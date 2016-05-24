@@ -84,3 +84,5 @@ plot(score ~ tsratio,
 abline(linear_model)
 ```
 
+
+Was ist hier looos???
