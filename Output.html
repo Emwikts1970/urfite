@@ -122,9 +122,17 @@ $(document).ready(function () {
 </div>
 
 
-<div id="chapter-3" class="section level2">
-<h2>Chapter 3</h2>
-<pre class="r"><code>cps_dat &lt;- read.csv(&quot;data/cps_ch3.csv&quot;, sep=&quot;;&quot;, dec=&quot;.&quot;)
+<div id="chapter-3" class="section level1">
+<h1>Chapter 3</h1>
+<div id="section-3.5" class="section level2">
+<h2>Section 3.5</h2>
+<div id="table-3.1" class="section level3">
+<h3>Table 3.1</h3>
+<p>In order to reproduce table 3.1 you need to download the data from the books source (LINK). We simply read in the data and then make use of the powerful package dplyr to subset the data.</p>
+<pre class="r"><code>library(dplyr, quietly=T)
+# Read in CPS data (taken from http:// ....)
+cps_dat &lt;- read.csv(&quot;data/cps_ch3.csv&quot;, sep=&quot;;&quot;, dec=&quot;.&quot;)
+# Get an overview of the data structure
 head(cps_dat)</code></pre>
 <pre><code>##   a_sex year    ahe12
 ## 1     1 1992 18.30969
@@ -133,6 +141,29 @@ head(cps_dat)</code></pre>
 ## 4     2 1992 14.17163
 ## 5     1 1992 23.60233
 ## 6     2 1992 12.98128</code></pre>
+<pre class="r"><code># Take cps_dat %&gt;% group data by gender and year %&gt;% compute the mean, standard deviation
+# and number of observations for each group
+avgs &lt;- cps_dat %&gt;% group_by(a_sex, year) %&gt;% summarise(mean(ahe12), sd(ahe12), n())
+# Round all results and print them
+round(avgs, 2)</code></pre>
+<pre><code>## Source: local data frame [12 x 5]
+## Groups: a_sex [?]
+## 
+##    a_sex  year mean(ahe12) sd(ahe12)   n()
+##    (dbl) (dbl)       (dbl)     (dbl) (dbl)
+## 1      1  1992       24.83     10.85  1594
+## 2      1  1996       23.97     10.79  1380
+## 3      1  2000       26.55     12.38  1303
+## 4      1  2004       26.80     12.81  1894
+## 5      1  2008       26.63     12.57  1839
+## 6      1  2012       25.30     12.09  2004
+## 7      2  1992       21.39      8.39  1368
+## 8      2  1996       20.26      8.49  1230
+## 9      2  2000       22.13      9.99  1181
+## 10     2  2004       22.43      9.99  1735
+## 11     2  2008       22.27     10.30  1871
+## 12     2  2012       21.50      9.99  1951</code></pre>
+</div>
 </div>
 <div id="chapter-4" class="section level2">
 <h2>Chapter 4</h2>
@@ -214,6 +245,7 @@ abline(linear_model)</code></pre>
 <p>Test test test</p>
 <p>dfkhdlfhd</p>
 <p>ppp</p>
+</div>
 </div>
 
 
