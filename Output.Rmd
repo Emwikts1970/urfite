@@ -9,9 +9,13 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
+## Chapter 3
+```{r, echo=T}
+cps_dat <- read.csv("data/cps_ch3.csv", sep=";", dec=".")
+head(cps_dat)
+```
 
-
-##Chapture 4
+## Chapter 4
 
 ```{r Table 4.1}
 library(AER)                                                    # contains the dataset 
