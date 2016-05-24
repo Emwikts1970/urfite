@@ -1,0 +1,234 @@
+---
+output: 
+  pdf_document:
+    highlight: default
+    keep_tex: yes
+    template: Includes/template.tex
+---
+
+```{r, echo=FALSE, warning=FALSE, error=FALSE}
+library(highr)
+```
+
+
+\begin{titlepage}
+\begin{flushleft}
+
+\HRule \\ [0.4cm]
+\Huge Eine Einf\"uhrung in \\
+\includegraphics[width=0.3\textwidth]{Images/Rlogo.png}
+\HRule \\ [0.4cm]
+\end{flushleft}
+
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Universit\"at Duisburg-Essen \\ Lehrstuhl f\"ur \"Okonometrie\\ Martin Schmelzer}\\
+\end{flushleft}
+\end{minipage}
+\vspace{12cm}
+\begin{center}
+\includegraphics[width=0.4\textwidth]{Images/unilogo.jpg} \\ \vspace{3cm}
+\end{center}
+\hfill
+\end{titlepage}
+
+
+
+
+
+\tableofcontents
+\newpage
+
+
+
+\section{Grundlagen}
+\subsection{Was ist R, warum nutzen wir R?}
+
+
+R ist eine Interpretersprache f\"ur statistische Anwendungen. Ihre Nutzergemeinde
+steigt stetig an. Jeder kann zum R-Projekt beitragen, indem er eigene Pakete entwickelt und 
+den anderen Nutzern zur Verf\"ugung stellt. Durch diesen Open Source-Charakter bietet \textbf{R} eine Vielzahl von analytischen M\"oglichkeiten f\"ur seine Anwender.
+Beispielsweise gibt es Pakete, um das Rechnen mit Zeitreihen zu vereinfachen oder aber um mit 
+den API's von Facebook oder Twitter zu kommunizieren und so Social-Media-Daten abzufragen. 
+Aber auch die gro\ss en "Datenkraken" ihrerseits haben \textbf{R} als n\"utzliches Werkzeug entdeckt. Gerade die 
+Analyse von "Big Data" (rechen- und speicherintensiv) ist eine St\"arke von \textbf{R}.
+
+\subsection{Installation von R und RStudio}
+
+\textbf{R} selbst verf\"ugt nicht \"uber eine sonderlich ansprechende Nutzeroberfl\"ache. Um \textbf{R} effektiv nutzen zu k\"onnen, empfiehlt sich das Arbeiten mit einem Editor. Wir werden \textbf{RStudio} als Arbeitsoberfl\"ache nutzen. Laden Sie zun\"achst beide Programme herunter: 
+
+
+
+\begin{enumerate}
+    \item \textbf{Die eigentliche Programmierumgebung R}: \\ \url{http://cran.r-project.org/} \\
+    Auf dieser Seite finden Sie die aktuelle Version von \textbf{R} f\"ur alle g\"angigen Betriebssysteme.
+    \begin{figure}[ht]
+        \centering
+            \includegraphics[width=1\textwidth]{Images/download.png}
+        \caption{Der Downloadbereich der R-Project Homepage}
+	    \label{fig1}
+    \end{figure} 
+
+
+\newpage
+    \item \textbf{Die Editor-Software RStudio}: \\ \url{http://www.rstudio.com/products/rstudio/download/} \\
+    Auch hier laden Sie die entsprechende Datei herunter.
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=0.8\textwidth]{Images/rstudiodownload.png}
+        \caption{Der Downloadbereich der RStudio Homepage}
+        \label{fig2}
+    \end{figure} 
+\end{enumerate}
+
+
+
+
+Als erstes wird \textbf{R} installiert. Der Installationspfad kann beliebig gew\"ahlt werden. Shortcuts sind nicht n\"otig.
+Nachdem die Installation von \textbf{R} erfolgreich war, installieren Sie \textbf{RStudio}. Hier ist ein Shortcut auf dem Desktop oder im Startmen\"u sinnvoll.
+
+
+
+\subsection{Die Benutzeroberfl\"ache}
+
+\begin{figure}[ht]
+    \centering
+  \includegraphics[width=1\textwidth]{Images/rstudio.png}
+	\caption{Die Benutzeroberfl\"ache von RStudio}
+	\label{fig3}
+\end{figure}
+\newpage
+Starten Sie \textbf{RStudio}. Die Benutzeroberfl\"ache ist in vier Bereiche eingeteilt:
+
+\begin{enumerate}[font=\bfseries]
+    
+    \item \textbf{Der Editor}\\
+        Erf\"ullt die gleichen Funktionen wie das Programm \textit{Editor} unter Windows.
+        
+    \item \textbf{Protokoll-Fenster}\\
+        Im Reiter \textit{Environment} findet man eine \"Ubersicht aller gespeicherten Objekte (Variablen und Funktionen). Unter \textit{History} wird der Verlauf des bisher ausgef\"uhrten Codes angezeigt (quasi wie die Chronik im Browser). \textit{Presentation} ist f\"ur unsere Zwecke unwichtig. Es sei jedoch erw\"ahnt, dass es m\"oglich ist, Slides mit Codes und Plots direkt in \textbf{RStudio} zu erstellen und anzuzeigen.
+        
+    \item \textbf{Grafische Ausgabe, Dokumentation und Packages}\\
+        Der Reiter \textit{Plots} dient der grafischen Ausgabe. Ben\"otigt man Hilfe zu einer bestimmten Funktion, kann man unter \textit{Help} im Suchfeld oben rechts nach ihr suchen. Eine \"Ubersicht aller installierten Pakete findet sich unter dem Reiter \textit{Packages}.
+       
+    \item \textbf{Die Konsole}\\
+        Wollen wir unseren im Editor geschriebenen Code ausf\"uhren, senden wir ihn \"uber den Button \menu[,]{Source} (oben rechts im Editorfenster) zur Konsole. Alternativ kann man seinen Code auch direkt in der Konsole eingeben.
+\end{enumerate}
+
+
+\subsection{Die Dokumentation: wie war das noch gleich?}     
+\textbf{R} verf\"ugt \"uber eine sehr gut strukturierte Dokumentation, mit der sich die Mehrzahl der Probleme w\"ahrend des Arbeitens l\"osen l\"asst. 
+Ben\"otigen wir Hilfe zu einer bestimmten Funktion, k\"onnen wir die dazugeh\"orige Seite mittels \texttt{`r hi_latex("help(Funktionsname)")`} aufrufen. Dabei folgen alle Funktionsbeschreibungen der Dokumentation demselben Aufbau. Im Abschnitt \textit{Description} erfahren wir, welchen Zweck die jeweilige Funktion erfüllt. Unter \textit{Usage} sehen wir den typischen Aufbau der Funktion und unter \textit{Arguments} die detailierte Beschreibung der Funktionsargumente. Am Ende jeder Seite findet man simple Anwendungsbeispiele. Eine Kurzschreibweise ist durch \texttt{?NameDerFunktion} gegeben.
+
+```{r, eval=FALSE,  results='asis'}
+help(rnorm)        ## Hilfe zu der Funktion rnorm()
+?help              ## Hilfe zu der Funktion help()
+??randomnumbers    ## Hilfe zum Stichwort "randomnumbers"
+```
+
+Die Dokumentation kann auch nach einzelnen Stichw\"ortern durchsucht werden. Dazu verwendet man einfach zwei Fragezeichen anstelle von einem.
+
+\subsection{Installation und Verwendung zusätzlicher Pakete}
+Neue Pakete k\"onnen innerhalb von RStudio \"uber den den Reiter \textit{Packages} oder alternativ \"uber das Men\"u \menu[,]{Tools, Install Packages} installiert werden. Die Standardquelle f\"ur neue Pakete ist dabei die "CRAN" Bibliothek. Fortgeschrittene Nutzer k\"onnen Pakete auch direkt in der Konsole installieren. Dazu nutzt man den Befehl \texttt{`r hi_latex("install.packages()")`}\index{install.packages}.
+M\"ochte man ein neu installiertes Paket verwenden, so muss man es in der aktuellen \textbf{R}-Session noch importieren. Dies geschieht mit Hilfe der Funktion \texttt{`r hi_latex("library(Paketname)")`}\index{library}.
+Beispielsweise beinhaltet das Paket "MASS" unter anderem einen Datensatz namens \texttt{geyser} und die Funktion \texttt{`r hi_latex("truehist()")`}\index{truehist}, mit deren Hilfe das Plotten von Histogrammen verbessert werden kann.
+
+
+```{r, echo=TRUE, warning=FALSE, error=FALSE, out.width='9cm', fig.align='center'} 
+# Methoden und Daten des Pakets MASS laden/importieren!
+# Die auftretende Warnung kann ignoriert werden.
+library(MASS) 
+# Variablen des Datensatzes importieren
+attach(geyser)
+# Histogramm der durchschnittlichen Wartezeit zwischen
+# zwei Ausbrüchen des Geysirs plotten.
+truehist(waiting, main="Duration Between Two Eruptions")
+```
+
+\section{Stock and Watson - Chapter 2}
+
+\section{Stock and Watson - Chapter 3}
+
+\section{Stock and Watson - Chapter 4}
+
+
+
+```{r Table 4.1}
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+
+CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+
+mean(CASchools$tsratio) 
+mean(CASchools$score)
+sd(CASchools$tsratio) 
+sd(CASchools$score)
+quantiles          <- c(0.10, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9)
+quantile(CASchools$tsratio, quantiles)
+quantile(CASchools$score, quantiles)
+
+```
+
+
+
+
+```{r Figure 4.2}
+plot(score ~ tsratio, 
+     data = CASchools,
+     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
+     xlab = "Student teacher-ratio (X)",
+     ylab = "Test Score (Y)",
+     xlim = c(10,30),
+     ylim = c(600, 720))
+```
+
+```{r}
+attach(CASchools)
+beta_1 <- sum((tsratio - mean(tsratio))*(score - mean(score))) / sum((tsratio - mean(tsratio))^2)
+beta_0 <- mean(score) - beta_1 * mean(tsratio)
+```
+
+```{r}
+library(xtable)
+plot(score ~ tsratio, 
+     data = CASchools,
+     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
+     xlab = "Student teacher-ratio (X)",
+     ylab = "Test Score (Y)",
+     xlim = c(10,30),
+     ylim = c(600, 720))
+
+linear_model <- lm(score ~ tsratio, data = CASchools)
+linear_model
+
+abline(a = beta_0, b = beta_1)
+```
+
+
+```{r}
+linear_model <- lm(score ~ tsratio, data = CASchools)
+linear_model
+```
+
+```{r Figure 4.3}
+library(xtable)
+plot(score ~ tsratio, 
+     data = CASchools,
+     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
+     xlab = "Student teacher-ratio (X)",
+     ylab = "Test Score (Y)",
+     xlim = c(10,30),
+     ylim = c(600, 720))
+
+abline(linear_model)
+```
+
+
+\printindex
+
+
+
+
+
+
