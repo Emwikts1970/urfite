@@ -86,3 +86,6 @@ abline(linear_model)
 
 
 Was ist hier looos???
+
+
+Wie jetzt gehts endlich?
