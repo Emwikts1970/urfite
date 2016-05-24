@@ -1,0 +1,86 @@
+---
+title: "Introduction to Econometrics with R"
+author: "M. Arnold, M. Schmelzer, A. Gerber"
+date: "20 Mai 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+
+
+##Chapture 4
+
+```{r Table 4.1}
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+
+CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+
+mean(CASchools$tsratio) 
+mean(CASchools$score)
+sd(CASchools$tsratio) 
+sd(CASchools$score)
+quantiles          <- c(0.10, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9)
+quantile(CASchools$tsratio, quantiles)
+quantile(CASchools$score, quantiles)
+
+```
+
+
+
+
+```{r Figure 4.2}
+plot(score ~ tsratio, 
+     data = CASchools,
+     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
+     xlab = "Student teacher-ratio (X)",
+     ylab = "Test Score (Y)",
+     xlim = c(10,30),
+     ylim = c(600, 720))
+```
+
+```{r}
+attach(CASchools)
+beta_1 <- sum((tsratio - mean(tsratio))*(score - mean(score))) / sum((tsratio - mean(tsratio))^2)
+beta_0 <- mean(score) - beta_1 * mean(tsratio)
+```
+
+```{r}
+library(xtable)
+plot(score ~ tsratio, 
+     data = CASchools,
+     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
+     xlab = "Student teacher-ratio (X)",
+     ylab = "Test Score (Y)",
+     xlim = c(10,30),
+     ylim = c(600, 720))
+
+linear_model <- lm(score ~ tsratio, data = CASchools)
+linear_model
+
+abline(a = beta_0, b = beta_1)
+```
+
+
+```{r}
+linear_model <- lm(score ~ tsratio, data = CASchools)
+linear_model
+```
+
+```{r Figure 4.3}
+library(xtable)
+plot(score ~ tsratio, 
+     data = CASchools,
+     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
+     xlab = "Student teacher-ratio (X)",
+     ylab = "Test Score (Y)",
+     xlim = c(10,30),
+     ylim = c(600, 720))
+
+abline(linear_model)
+```
+
