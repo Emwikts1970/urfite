@@ -47,7 +47,7 @@ print(result, digits = 2)
 ```
 
 
-## Chapter 4
+# Chapter 4
 
 ```{r Table 4.1}
 library(AER)                                                    # contains the dataset 
@@ -119,4 +119,41 @@ plot(score ~ tsratio,
 
 abline(linear_model)
 ```
+
+# Chapter 5
+
+# Chapter 6
+## Section 6.3
+```{r}
+# Multiple Regression - Application to Test Scores and the Student-Teacher Ratio
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+model <- lm(score ~ tsratio + english, data = CASchools)
+```
+
+## Section 6.4
+Taking the code from Section 6.3 you could simply use `summary(model)` to print the $SER$, $R^2$ and adjusted-$R^2$. You find them at the bottom of the output.
+```{r}
+summary(model)
+```
+You can also compute the parameters by hand using the formulas on p. 242.
+```{r}
+n <- nrow(CASchools)    # number of observations (rows)
+k <- 2                  # 2 regressors
+y_mean <- mean(CASchools$score)
+
+SSR <- sum( residuals(model)^2 )
+TSS <- sum( ( CASchools$score - y_mean )^2 )
+ESS <- sum((fitted(model) - y_mean)^2)
+
+SER <- sqrt(1/(n-k-1) * SSR)
+Rsq <- 1 - (SSR / TSS)
+adj_Rsq <- 1 - (n-1)/(n-k-1) * SSR/TSS
+cat(SER, Rsq, adj_Rsq, sep = "    ")
+```
+
+
+
 
