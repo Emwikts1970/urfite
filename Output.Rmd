@@ -102,19 +102,3 @@ plot(score ~ tsratio,
 abline(linear_model)
 ```
 
-
-Was ist hier looos???
-
-Klötenkasper1337
-
-Wie jetzt gehts endlich?
-
-
-Test test test
-
-
-
-dfkhdlfhd
-
-ppp
-
