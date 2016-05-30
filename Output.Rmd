@@ -2,18 +2,55 @@
 title: "Introduction to Econometrics with R"
 author: "M. Arnold, M. Schmelzer, A. Gerber"
 date: "20 Mai 2016"
-output: html_document
+output:
+  html_document:
+    css: styles.css
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
+# Chapter 3
+## Section 3.5
 
-##Chapture 4
-The 
+### Table 3.1 - Not completed (sig. test)
+In order to reproduce the data from table 3.1 you need to download the data from the books source (LINK).
+We simply read in the data and then make use of the powerful package dplyr to subset the data.
 
-```{r Table 4.1}
+```{r, echo=T, eval=T}
+library(dplyr, quietly=T)
+# Read in CPS data (taken from http:// ....)
+cps_dat <- read.csv("data/cps_ch3.csv", sep=";", dec=".")
+# Get an overview of the data structure
+head(cps_dat)
+# Take cps_dat %>% group data by gender and year %>% compute the mean, standard deviation
+# and number of observations for each group
+avgs <- cps_dat %>% group_by(a_sex, year) %>% summarise(mean(ahe12), sd(ahe12), n())
+print(avgs, digits=2)
+```
+
+Now that we have the numbers we can compute the difference between both genders.
+```{r, echo=T}
+male   <- avgs %>% filter(a_sex == 1) 
+female <- avgs %>% filter(a_sex == 2)
+colnames(male)   <- c("Sex", "Year", "Y_bar_m", "s_m", "n_m")
+colnames(female) <- c("Sex", "Year", "Y_bar_f", "s_f", "n_f")
+
+# Gender gap, standard errors and confidence intervals
+gap      <- male$Y_bar_m - female$Y_bar_f
+gap_se   <- sqrt(male$s_m^2 / male$n_m + female$s_f^2 / female$n_f)
+gap_ci_l <- gap - 1.96 * gap_se
+gap_ci_u <- gap + 1.96 * gap_se
+result <- cbind(male[,-1], female[,-(1:2)], gap, gap_se, gap_ci_l, gap_ci_u)
+print(result, digits = 2)
+```
+
+
+# Chapter 4
+
+```{r}
 library(AER)                                                    # contains the dataset 
 data(CASchools) 
 
@@ -47,12 +84,6 @@ plot(score ~ tsratio,
 attach(CASchools)
 beta_1 <- sum((tsratio - mean(tsratio))*(score - mean(score))) / sum((tsratio - mean(tsratio))^2)
 beta_0 <- mean(score) - beta_1 * mean(tsratio)
-
-OLS<- function(beta_0, beta_1, x){
-        beta_0 + x* beta_1
-     }
-
-#curve(OLS, from = 0, to = 10, beta_0 = beta_0, beta_1 = beta_1)
 ```
 
 ```{r}
@@ -77,7 +108,6 @@ linear_model
 ```
 
 ```{r Figure 4.3}
-library(xtable)
 plot(score ~ tsratio, 
      data = CASchools,
      main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
@@ -89,19 +119,40 @@ plot(score ~ tsratio,
 abline(linear_model)
 ```
 
+# Chapter 5
 
-Was ist hier looos???
+# Chapter 6
+## Section 6.3
+```{r}
+# Multiple Regression - Application to Test Scores and the Student-Teacher Ratio
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+model <- lm(score ~ tsratio + english, data = CASchools)
+```
 
-Klötenkasper1337
+## Section 6.4
+Taking the code from Section 6.3 you could simply use `summary(model)` to print the $SER$, $R^2$ and adjusted-$R^2$. You find them at the bottom of the output.
+```{r}
+summary(model)
+```
+You can also compute the parameters by hand using the formulas on p. 242.
+```{r}
+n <- nrow(CASchools)    # number of observations (rows)
+k <- 2                  # 2 regressors
+y_mean <- mean(CASchools$score)
 
-Wie jetzt gehts endlich?
+SSR <- sum( residuals(model)^2 )
+TSS <- sum( ( CASchools$score - y_mean )^2 )
+ESS <- sum((fitted(model) - y_mean)^2)
+
+SER <- sqrt(1/(n-k-1) * SSR)
+Rsq <- 1 - (SSR / TSS)
+adj_Rsq <- 1 - (n-1)/(n-k-1) * SSR/TSS
+cat(SER, Rsq, adj_Rsq, sep = "    ")
+```
 
 
-Test test test
 
-
-
-dfkhdlfhd
-
-ppp
 
