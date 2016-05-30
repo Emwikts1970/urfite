@@ -120,6 +120,37 @@ abline(linear_model)
 ```
 
 # Chapter 5
+## Section 5.4
+
+```{r Figure 5.2}
+library(scales)
+
+# Genrate some heteroscedastic data
+
+set.seed(123) 
+x <- rep(c(10,15,20,25),each=25)
+e <- rnorm(100, sd=12)                
+i <- order(runif(100, max=dnorm(e, sd=12))) 
+y <- 720 - 3.3 * x + e[rev(i)]
+
+# Plot data and inspect conditional distributions
+
+mod <- lm(y ~ x)
+plot(x, y, main="An Example of Heteroscedasticity",
+     xlab = "Student teacher-ratio (X)",
+     ylab = "Test Score (Y)",
+     cex=0.5, pch=19, xlim=c(8,27), ylim=c(600,710))
+abline(mod, col="red")
+boxplot(y~x, add=TRUE, at=c(10,15,20,25), col=alpha("gray", 0.4), border="black")
+```
+
+```{r}
+#if(!require(devtools))
+#  install.packages("devtools")
+#library(devtools)
+#install_github("datacamp/tutorial")
+#library(tutorial)
+```
 
 # Chapter 6
 ## Section 6.3
