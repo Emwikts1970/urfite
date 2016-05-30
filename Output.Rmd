@@ -10,8 +10,8 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
 
-
 ##Chapture 4
+The 
 
 ```{r Table 4.1}
 library(AER)                                                    # contains the dataset 
@@ -19,7 +19,10 @@ data(CASchools)
 
 CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
 CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+```
 
+
+```{r Table 4.1}
 mean(CASchools$tsratio) 
 mean(CASchools$score)
 sd(CASchools$tsratio) 
@@ -27,10 +30,7 @@ sd(CASchools$score)
 quantiles          <- c(0.10, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9)
 quantile(CASchools$tsratio, quantiles)
 quantile(CASchools$score, quantiles)
-
 ```
-
-
 
 
 ```{r Figure 4.2}
@@ -47,10 +47,15 @@ plot(score ~ tsratio,
 attach(CASchools)
 beta_1 <- sum((tsratio - mean(tsratio))*(score - mean(score))) / sum((tsratio - mean(tsratio))^2)
 beta_0 <- mean(score) - beta_1 * mean(tsratio)
+
+OLS<- function(beta_0, beta_1, x){
+        beta_0 + x* beta_1
+     }
+
+#curve(OLS, from = 0, to = 10, beta_0 = beta_0, beta_1 = beta_1)
 ```
 
 ```{r}
-library(xtable)
 plot(score ~ tsratio, 
      data = CASchools,
      main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
