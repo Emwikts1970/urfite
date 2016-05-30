@@ -122,6 +122,8 @@ abline(linear_model)
 
 Änderung -> Martin A.'s Änderung
 
+Veränderung 
+
 # Chapter 5
 
 # Chapter 6
