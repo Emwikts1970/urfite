@@ -120,7 +120,7 @@ abline(linear_model)
 ```
 
 
-Änderung -> Martin A.'s aenderung 2
+Änderung -> Martin A.'s aenderung
 
 
 Veränderung 
