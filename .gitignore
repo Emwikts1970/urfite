@@ -2,4 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
+<<<<<<< HEAD
 Output.html
+=======
+.DS_Store
+>>>>>>> dcb4faa44516abadabd9e6ee72dd639430edf56a
