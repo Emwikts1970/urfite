@@ -119,6 +119,9 @@ plot(score ~ tsratio,
 abline(linear_model)
 ```
 
+
+Änderung 
+
 # Chapter 5
 
 # Chapter 6
