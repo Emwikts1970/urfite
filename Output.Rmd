@@ -1,7 +1,7 @@
 ---
 title: "Introduction to Econometrics with R"
 author: "M. Arnold, M. Schmelzer, A. Gerber"
-date: "20 Mai 2016"
+date: "`r Sys.Date()`"
 output:
   html_document:
     css: styles.css
@@ -150,6 +150,37 @@ boxplot(y~x, add=TRUE, at=c(10,15,20,25), col=alpha("gray", 0.4), border="black"
 #library(devtools)
 #install_github("datacamp/tutorial")
 #library(tutorial)
+```
+
+We already have assigned the model's summary to `mod`. Now, use your R knowledge to display coefficients and standard errors!
+
+```{r, ex="create_a", type="pre-exercise-code", include=FALSE}
+# Available in the workspace when the session initializes
+set.seed(123) 
+x <- rep(c(10,15,20,25),each=25)
+e <- rnorm(100, sd=12)                
+i <- order(runif(100, max=dnorm(e, sd=12))) 
+y <- 720 - 3.3 * x + e[rev(i)]
+mod <- summary(lm(y ~ x))
+```
+
+```{r, ex="create_a", type="sample-code", include=FALSE}
+# Access coefficients and standard errors
+
+```
+
+```{r, ex="create_a", type="solution", include=FALSE}
+# Access coefficients and standard errors
+mod$coefficients
+```
+
+```{r, ex="create_a", type="sct", eval=FALSE, include=FALSE}
+test_output_contains("mod$coefficients", incorrect_msg = "Make sure to use `mod$` !")
+success_msg("Econometrics ROXXXXXX111!!!")
+```
+
+```{r, ex="create_a", type="hint", eval=FALSE, include=FALSE}
+Use the dollar operator.
 ```
 
 # Chapter 6
