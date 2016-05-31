@@ -11,7 +11,7 @@
 
 <meta name="author" content="M. Arnold, M. Schmelzer, A. Gerber" />
 
-<meta name="date" content="2016-05-30" />
+<meta name="date" content="2016-05-31" />
 
 <title>Introduction to Econometrics with R</title>
 
@@ -119,7 +119,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Introduction to Econometrics with R</h1>
 <h4 class="author"><em>M. Arnold, M. Schmelzer, A. Gerber</em></h4>
-<h4 class="date"><em>2016-05-30</em></h4>
+<h4 class="date"><em>2016-05-31</em></h4>
 
 </div>
 
@@ -261,6 +261,15 @@ abline(linear_model)</code></pre>
 </div>
 <div id="chapter-5" class="section level1">
 <h1>Chapter 5</h1>
+<div id="section-5.1" class="section level2">
+<h2>Section 5.1</h2>
+<p>Consider again theprevious OLS regression that gave us the regression line <span class="math display">\[ \widehat{score} = 698.9 - 2.28 \times tsratio.  \]</span> For testing a hypothesis regarding the slope parameter, we need <span class="math inline">\(SE(\hat{\beta}_1)\)</span>, the standard error of the respective point estimator. By looking at the second column of the coefficient’s summary, we find this value to be approximately <span class="math inline">\(0.48\)</span>.</p>
+<pre class="r"><code>summary(linear_model)$coefficients</code></pre>
+<pre><code>##               Estimate Std. Error   t value      Pr(&gt;|t|)
+## (Intercept) 698.932949  9.4674911 73.824516 6.569846e-242
+## tsratio      -2.279808  0.4798255 -4.751327  2.783308e-06</code></pre>
+<p>How is <span class="math inline">\(SE(\hat{\beta}_1)\)</span> computed? The <code>summary</code> function uses the homoskedasticity-only formula <span class="math display">\[ SE(\hat{\beta}_1) = \sqrt{ \overset{\sim}{\sigma}^2_{beta_1} } = \sqrt{ \frac{SER^2}{\sum(X_i - \overline{X})^2} }. \]</span></p>
+</div>
 <div id="section-5.4" class="section level2">
 <h2>Section 5.4</h2>
 <pre class="r"><code>library(scales)
