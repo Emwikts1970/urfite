@@ -1,7 +1,7 @@
 ---
 title: "Introduction to Econometrics with R"
 author: "M. Arnold, M. Schmelzer, A. Gerber"
-date: "20 Mai 2016"
+date: "`r Sys.Date()`"
 output:
   html_document:
     css: styles.css
@@ -119,10 +119,84 @@ plot(score ~ tsratio,
 abline(linear_model)
 ```
 
-
-Änderung 
-
 # Chapter 5
+
+## Section 5.1
+
+Consider again theprevious OLS regression that gave us the regression line
+  \[ \widehat{score} = 698.9 - 2.28 \times tsratio.  \]
+For testing a hypothesis regarding the slope parameter, we need $SE(\hat{\beta}_1)$, the standard error of the respective point estimator. By looking at the second column of the coefficient's summary, we find this value to be approximately $0.48$.
+
+```{r}
+summary(linear_model)$coefficients
+```
+
+How is $SE(\hat{\beta}_1)$ computed? The `summary` function uses the homoskedasticity-only formula 
+  \[ SE(\hat{\beta}_1) = \sqrt{ \overset{\sim}{\sigma}^2_{beta_1} } = \sqrt{ \frac{SER^2}{\sum(X_i - \overline{X})^2} }. \]
+
+
+## Section 5.4
+
+```{r Figure 5.2}
+library(scales)
+
+# Genrate some heteroscedastic data
+
+set.seed(123) 
+x <- rep(c(10,15,20,25),each=25)
+e <- rnorm(100, sd=12)                
+i <- order(runif(100, max=dnorm(e, sd=12))) 
+y <- 720 - 3.3 * x + e[rev(i)]
+
+# Plot data and inspect conditional distributions
+
+mod <- lm(y ~ x)
+plot(x, y, main="An Example of Heteroscedasticity",
+     xlab = "Student teacher-ratio (X)",
+     ylab = "Test Score (Y)",
+     cex=0.5, pch=19, xlim=c(8,27), ylim=c(600,710))
+abline(mod, col="red")
+boxplot(y~x, add=TRUE, at=c(10,15,20,25), col=alpha("gray", 0.4), border="black")
+```
+
+```{r}
+#if(!require(devtools))
+#  install.packages("devtools")
+#library(devtools)
+#install_github("datacamp/tutorial")
+#library(tutorial)
+```
+
+We already have assigned the model's summary to `mod`. Now, use your R knowledge to display coefficients and standard errors!
+
+```{r, ex="create_a", type="pre-exercise-code", include=FALSE}
+# Available in the workspace when the session initializes
+set.seed(123) 
+x <- rep(c(10,15,20,25),each=25)
+e <- rnorm(100, sd=12)                
+i <- order(runif(100, max=dnorm(e, sd=12))) 
+y <- 720 - 3.3 * x + e[rev(i)]
+mod <- summary(lm(y ~ x))
+```
+
+```{r, ex="create_a", type="sample-code", include=FALSE}
+# Access coefficients and standard errors
+
+```
+
+```{r, ex="create_a", type="solution", include=FALSE}
+# Access coefficients and standard errors
+mod$coefficients
+```
+
+```{r, ex="create_a", type="sct", eval=FALSE, include=FALSE}
+test_output_contains("mod$coefficients", incorrect_msg = "Make sure to use `mod$` !")
+success_msg("Econometrics ROXXXXXX111!!!")
+```
+
+```{r, ex="create_a", type="hint", eval=FALSE, include=FALSE}
+Use the dollar operator.
+```
 
 # Chapter 6
 ## Section 6.3
