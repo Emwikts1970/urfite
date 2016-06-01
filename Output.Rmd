@@ -156,6 +156,41 @@ adj_Rsq <- 1 - (n-1)/(n-k-1) * SSR/TSS
 cat(SER, Rsq, adj_Rsq, sep = "    ")
 ```
 
+## Section 6.7
+### Examples of Perfect Multicollinearity
 
+If you try to compute OLS with a set of regressors that suffer from perfect multicollinearity the system will warn you and ignore the regressor(s) which is(are) assumed to be a linear combination of the others.
+```{r}
+# Example 1
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+CASchools$FracEL    <- CASchools$english/100
+model <- lm(score ~ tsratio + english + FracEL, data = CASchools)
+summary(model)
+```
+
+```{r}
+# Example 2
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+CASchools$NVS      <- ifelse(CASchools$tsratio < 12, 0, 1)      # If tsration smaller 12, NVS = 0, else NVS = 1
+model <- lm(score ~ tsratio + english + NVS, data = CASchools)
+summary(model)
+```
+
+```{r}
+# Example 3
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  <- CASchools$students/CASchools$teachers  # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2  # average test-score
+CASchools$PctES    <- 100 - CASchools$english  # Percentage of english speakers 
+model <- lm(score ~ tsratio + english + PctES, data = CASchools)
+summary(model)
+```
 
 
