@@ -123,7 +123,7 @@ abline(linear_model)
 
 ## Section 5.1
 
-Consider again theprevious OLS regression that gave us the regression line
+Consider again the previous OLS regression that gave us the regression line
   \[ \widehat{score} = 698.9 - 2.28 \times tsratio.  \]
 For testing a hypothesis regarding the slope parameter, we need $SE(\hat{\beta}_1)$, the standard error of the respective point estimator. By looking at the second column of the coefficient's summary, we find this value to be approximately $0.48$.
 
