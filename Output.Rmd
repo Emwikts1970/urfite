@@ -49,6 +49,9 @@ print(result, digits = 2)
 
 
 # Chapter 4
+## Linear Regression with One Regressor 
+
+This chapter introduces the linear regression model which  relates one variable, $X$, to another variable $Y$. If for example a school cuts the class sizes by hiring new teachers, would this have an impact on the students test scores? With linear regression we can not only examine whether the class size ($X$) does have an impact on the test results ($Y$). We can learn also something about the direction and the strength of the effect.      
 
 ```{r}
 library(AER)                                                    # contains the dataset 
@@ -79,6 +82,17 @@ plot(score ~ tsratio,
      xlim = c(10,30),
      ylim = c(600, 720))
 ```
+
+## The Ordinary Least Squares Estimator (OLS)
+
+\begin{align}
+\hat{\beta_1} & =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})} \\
+
+\hat{\beta_0} & =  \bar{Y} - \hat{\beta_1} \bar{X} 
+\end{align}
+
+
+
 
 ```{r}
 attach(CASchools)
