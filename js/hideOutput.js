@@ -17,18 +17,15 @@ $(document).ready(function() {
   $output = $("pre").not(".r");
   // Add the "show/hide-button" to each output chunk
   $output.prepend("<div class=\"showopt\">Show Output</div>");
-  // Create selector variable for the <code> tags that include the output
-  $code = $output.children("code");
-  // When the page is loaded, hide all output chunks
-  $code.fadeToggle("fast", "linear");
-  
-  
+  // Select the <pre> tags, then choose their <code> child tags and toggle visibility 
+  $output.children("code").fadeToggle("fast", "linear");
+
   // When the show/hide-button is clicked, toggle the current state and
   // change the button text
   $(".showopt").click(function() {
   	  $btn = $(this);
-      $chunk = $(this).next("code");
-	    $chunk.fadeToggle("fast", "linear");
+      $chunk = $btn.next("code");
+	    $chunk.slideToggle(350, "swing");
 	    if($btn.html() === "Show Output") {
 	      $btn.html("Hide Output");
 	    } else {
