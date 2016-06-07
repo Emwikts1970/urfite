@@ -17,5 +17,10 @@ navbar:
           href: "index.html#chapter-7"
     - text: "About"
       icon: glyphicon-info-sign
-      href: ""
+      href: "about.html"
+      
+output:
+  html_document:
+    css: css/theme.min.css
+    highlight: textmate
       

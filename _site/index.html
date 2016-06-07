@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="M. Arnold, M. Schmelzer, A. Gerber" />
+
+<meta name="date" content="2016-06-07" />
+
+<title>Introduction to Econometrics with R</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/textmate.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="css/theme.min.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.0/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">URFITE</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="glyphicon glyphicon-book"></span>
+     
+    Chapters
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="index.html#chapter-3">Chapter 3</a>
+    </li>
+    <li>
+      <a href="index.html#chapter-4">Chapter 4</a>
+    </li>
+    <li>
+      <a href="index.html#chapter-5">Chapter 5</a>
+    </li>
+    <li>
+      <a href="index.html#chapter-6">Chapter 6</a>
+    </li>
+    <li>
+      <a href="index.html#chapter-7">Chapter 7</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="about.html">
+    <span class="glyphicon glyphicon-info-sign"></span>
+     
+    About
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Introduction to Econometrics with R</h1>
+<h4 class="author"><em>M. Arnold, M. Schmelzer, A. Gerber</em></h4>
+<h4 class="date"><em>2016-06-07</em></h4>
+
+</div>
+
+
+<!--Include script for hiding output chunks-->
+<script src="js/hideOutput.js"></script>
+<div id="chapter-3" class="section level1">
+<h1>Chapter 3</h1>
+<div id="section-3.5" class="section level2">
+<h2>Section 3.5</h2>
+<div id="table-3.1---not-completed-sig.-test" class="section level3">
+<h3>Table 3.1 - Not completed (sig. test)</h3>
+<p>In order to reproduce the data from table 3.1 you need to download the data from the books source (LINK). We simply read in the data and then make use of the powerful package dplyr to subset the data.</p>
+<pre class="r"><code>library(dplyr, quietly=T)
+# Read in CPS data (taken from http:// ....)
+cps_dat &lt;- read.csv(&quot;data/cps_ch3.csv&quot;, sep=&quot;;&quot;, dec=&quot;.&quot;)
+# Get an overview of the data structure
+head(cps_dat)</code></pre>
+<pre><code>##   a_sex year    ahe12
+## 1     1 1992 18.30969
+## 2     1 1992 16.36428
+## 3     1 1992 24.47649
+## 4     2 1992 14.17163
+## 5     1 1992 23.60233
+## 6     2 1992 12.98128</code></pre>
+<pre class="r"><code># Take cps_dat %&gt;% group data by gender and year %&gt;% compute the mean, standard deviation
+# and number of observations for each group
+avgs &lt;- cps_dat %&gt;% group_by(a_sex, year) %&gt;% summarise(mean(ahe12), sd(ahe12), n())
+print(avgs, digits=2)</code></pre>
+<pre><code>## Source: local data frame [12 x 5]
+## Groups: a_sex [?]
+## 
+##    a_sex  year mean(ahe12) sd(ahe12)   n()
+##    (int) (int)       (dbl)     (dbl) (int)
+## 1      1  1992    24.83019 10.852310  1594
+## 2      1  1996    23.97028 10.794585  1380
+## 3      1  2000    26.54988 12.376707  1303
+## 4      1  2004    26.80202 12.811654  1894
+## 5      1  2008    26.63023 12.573526  1839
+## 6      1  2012    25.29886 12.091118  2004
+## 7      2  1992    21.38683  8.394597  1368
+## 8      2  1996    20.25632  8.486105  1230
+## 9      2  2000    22.12856  9.986240  1181
+## 10     2  2004    22.42996  9.989347  1735
+## 11     2  2008    22.26640 10.300938  1871
+## 12     2  2012    21.50238  9.986548  1951</code></pre>
+<p>Now that we have the numbers we can compute the difference between both genders.</p>
+<pre class="r"><code>male   &lt;- avgs %&gt;% filter(a_sex == 1) 
+female &lt;- avgs %&gt;% filter(a_sex == 2)
+colnames(male)   &lt;- c(&quot;Sex&quot;, &quot;Year&quot;, &quot;Y_bar_m&quot;, &quot;s_m&quot;, &quot;n_m&quot;)
+colnames(female) &lt;- c(&quot;Sex&quot;, &quot;Year&quot;, &quot;Y_bar_f&quot;, &quot;s_f&quot;, &quot;n_f&quot;)
+
+# Gender gap, standard errors and confidence intervals
+gap      &lt;- male$Y_bar_m - female$Y_bar_f
+gap_se   &lt;- sqrt(male$s_m^2 / male$n_m + female$s_f^2 / female$n_f)
+gap_ci_l &lt;- gap - 1.96 * gap_se
+gap_ci_u &lt;- gap + 1.96 * gap_se
+result &lt;- cbind(male[,-1], female[,-(1:2)], gap, gap_se, gap_ci_l, gap_ci_u)
+print(result, digits = 2)</code></pre>
+<pre><code>##   Year Y_bar_m s_m  n_m Y_bar_f  s_f  n_f gap gap_se gap_ci_l gap_ci_u
+## 1 1992      25  11 1594      21  8.4 1368 3.4   0.35      2.7      4.1
+## 2 1996      24  11 1380      20  8.5 1230 3.7   0.38      3.0      4.5
+## 3 2000      27  12 1303      22 10.0 1181 4.4   0.45      3.5      5.3
+## 4 2004      27  13 1894      22 10.0 1735 4.4   0.38      3.6      5.1
+## 5 2008      27  13 1839      22 10.3 1871 4.4   0.38      3.6      5.1
+## 6 2012      25  12 2004      22 10.0 1951 3.8   0.35      3.1      4.5</code></pre>
+</div>
+</div>
+</div>
+<div id="chapter-4" class="section level1">
+<h1>Chapter 4</h1>
+<div id="linear-regression-with-one-regressor" class="section level2">
+<h2>Linear Regression with One Regressor</h2>
+<p>This chapter introduces the linear regression model which relates one variable, <span class="math inline">\(X\)</span>, to another variable <span class="math inline">\(Y\)</span>. If for example a school cuts the class sizes by hiring new teachers, would this have an impact on the students test scores? With linear regression we can not only examine whether the class size (<span class="math inline">\(X\)</span>) does have an impact on the test results (<span class="math inline">\(Y\)</span>). We can learn also something about the direction and the strength of the effect.</p>
+<pre class="r"><code>library(AER)                                                    # contains the dataset 
+data(CASchools) 
+
+CASchools$tsratio  &lt;- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    &lt;- (CASchools$read + CASchools$math)/2       # average test-score</code></pre>
+<pre class="r"><code>mean(CASchools$tsratio) 
+mean(CASchools$score)
+sd(CASchools$tsratio) 
+sd(CASchools$score)
+quantiles          &lt;- c(0.10, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9)
+quantile(CASchools$tsratio, quantiles)
+quantile(CASchools$score, quantiles)</code></pre>
+<pre><code>## [1] 19.64043
+## [1] 654.1565
+## [1] 1.891812
+## [1] 19.05335
+##      10%      25%      40%      50%      60%      75%      90% 
+## 17.34860 18.58236 19.26618 19.72321 20.07830 20.87181 21.86741 
+##      10%      25%      40%      50%      60%      75%      90% 
+## 630.3950 640.0500 649.0700 654.4500 659.4000 666.6625 678.8600</code></pre>
+<pre class="r"><code>plot(score ~ tsratio, 
+     data = CASchools,
+     main = &quot;Scatterplot of Test Score vs. Student-Teacher Ratio&quot;, 
+     xlab = &quot;Student teacher-ratio (X)&quot;,
+     ylab = &quot;Test Score (Y)&quot;,
+     xlim = c(10,30),
+     ylim = c(600, 720))</code></pre>
+<p><img src="index_files/figure-html/Figure%204.2-1.png" width="672" /></p>
+</div>
+<div id="the-ordinary-least-squares-estimator-ols" class="section level2">
+<h2>The Ordinary Least Squares Estimator (OLS)</h2>
+\begin{align}
+\hat{\beta_1} &amp; =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})^2} \\
+
+\hat{\beta_0} &amp; =  \bar{Y} - \hat{\beta_1} \bar{X} 
+\end{align}
+<pre class="r"><code>attach(CASchools)
+beta_1 &lt;- sum((tsratio - mean(tsratio))*(score - mean(score))) / sum((tsratio - mean(tsratio))^2)
+beta_0 &lt;- mean(score) - beta_1 * mean(tsratio)</code></pre>
+<pre class="r"><code>plot(score ~ tsratio, 
+     data = CASchools,
+     main = &quot;Scatterplot of Test Score vs. Student-Teacher Ratio&quot;, 
+     xlab = &quot;Student teacher-ratio (X)&quot;,
+     ylab = &quot;Test Score (Y)&quot;,
+     xlim = c(10,30),
+     ylim = c(600, 720))
+
+linear_model &lt;- lm(score ~ tsratio, data = CASchools)
+linear_model</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = score ~ tsratio, data = CASchools)
+## 
+## Coefficients:
+## (Intercept)      tsratio  
+##      698.93        -2.28</code></pre>
+<pre class="r"><code>abline(a = beta_0, b = beta_1)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>linear_model &lt;- lm(score ~ tsratio, data = CASchools)
+linear_model</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = score ~ tsratio, data = CASchools)
+## 
+## Coefficients:
+## (Intercept)      tsratio  
+##      698.93        -2.28</code></pre>
+<pre class="r"><code>plot(score ~ tsratio, 
+     data = CASchools,
+     main = &quot;Scatterplot of Test Score vs. Student-Teacher Ratio&quot;, 
+     xlab = &quot;Student teacher-ratio (X)&quot;,
+     ylab = &quot;Test Score (Y)&quot;,
+     xlim = c(10,30),
+     ylim = c(600, 720))
+
+abline(linear_model)</code></pre>
+<p><img src="index_files/figure-html/Figure%204.3-1.png" width="672" /></p>
+</div>
+</div>
+<div id="chapter-5" class="section level1">
+<h1>Chapter 5</h1>
+<div id="section-5.1" class="section level2">
+<h2>Section 5.1</h2>
+<p>Consider again the previous OLS regression that gave us the regression line <span class="math display">\[ \widehat{score} = 698.9 - 2.28 \times tsratio.  \]</span> For testing a hypothesis regarding the slope parameter, we need <span class="math inline">\(SE(\hat{\beta}_1)\)</span>, the standard error of the respective point estimator. By looking at the second column of the coefficient’s summary, we find this value to be approximately <span class="math inline">\(0.48\)</span>.</p>
+<pre class="r"><code>summary(linear_model)$coefficients</code></pre>
+<pre><code>##               Estimate Std. Error   t value      Pr(&gt;|t|)
+## (Intercept) 698.932949  9.4674911 73.824516 6.569846e-242
+## tsratio      -2.279808  0.4798255 -4.751327  2.783308e-06</code></pre>
+<p>How is <span class="math inline">\(SE(\hat{\beta}_1)\)</span> computed? The <code>summary</code> function uses the homoskedasticity-only formula <span class="math display">\[ SE(\hat{\beta}_1) = \sqrt{ \overset{\sim}{\sigma}^2_{beta_1} } = \sqrt{ \frac{SER^2}{\sum(X_i - \overline{X})^2} }. \]</span></p>
+</div>
+<div id="section-5.4" class="section level2">
+<h2>Section 5.4</h2>
+<pre class="r"><code>library(scales)
+
+# Genrate some heteroscedastic data
+
+set.seed(123) 
+x &lt;- rep(c(10,15,20,25),each=25)
+e &lt;- rnorm(100, sd=12)                
+i &lt;- order(runif(100, max=dnorm(e, sd=12))) 
+y &lt;- 720 - 3.3 * x + e[rev(i)]
+
+# Plot data and inspect conditional distributions
+
+mod &lt;- lm(y ~ x)
+plot(x, y, main=&quot;An Example of Heteroscedasticity&quot;,
+     xlab = &quot;Student teacher-ratio (X)&quot;,
+     ylab = &quot;Test Score (Y)&quot;,
+     cex=0.5, pch=19, xlim=c(8,27), ylim=c(600,710))
+abline(mod, col=&quot;red&quot;)
+boxplot(y~x, add=TRUE, at=c(10,15,20,25), col=alpha(&quot;gray&quot;, 0.4), border=&quot;black&quot;)</code></pre>
+<p><img src="index_files/figure-html/Figure%205.2-1.png" width="672" /></p>
+<pre class="r"><code>#if(!require(devtools))
+#  install.packages(&quot;devtools&quot;)
+#library(devtools)
+#install_github(&quot;datacamp/tutorial&quot;)
+#library(tutorial)</code></pre>
+<p>We already have assigned the model’s summary to <code>mod</code>. Now, use your R knowledge to display coefficients and standard errors!</p>
+</div>
+</div>
+<div id="chapter-6" class="section level1">
+<h1>Chapter 6</h1>
+<div id="section-6.3" class="section level2">
+<h2>Section 6.3</h2>
+<pre class="r"><code># Multiple Regression - Application to Test Scores and the Student-Teacher Ratio
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  &lt;- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    &lt;- (CASchools$read + CASchools$math)/2       # average test-score
+model &lt;- lm(score ~ tsratio + english, data = CASchools)</code></pre>
+</div>
+<div id="section-6.4" class="section level2">
+<h2>Section 6.4</h2>
+<p>Taking the code from Section 6.3 you could simply use <code>summary(model)</code> to print the <span class="math inline">\(SER\)</span>, <span class="math inline">\(R^2\)</span> and adjusted-<span class="math inline">\(R^2\)</span>. You find them at the bottom of the output.</p>
+<pre class="r"><code>summary(model)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = score ~ tsratio + english, data = CASchools)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -48.845 -10.240  -0.308   9.815  43.461 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 686.03224    7.41131  92.566  &lt; 2e-16 ***
+## tsratio      -1.10130    0.38028  -2.896  0.00398 ** 
+## english      -0.64978    0.03934 -16.516  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 14.46 on 417 degrees of freedom
+## Multiple R-squared:  0.4264, Adjusted R-squared:  0.4237 
+## F-statistic:   155 on 2 and 417 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>You can also compute the parameters by hand using the formulas on p. 242.</p>
+<pre class="r"><code>n &lt;- nrow(CASchools)    # number of observations (rows)
+k &lt;- 2                  # 2 regressors
+y_mean &lt;- mean(CASchools$score)
+
+SSR &lt;- sum( residuals(model)^2 )
+TSS &lt;- sum( ( CASchools$score - y_mean )^2 )
+ESS &lt;- sum((fitted(model) - y_mean)^2)
+
+SER &lt;- sqrt(1/(n-k-1) * SSR)
+Rsq &lt;- 1 - (SSR / TSS)
+adj_Rsq &lt;- 1 - (n-1)/(n-k-1) * SSR/TSS
+cat(SER, Rsq, adj_Rsq, sep = &quot;    &quot;)</code></pre>
+<pre><code>## 14.46448    0.4264315    0.4236805</code></pre>
+</div>
+<div id="section-6.7" class="section level2">
+<h2>Section 6.7</h2>
+<div id="examples-of-perfect-multicollinearity" class="section level3">
+<h3>Examples of Perfect Multicollinearity</h3>
+<p>If you use <code>lm</code> to estimate a model with a set of regressors that suffer from perfect multicollinearity the system will warn you (<em>1 not defined because of singularities</em>) and ignore the regressor(s) which is(are) assumed to be a linear combination of the others.</p>
+<pre class="r"><code># Example 1
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  &lt;- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    &lt;- (CASchools$read + CASchools$math)/2       # average test-score
+CASchools$FracEL    &lt;- CASchools$english/100
+model &lt;- lm(score ~ tsratio + english + FracEL, data = CASchools)
+summary(model)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = score ~ tsratio + english + FracEL, data = CASchools)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -48.845 -10.240  -0.308   9.815  43.461 
+## 
+## Coefficients: (1 not defined because of singularities)
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 686.03224    7.41131  92.566  &lt; 2e-16 ***
+## tsratio      -1.10130    0.38028  -2.896  0.00398 ** 
+## english      -0.64978    0.03934 -16.516  &lt; 2e-16 ***
+## FracEL             NA         NA      NA       NA    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 14.46 on 417 degrees of freedom
+## Multiple R-squared:  0.4264, Adjusted R-squared:  0.4237 
+## F-statistic:   155 on 2 and 417 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>If you compute OLS by hand you will run into the problem as well but noone is helping you out. The computation simply fails. Why is this the case? Take the following example:</p>
+<p>Assume you want to estimate a simple linear regression model with an intercept and one regressor: <span class="math display">\[ y_i = \beta_0 + \beta_1 x_i + u_i\]</span> When applying perfect multicollinearity <span class="math inline">\(x\)</span> has to be a linear combination of the other regressors. Since the only other regressor is a constant, <span class="math inline">\(x\)</span> has to be constant as well. When you recap the formula for <span class="math inline">\(\beta_1\)</span>, namely <span class="math display">\[ \hat{\beta_1} =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})^2}\]</span> you find the variance of the regressor <span class="math inline">\(x\)</span> in the nominator. Since the variance of a constant is zero, you are not able to compute this fraction. <span class="math inline">\(\hat{\beta}_1\)</span> remains undefined.</p>
+<p><font style="color:#004c93; font-weight:bold;">Note:</font> In this special case the nominator equals zero as well. Can you show that?</p>
+<pre class="r"><code># Example 2
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  &lt;- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    &lt;- (CASchools$read + CASchools$math)/2       # average test-score
+CASchools$NVS      &lt;- ifelse(CASchools$tsratio &lt; 12, 0, 1)      # if tsratio smaller 12, NVS = 0, else NVS = 1
+model &lt;- lm(score ~ tsratio + english + NVS, data = CASchools)
+summary(model)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = score ~ tsratio + english + NVS, data = CASchools)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -48.845 -10.240  -0.308   9.815  43.461 
+## 
+## Coefficients: (1 not defined because of singularities)
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 686.03224    7.41131  92.566  &lt; 2e-16 ***
+## tsratio      -1.10130    0.38028  -2.896  0.00398 ** 
+## english      -0.64978    0.03934 -16.516  &lt; 2e-16 ***
+## NVS                NA         NA      NA       NA    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 14.46 on 417 degrees of freedom
+## Multiple R-squared:  0.4264, Adjusted R-squared:  0.4237 
+## F-statistic:   155 on 2 and 417 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code># Example 3
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  &lt;- CASchools$students/CASchools$teachers  # teacher-student-ratio
+CASchools$score    &lt;- (CASchools$read + CASchools$math)/2  # average test-score
+CASchools$PctES    &lt;- 100 - CASchools$english  # Percentage of english speakers 
+model &lt;- lm(score ~ tsratio + english + PctES, data = CASchools)
+summary(model)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = score ~ tsratio + english + PctES, data = CASchools)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -48.845 -10.240  -0.308   9.815  43.461 
+## 
+## Coefficients: (1 not defined because of singularities)
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 686.03224    7.41131  92.566  &lt; 2e-16 ***
+## tsratio      -1.10130    0.38028  -2.896  0.00398 ** 
+## english      -0.64978    0.03934 -16.516  &lt; 2e-16 ***
+## PctES              NA         NA      NA       NA    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 14.46 on 417 degrees of freedom
+## Multiple R-squared:  0.4264, Adjusted R-squared:  0.4237 
+## F-statistic:   155 on 2 and 417 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

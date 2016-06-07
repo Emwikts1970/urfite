@@ -2,11 +2,6 @@
 title: "Introduction to Econometrics with R"
 author: "M. Arnold, M. Schmelzer, A. Gerber"
 date: "`r Sys.Date()`"
-output:
-  html_document:
-    css: css/theme.min.css
-    highlight: textmate
-  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
