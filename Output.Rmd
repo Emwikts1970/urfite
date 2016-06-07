@@ -12,6 +12,10 @@ output:
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
+ 
+ <script src="hideOutput.js"></script>
+
+
 # Chapter 3
 ## Section 3.5
 
@@ -270,7 +274,7 @@ model <- lm(score ~ tsratio + english + NVS, data = CASchools)
 summary(model)
 ```
 
-<div class="output">
+
 ```{r}
 # Example 3
 library(AER)                                                    # contains the dataset 
@@ -281,6 +285,6 @@ CASchools$PctES    <- 100 - CASchools$english  # Percentage of english speakers
 model <- lm(score ~ tsratio + english + PctES, data = CASchools)
 summary(model)
 ```
-</div>
+
 
 
