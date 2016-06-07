@@ -7036,4 +7036,6 @@ a.list-group-item-danger.active:focus {
   text-align: center;
   float: right;
   margin-bottom: 0px;
+  font-family: sans-serif;
+  border-radius: 8px;
 }

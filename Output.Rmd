@@ -4,7 +4,7 @@ author: "M. Arnold, M. Schmelzer, A. Gerber"
 date: "`r Sys.Date()`"
 output:
   html_document:
-    css: styles.css
+    css: css/styles.css
   pdf_document: default
 ---
 
@@ -12,8 +12,8 @@ output:
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
- 
- <script src="hideOutput.js"></script>
+<!--Include script for hiding output chunks-->
+<script src="js/hideOutput.js"></script>
 
 
 # Chapter 3
