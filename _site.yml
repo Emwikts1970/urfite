@@ -17,7 +17,7 @@ navbar:
           href: "index.html#chapter-7"
     - text: "About"
       icon: glyphicon-info-sign
-      href: "about.html"
+      href: "index.html#about-urfite"
       
 output:
   html_document:

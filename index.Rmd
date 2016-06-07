@@ -11,6 +11,15 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 <!--Include script for hiding output chunks-->
 <script src="js/hideOutput.js"></script>
 
+# Introduction
+
+Hier können wir was zum Projekt schreiben! Worum gehts, wie ist es aufgebaut ...
+
+
+
+<br>
+<br>
+<br>
 
 # Chapter 3
 ## Section 3.5
@@ -73,7 +82,7 @@ quantile(CASchools$score, quantiles)
 ```
 
 
-```{r Figure 4.2}
+```{r Figure 4.2, fig.align='center', fig.cap='Figure 4.2'}
 plot(score ~ tsratio, 
      data = CASchools,
      main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
@@ -92,7 +101,7 @@ plot(score ~ tsratio,
 \end{align}
 
 
-
+Let us apply the formulas above to the model ... and add the regression line to our plot (figure 4.2).
 
 ```{r}
 attach(CASchools)
@@ -100,7 +109,7 @@ beta_1 <- sum((tsratio - mean(tsratio))*(score - mean(score))) / sum((tsratio - 
 beta_0 <- mean(score) - beta_1 * mean(tsratio)
 ```
 
-```{r}
+```{r, fig.align='center', echo=-1, fig.cap='Figure 4.3'}
 plot(score ~ tsratio, 
      data = CASchools,
      main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
@@ -109,19 +118,17 @@ plot(score ~ tsratio,
      xlim = c(10,30),
      ylim = c(600, 720))
 
-linear_model <- lm(score ~ tsratio, data = CASchools)
-linear_model
-
-abline(a = beta_0, b = beta_1)
+abline(a = beta_0, b = beta_1) # add regression line
 ```
 
+There is a function called `lm` (**l**inear **m**odel) that can compute the OLS for you. It also takes care of a lot of other things like the residuals, fitted values, etc. Use `lm` to compute the OLS and add them to the figure 4.2 as well to check whether the coefficients really are the same.
 
 ```{r}
 linear_model <- lm(score ~ tsratio, data = CASchools)
 linear_model
 ```
 
-```{r Figure 4.3}
+```{r Figure 4.3, fig.align='center', echo=3, fig.cap='Figure 4.4'}
 plot(score ~ tsratio, 
      data = CASchools,
      main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
@@ -129,8 +136,8 @@ plot(score ~ tsratio,
      ylab = "Test Score (Y)",
      xlim = c(10,30),
      ylim = c(600, 720))
-
-abline(linear_model)
+abline(a = beta_0, b = beta_1, lwd=2)
+abline(linear_model, lty=2, col="red")
 ```
 
 # Chapter 5
@@ -151,7 +158,7 @@ How is $SE(\hat{\beta}_1)$ computed? The `summary` function uses the homoskedast
 
 ## Section 5.4
 
-```{r Figure 5.2}
+```{r Figure 5.2, fig.align='center'}
 library(scales)
 
 # Genrate some heteroscedastic data
@@ -294,5 +301,9 @@ model <- lm(score ~ tsratio + english + PctES, data = CASchools)
 summary(model)
 ```
 
+
+# About Urfite
+
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
 

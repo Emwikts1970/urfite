@@ -1,5 +1,0 @@
----
-title: About this Website
----
-
-Hier können wir was zum Projekt schreiben!
