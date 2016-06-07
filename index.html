@@ -331,7 +331,7 @@ quantile(CASchools$score, quantiles)</code></pre>
 <div id="the-ordinary-least-squares-estimator-ols" class="section level2">
 <h2>The Ordinary Least Squares Estimator (OLS)</h2>
 \begin{align}
-\hat{\beta_1} &amp; =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})} \\
+\hat{\beta_1} &amp; =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})^2} \\
 
 \hat{\beta_0} &amp; =  \bar{Y} - \hat{\beta_1} \bar{X} 
 \end{align}
@@ -472,7 +472,7 @@ cat(SER, Rsq, adj_Rsq, sep = &quot;    &quot;)</code></pre>
 <h2>Section 6.7</h2>
 <div id="examples-of-perfect-multicollinearity" class="section level3">
 <h3>Examples of Perfect Multicollinearity</h3>
-<p>If you use <code>lm</code> to estimate a model with a set of regressors that suffer from perfect multicollinearity the system will warn you and ignore the regressor(s) which is(are) assumed to be a linear combination of the others.</p>
+<p>If you use <code>lm</code> to estimate a model with a set of regressors that suffer from perfect multicollinearity the system will warn you (<em>1 not defined because of singularities</em>) and ignore the regressor(s) which is(are) assumed to be a linear combination of the others.</p>
 <pre class="r"><code># Example 1
 library(AER)                                                    # contains the dataset 
 data(CASchools) 
@@ -501,12 +501,15 @@ summary(model)</code></pre>
 ## Residual standard error: 14.46 on 417 degrees of freedom
 ## Multiple R-squared:  0.4264, Adjusted R-squared:  0.4237 
 ## F-statistic:   155 on 2 and 417 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>If you compute OLS by hand you will run into the problem as well but noone is helping you out. The computation simply fails. Why is this the case? Take the following example:</p>
+<p>Assume you want to estimate a simple linear regression model with an intercept and one regressor: <span class="math display">\[ y_i = \beta_0 + \beta_1 x_i + u_i\]</span> When applying perfect multicollinearity <span class="math inline">\(x\)</span> has to be a linear combination of the other regressors. Since the only other regressor is a constant, <span class="math inline">\(x\)</span> has to be constant as well. When you recap the formula for <span class="math inline">\(\beta_1\)</span>, namely <span class="math display">\[ \hat{\beta_1} =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})^2}\]</span> you find the variance of the regressor <span class="math inline">\(x\)</span> in the nominator. Since the variance of a constant is zero, you are not able to compute this fraction. <span class="math inline">\(\hat{\beta}_1\)</span> remains undefined.</p>
+<p><font style="color:#004c93; font-weight:bold;">Note:</font> In this special case the nominator equals zero as well. Can you show that?</p>
 <pre class="r"><code># Example 2
 library(AER)                                                    # contains the dataset 
 data(CASchools) 
 CASchools$tsratio  &lt;- CASchools$students/CASchools$teachers     # teacher-student-ratio
 CASchools$score    &lt;- (CASchools$read + CASchools$math)/2       # average test-score
-CASchools$NVS      &lt;- ifelse(CASchools$tsratio &lt; 12, 0, 1)      # If tsration smaller 12, NVS = 0, else NVS = 1
+CASchools$NVS      &lt;- ifelse(CASchools$tsratio &lt; 12, 0, 1)      # if tsratio smaller 12, NVS = 0, else NVS = 1
 model &lt;- lm(score ~ tsratio + english + NVS, data = CASchools)
 summary(model)</code></pre>
 <pre><code>## 

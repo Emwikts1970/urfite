@@ -91,7 +91,7 @@ plot(score ~ tsratio,
 ## The Ordinary Least Squares Estimator (OLS)
 
 \begin{align}
-\hat{\beta_1} & =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})} \\
+\hat{\beta_1} & =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})^2} \\
 
 \hat{\beta_0} & =  \bar{Y} - \hat{\beta_1} \bar{X} 
 \end{align}
@@ -252,7 +252,7 @@ cat(SER, Rsq, adj_Rsq, sep = "    ")
 ## Section 6.7
 ### Examples of Perfect Multicollinearity
 
-If you use `lm` to estimate a model with a set of regressors that suffer from perfect multicollinearity the system will warn you and ignore the regressor(s) which is(are) assumed to be a linear combination of the others.
+If you use `lm` to estimate a model with a set of regressors that suffer from perfect multicollinearity the system will warn you (_1 not defined because of singularities_) and ignore the regressor(s) which is(are) assumed to be a linear combination of the others.
 ```{r}
 # Example 1
 library(AER)                                                    # contains the dataset 
@@ -264,13 +264,25 @@ model <- lm(score ~ tsratio + english + FracEL, data = CASchools)
 summary(model)
 ```
 
+
+If you compute OLS by hand you will run into the problem as well but noone is helping you out. The computation simply fails. Why is this the case? Take the following example:
+
+Assume you want to estimate a simple linear regression model with an intercept and one regressor:
+    \[ y_i = \beta_0 + \beta_1 x_i + u_i\]
+When applying perfect multicollinearity $x$ has to be a linear combination of the other regressors. Since the only other regressor is a constant, $x$ has to be constant as well. When you recap the formula for $\beta_1$, namely
+    \[ \hat{\beta_1} =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})^2}\]
+you find the variance of the regressor $x$ in the nominator. Since the variance of a constant is zero, you are not able to compute this fraction. $\hat{\beta}_1$ remains undefined.
+
+<font style="color:#004c93; font-weight:bold;">Note:</font> In this special case the nominator equals zero as well. Can you show that?
+
+
 ```{r}
 # Example 2
 library(AER)                                                    # contains the dataset 
 data(CASchools) 
 CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
 CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
-CASchools$NVS      <- ifelse(CASchools$tsratio < 12, 0, 1)      # If tsration smaller 12, NVS = 0, else NVS = 1
+CASchools$NVS      <- ifelse(CASchools$tsratio < 12, 0, 1)      # if tsratio smaller 12, NVS = 0, else NVS = 1
 model <- lm(score ~ tsratio + english + NVS, data = CASchools)
 summary(model)
 ```
