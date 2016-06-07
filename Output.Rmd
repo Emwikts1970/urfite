@@ -4,7 +4,8 @@ author: "M. Arnold, M. Schmelzer, A. Gerber"
 date: "`r Sys.Date()`"
 output:
   html_document:
-    css: css/styles.css
+    css: css/theme.min.css
+    highlight: textmate
   pdf_document: default
 ---
 
