@@ -67,7 +67,7 @@ CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-s
 ```
 
 
-```{r Table 4.1}
+```{r Table 4.1, results='hold'}
 mean(CASchools$tsratio) 
 mean(CASchools$score)
 sd(CASchools$tsratio) 

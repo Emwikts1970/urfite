@@ -199,20 +199,20 @@ data(CASchools)
 
 CASchools$tsratio  &lt;- CASchools$students/CASchools$teachers     # teacher-student-ratio
 CASchools$score    &lt;- (CASchools$read + CASchools$math)/2       # average test-score</code></pre>
-<pre class="r"><code>mean(CASchools$tsratio) </code></pre>
-<pre><code>## [1] 19.64043</code></pre>
-<pre class="r"><code>mean(CASchools$score)</code></pre>
-<pre><code>## [1] 654.1565</code></pre>
-<pre class="r"><code>sd(CASchools$tsratio) </code></pre>
-<pre><code>## [1] 1.891812</code></pre>
-<pre class="r"><code>sd(CASchools$score)</code></pre>
-<pre><code>## [1] 19.05335</code></pre>
-<pre class="r"><code>quantiles          &lt;- c(0.10, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9)
-quantile(CASchools$tsratio, quantiles)</code></pre>
-<pre><code>##      10%      25%      40%      50%      60%      75%      90% 
-## 17.34860 18.58236 19.26618 19.72321 20.07830 20.87181 21.86741</code></pre>
-<pre class="r"><code>quantile(CASchools$score, quantiles)</code></pre>
-<pre><code>##      10%      25%      40%      50%      60%      75%      90% 
+<pre class="r"><code>mean(CASchools$tsratio) 
+mean(CASchools$score)
+sd(CASchools$tsratio) 
+sd(CASchools$score)
+quantiles          &lt;- c(0.10, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9)
+quantile(CASchools$tsratio, quantiles)
+quantile(CASchools$score, quantiles)</code></pre>
+<pre><code>## [1] 19.64043
+## [1] 654.1565
+## [1] 1.891812
+## [1] 19.05335
+##      10%      25%      40%      50%      60%      75%      90% 
+## 17.34860 18.58236 19.26618 19.72321 20.07830 20.87181 21.86741 
+##      10%      25%      40%      50%      60%      75%      90% 
 ## 630.3950 640.0500 649.0700 654.4500 659.4000 666.6625 678.8600</code></pre>
 <pre class="r"><code>plot(score ~ tsratio, 
      data = CASchools,
