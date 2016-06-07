@@ -247,7 +247,7 @@ cat(SER, Rsq, adj_Rsq, sep = "    ")
 ## Section 6.7
 ### Examples of Perfect Multicollinearity
 
-If you try to compute OLS with a set of regressors that suffer from perfect multicollinearity the system will warn you and ignore the regressor(s) which is(are) assumed to be a linear combination of the others.
+If you use `lm` to estimate a model with a set of regressors that suffer from perfect multicollinearity the system will warn you and ignore the regressor(s) which is(are) assumed to be a linear combination of the others.
 ```{r}
 # Example 1
 library(AER)                                                    # contains the dataset 
@@ -270,6 +270,7 @@ model <- lm(score ~ tsratio + english + NVS, data = CASchools)
 summary(model)
 ```
 
+<div class="output">
 ```{r}
 # Example 3
 library(AER)                                                    # contains the dataset 
@@ -280,5 +281,6 @@ CASchools$PctES    <- 100 - CASchools$english  # Percentage of english speakers
 model <- lm(score ~ tsratio + english + PctES, data = CASchools)
 summary(model)
 ```
+</div>
 
 
