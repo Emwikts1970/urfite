@@ -1,0 +1,19 @@
+name: "URFITE"
+navbar:
+  title: "My Website"
+  left:
+    - text: "Chapters"
+      menu:
+        - text: "Chapter 3"
+          href: "index.html#chapter-3"
+        - text: "Chapter 4"
+          href: "index.html#chapter-4"
+        - text: "Chapter 5"
+          href: "index.html#chapter-5"
+        - text: "Chapter 6"
+          href: "index.html#chapter-6"
+        - text: "Chapter 7"
+          href: "index.html#chapter-7"
+    - text: "About"
+      href: ""
+      
