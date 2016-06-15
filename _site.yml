@@ -18,6 +18,8 @@ navbar:
     - text: "About"
       icon: glyphicon-info-sign
       href: "index.html#about-urfite"
+    - text: "Back"
+      href: "javascript:history.go(-1)"
       
 output:
   html_document:
