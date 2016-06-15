@@ -387,9 +387,30 @@ Figure 4.4
 <li><p>Regression when <span class="math inline">\(X\)</span> is a dummy variable</p></li>
 <li><p>Heteroskedasticity and Homoskedasticity</p></li>
 </ul>
-<div id="section-5.1" class="section level2">
-<h2>Section 5.1</h2>
-<p>Consider again the previous OLS regression that gave us the regression line <span class="math display">\[ \widehat{score} = 698.9 - 2.28 \times tsratio.  \]</span> For testing a hypothesis regarding the slope parameter, we need <span class="math inline">\(SE(\hat{\beta}_1)\)</span>, the standard error of the respective point estimator. By looking at the second column of the coefficient’s summary, we find this value to be approximately <span class="math inline">\(0.48\)</span>.</p>
+<div id="section-5.1-two-sided-hypotheses-concerning-beta_1" class="section level2">
+<h2>Section 5.1 Two-Sided Hypotheses Concerning <span class="math inline">\(\beta_1\)</span></h2>
+<p>Using the fact that <span class="math inline">\(\hat{\beta}_1\)</span> is approximately normal distributed in large samples, hypothesis testing about the true value <span class="math inline">\(\beta_1\)</span> can be done with the same approach as discussed in chapter 3.2.</p>
+<p>Remember from section 3.2 that a general <span class="math inline">\(t\)</span>-statistic has the form</p>
+<p><span class="math display">\[
+  t = \frac{\text{estimated value} - \text{hypothesized value}}{\text{standard error of the estimator}}.
+\]</span></p>
+<p>For testing the hypothesis <span class="math inline">\(H_0: \beta_1 = \beta_{1,0}\)</span>, we need to perform the following steps:</p>
+<ol style="list-style-type: decimal">
+<li>Compute the standard error of <span class="math inline">\(\hat{\beta}_1\)</span>, <span class="math inline">\(SE(\hat{\beta}_1)\)</span></li>
+</ol>
+<p><span class="math display">\[ SE(\hat{\beta}_1) = \sqrt{ \hat{\sigma}^2_{\hat{\beta}_1} } \ \ , \ \ 
+  \hat{\sigma}^2_{\hat{\beta}_1} = \frac{1}{n} \times \frac{\frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u_i}^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2 \right]^2}
+\]</span></p>
+<ol start="2" style="list-style-type: decimal">
+<li>Compute the <span class="math inline">\(t\)</span>-statistic.</li>
+</ol>
+<p><span class="math display">\[ t = \frac{\hat{\beta}_1 - \beta_{1,0}}{ SE(\hat{\beta}_1) } \]</span></p>
+<ol start="3" style="list-style-type: decimal">
+<li>Reject at the <span class="math inline">\(5\%\)</span> level if <span class="math inline">\(|t^{act}| &gt; 1.96\)</span> or, equivalently, if the <span class="math inline">\(p\)</span>-value is less than 0.05. <span class="math display">\[
+p \text{-value} = \text{Pr}_{H_0} \left[ \left| \frac{ \hat{\beta}_1 - \beta_{1,0} }{ SE(\hat{\beta}_1) } \right| &gt; \left| \frac{ \hat{\beta}_1^{act} - \beta_{1,0} }{ SE(\hat{\beta}_1) } \right| \right] = \text{Pr}_{H_0} (|t| &gt; |t^{act}|) = 2 \Phi(-|t^{act}|)
+\]</span> The last equality holds due to the normal approximation.</li>
+</ol>
+<p>Consider again the previous OLS regression that gave us the regression line <span class="math display">\[ \widehat{score} = \underset{(9.47)}{698.9} - \underset{(0.49)}{2.28} \times tsratio.  \]</span> For testing a hypothesis regarding the slope parameter, we need <span class="math inline">\(SE(\hat{\beta}_1)\)</span>, the standard error of the respective point estimator. These are presented in parantheses under the respective point estimate. How can we get these values using R? By looking at the second column of the coefficients’ summary, we discover both values.</p>
 <pre class="r"><code>summary(linear_model)$coefficients</code></pre>
 <pre><code>##               Estimate Std. Error   t value      Pr(&gt;|t|)
 ## (Intercept) 698.932949  9.4674911 73.824516 6.569846e-242
