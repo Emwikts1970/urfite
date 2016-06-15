@@ -142,7 +142,21 @@ abline(linear_model, lty=2, col="red")
 
 # Chapter 5
 
+In this chapter, we continue with the treatment of the simple linear regression model. We will see how we may use our knowledge about the sampling distribution of the OLS estimator in order to make statements regarding its uncertainty.
+<br>
+This chapter covers:
+
+- Testing Hypotheses about regression coefficients
+
+- Confidence intervals for regression coefficients
+
+- Regression when $X$ is a dummy variable
+
+- Heteroskedasticity and Homoskedasticity
+
 ## Section 5.1
+
+
 
 Consider again the previous OLS regression that gave us the regression line
   \[ \widehat{score} = 698.9 - 2.28 \times tsratio.  \]
@@ -161,7 +175,7 @@ How is $SE(\hat{\beta}_1)$ computed? The `summary` function uses the homoskedast
 ```{r Figure 5.2, fig.align='center'}
 library(scales)
 
-# Genrate some heteroscedastic data
+# Genrate some heteroskedastic data
 
 set.seed(123) 
 x <- rep(c(10,15,20,25),each=25)
@@ -172,7 +186,7 @@ y <- 720 - 3.3 * x + e[rev(i)]
 # Plot data and inspect conditional distributions
 
 mod <- lm(y ~ x)
-plot(x, y, main="An Example of Heteroscedasticity",
+plot(x, y, main="An Example of Heteroskedasticity",
      xlab = "Student teacher-ratio (X)",
      ylab = "Test Score (Y)",
      cex=0.5, pch=19, xlim=c(8,27), ylim=c(600,710))
