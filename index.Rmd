@@ -142,11 +142,47 @@ abline(linear_model, lty=2, col="red")
 
 # Chapter 5
 
-## Section 5.1
+In this chapter, we continue with the treatment of the simple linear regression model. We will see how we may use our knowledge about the sampling distribution of the OLS estimator in order to make statements regarding its uncertainty.
+<br>
+This chapter covers:
+
+- Testing Hypotheses about regression coefficients
+
+- Confidence intervals for regression coefficients
+
+- Regression when $X$ is a dummy variable
+
+- Heteroskedasticity and Homoskedasticity
+
+## Section 5.1 Two-Sided Hypotheses Concerning $\beta_1$
+
+Using the fact that $\hat{\beta}_1$ is approximately normal distributed in large samples, hypothesis testing about the true value $\beta_1$ can be done with the same approach as discussed in chapter 3.2.
+
+Remember from section 3.2 that a general $t$-statistic has the form
+
+\[
+  t = \frac{\text{estimated value} - \text{hypothesized value}}{\text{standard error of the estimator}}.
+\]
+
+For testing the hypothesis $H_0: \beta_1 = \beta_{1,0}$, we need to perform the following steps:
+
+1. Compute the standard error of $\hat{\beta}_1$, $SE(\hat{\beta}_1)$
+
+\[ SE(\hat{\beta}_1) = \sqrt{ \hat{\sigma}^2_{\hat{\beta}_1} } \ \ , \ \ 
+  \hat{\sigma}^2_{\hat{\beta}_1} = \frac{1}{n} \times \frac{\frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u_i}^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2 \right]^2}
+\]
+
+2. Compute the $t$-statistic.
+
+\[ t = \frac{\hat{\beta}_1 - \beta_{1,0}}{ SE(\hat{\beta}_1) } \]
+
+3. Reject at the $5\%$ level if $|t^{act}| > 1.96$ or, equivalently, if the $p$-value is less than 0.05. \[
+p \text{-value} = \text{Pr}_{H_0} \left[ \left| \frac{ \hat{\beta}_1 - \beta_{1,0} }{ SE(\hat{\beta}_1) } \right| > \left| \frac{ \hat{\beta}_1^{act} - \beta_{1,0} }{ SE(\hat{\beta}_1) } \right| \right] = \text{Pr}_{H_0} (|t| > |t^{act}|) = 2 \Phi(-|t^{act}|)
+\] The last equality holds due to the normal approximation.
 
 Consider again the previous OLS regression that gave us the regression line
-  \[ \widehat{score} = 698.9 - 2.28 \times tsratio.  \]
-For testing a hypothesis regarding the slope parameter, we need $SE(\hat{\beta}_1)$, the standard error of the respective point estimator. By looking at the second column of the coefficient's summary, we find this value to be approximately $0.48$.
+  \[ \widehat{score} = \underset{(9.47)}{698.9} - \underset{(0.49)}{2.28} \times tsratio.  \]
+For testing a hypothesis regarding the slope parameter, we need $SE(\hat{\beta}_1)$, the standard error of the respective point estimator. These are presented in parantheses under the respective point estimate. How can we get these values using R? By looking at the second column of the coefficients' summary, we discover both values.
 
 ```{r}
 summary(linear_model)$coefficients
@@ -161,7 +197,7 @@ How is $SE(\hat{\beta}_1)$ computed? The `summary` function uses the homoskedast
 ```{r Figure 5.2, fig.align='center'}
 library(scales)
 
-# Genrate some heteroscedastic data
+# Genrate some heteroskedastic data
 
 set.seed(123) 
 x <- rep(c(10,15,20,25),each=25)
@@ -172,7 +208,7 @@ y <- 720 - 3.3 * x + e[rev(i)]
 # Plot data and inspect conditional distributions
 
 mod <- lm(y ~ x)
-plot(x, y, main="An Example of Heteroscedasticity",
+plot(x, y, main="An Example of Heteroskedasticity",
      xlab = "Student teacher-ratio (X)",
      ylab = "Test Score (Y)",
      cex=0.5, pch=19, xlim=c(8,27), ylim=c(600,710))
