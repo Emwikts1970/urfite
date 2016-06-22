@@ -45,7 +45,7 @@ print(avgs, digits=2)
 
 Now that we have the numbers we can compute the difference between both genders.
 
-<div class="fold s o">
+<div class="fold o">
 ```{r, echo=T}
 male   <- avgs %>% filter(a_sex == 1) 
 female <- avgs %>% filter(a_sex == 2)
@@ -75,7 +75,7 @@ CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-studen
 CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
 ```
 
-
+<div class="fold o">
 ```{r Table 4.1, results='hold'}
 mean(CASchools$tsratio) 
 mean(CASchools$score)
@@ -85,8 +85,9 @@ quantiles          <- c(0.10, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9)
 quantile(CASchools$tsratio, quantiles)
 quantile(CASchools$score, quantiles)
 ```
+</div>
 
-
+<div class="fold o">
 ```{r Figure 4.2, fig.align='center', fig.cap='Figure 4.2'}
 plot(score ~ tsratio, 
      data = CASchools,
@@ -96,7 +97,7 @@ plot(score ~ tsratio,
      xlim = c(10,30),
      ylim = c(600, 720))
 ```
-
+</div>
 ## The Ordinary Least Squares Estimator (OLS)
 
 \begin{align}
