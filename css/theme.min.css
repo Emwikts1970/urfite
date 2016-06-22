@@ -1448,6 +1448,11 @@ td.visible-print,th.visible-print{display:table-cell!important}
 
 
 /* ADDDED BY MARTIN */
+
+.fold {
+  display:inline;
+}
+ 
 .showopt {
   background-color: #004c93;
   color: #FFFFFF; 
@@ -1463,6 +1468,10 @@ td.visible-print,th.visible-print{display:table-cell!important}
 .showopt:hover {
     background-color: #dfe4f2;
     color: #004c93;
+}
+
+pre.plot {
+  background-color: white !important;
 }
 
 /* ADDED BY ALEX */
@@ -1493,3 +1502,5 @@ td.visible-print,th.visible-print{display:table-cell!important}
   clear: both;
 }
  
+
+
