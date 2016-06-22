@@ -2,6 +2,7 @@
 title: "Introduction to Econometrics with R"
 author: "M. Arnold, M. Schmelzer, A. Gerber"
 date: "`r Sys.Date()`"
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -28,6 +29,7 @@ Hier können wir was zum Projekt schreiben! Worum gehts, wie ist es aufgebaut ..
 In order to reproduce the data from table 3.1 you need to download the data from the books source (LINK).
 We simply read in the data and then make use of the powerful package dplyr to subset the data.
 
+<div class="fold o">
 ```{r, echo=T, eval=T}
 library(dplyr, quietly=T)
 # Read in CPS data (taken from http:// ....)
@@ -39,8 +41,11 @@ head(cps_dat)
 avgs <- cps_dat %>% group_by(a_sex, year) %>% summarise(mean(ahe12), sd(ahe12), n())
 print(avgs, digits=2)
 ```
+</div>
 
 Now that we have the numbers we can compute the difference between both genders.
+
+<div class="fold s o">
 ```{r, echo=T}
 male   <- avgs %>% filter(a_sex == 1) 
 female <- avgs %>% filter(a_sex == 2)
@@ -55,7 +60,7 @@ gap_ci_u <- gap + 1.96 * gap_se
 result <- cbind(male[,-1], female[,-(1:2)], gap, gap_se, gap_ci_l, gap_ci_u)
 print(result, digits = 2)
 ```
-
+</div>
 
 # Chapter 4
 ## Linear Regression with One Regressor 
@@ -248,19 +253,96 @@ For testing the hypothesis $H_0: \beta_1 = \beta_{1,0}$, we need to perform the 
 p \text{-value} = \text{Pr}_{H_0} \left[ \left| \frac{ \hat{\beta}_1 - \beta_{1,0} }{ SE(\hat{\beta}_1) } \right| > \left| \frac{ \hat{\beta}_1^{act} - \beta_{1,0} }{ SE(\hat{\beta}_1) } \right| \right] = \text{Pr}_{H_0} (|t| > |t^{act}|) = 2 \Phi(-|t^{act}|)
 \] The last equality holds due to the normal approximation.
 
-Consider again the previous OLS regression that gave us the regression line
+Consider again the previous OLS regression stored in `linear_model that gave us the regression line
   \[ \widehat{score} = \underset{(9.47)}{698.9} - \underset{(0.49)}{2.28} \times tsratio.  \]
-For testing a hypothesis regarding the slope parameter, we need $SE(\hat{\beta}_1)$, the standard error of the respective point estimator. These are presented in parantheses under the respective point estimate. How can we get these values using R? By looking at the second column of the coefficients' summary, we discover both values.
+For testing a hypothesis regarding the slope parameter, we need $SE(\hat{\beta}_1)$, the standard error of the respective point estimator. These are presented in parantheses under the respective point estimate. 
+
+How can we get these values using R? By looking at the second column of the coefficients' summary, we discover both values.
+In the third column, we find $t^{act}$ for tests of hypotheses $H_0: \beta_0=0$ and $H_0: \beta_1=0$. Furthermore we find corresponding $p$-values in the fourth column.
 
 ```{r}
 summary(linear_model)$coefficients
 ```
 
-How is $SE(\hat{\beta}_1)$ computed? The `summary` function uses the homoskedasticity-only formula 
-  \[ SE(\hat{\beta}_1) = \sqrt{ \overset{\sim}{\sigma}^2_{beta_1} } = \sqrt{ \frac{SER^2}{\sum(X_i - \overline{X})^2} }. \]
+Let's have a closer look at the test $H_0: \beta_1=0 \, v. \, H_1: \beta_1 \neq 0$. Using our revisited knowledge about $t$-statistics we see that
 
+\[ t^{act} = \frac{-2.279808 - 0}{0.4798255} \approx - 4.75 \]
+
+What does this tell us about the significance of the estimated coefficient? Using R we may visualise how such a statement can be made:
+
+```{r, fig.align='center'}
+# Plot the standard normal density
+z <- seq(-6,6,0.01)
+tact <- -4.75
+plot(z, dnorm(z,0,1), type = "l", col="steelblue", lwd=2, yaxs="i", bty = "n", axes=F, ylab = "", cex.lab=0.7)
+axis(1, at = c(0,-1.96,1.96,-tact,tact), cex.axis=0.7)
+
+# Shade the critical regions
+polygon(c(-6,seq(-6,-1.96,0.01),-1.96),c(0,dnorm(seq(-6,-1.96,0.01)),0),col='orange')
+polygon(c(1.96,seq(1.96,6,0.01),6),c(0,dnorm(seq(1.96,6,0.01)),0),col='orange')
+
+# Add arrows and text indicating critical regions and the p-value
+arrows(-3.5,0.2,-2.5,0.02, length = 0.1)
+arrows(3.5,0.2,2.5,0.02, length = 0.1)
+
+arrows(-5,0.16,-4.75,0, length = 0.1)
+arrows(5,0.16,4.75,0, length = 0.1)
+
+text(-3.5,0.22, labels = "p-value/2", cex = 0.7)
+text(3.5,0.22, labels = "p-value/2", cex = 0.7)
+
+text(-5,0.18, labels = expression(t^{act}), cex = 0.7)
+text(5,0.18, labels = expression(t^{act}), cex = 0.7)
+
+# Add ticks indicating critical values at the 0.05-level, t^act and -t^act 
+rug(c(-1.96,1.96), ticksize  = 0.145, lwd = 2, col = "darkred")
+rug(c(-tact,tact), ticksize  = -0.0451, lwd = 2, col = "darkgreen")
+
+```
+
+We reject the null hypothesis at the 5\% level since $|t^{act}| > 1.96$ or, alternatively and leading to the same result, $p\text{-value} = 2.78*10^{-6} > 0.05$. Hence, we conclude that the coefficient is significantly different from zero. 
+
+## Section 5.2 Confidence Intervals for Regression Coefficients
+
+As we already know, estimates of regression coefficients $\beta_0$ and $\beta_1$ have sampling uncertainty. Therefore, we will never estimate the exact true value of these parameters from sample data. However, we may construct confidence intervals for the intercept and the slope parameter.
+
+### Confidence intervall for $\beta_i$
+
+Imagine you could draw all possible random samples of given size. The interval that contains the true value $\beta_i$ in $95\%$ of all samples is given by the expression
+
+\[ \text{KI}_{0.95}^{\beta_i} = \left[ \hat{\beta}_i - 1.96 \times SE(\hat{\beta}_i) \, , \, \hat{\beta}_i + 1.96 \times SE(\hat{\beta}_i) \right]. \]
+
+Equivalently, this interval can be seen as the set of null hypotheses for which a $5\%$ two-sided hypothesis test cannot reject.
+
+Let us now turn back to the regression model stored in `linear_model`. An easy way to get $95\%$ confidence intervals for $\beta_0$ and $\beta_1$ is to use the function `confint(). We only have to provide a fitted model object as an argument. 
+
+```{r}
+confint(linear_model)
+```
+
+Let us check if the calculation is done as we expect it to be. For $\beta_1$, according to the formula presented above, interval borders are computed as
+
+\[  -2.279808 \pm 1.96 \times 0.4798255 \, \Rightarrow \, \text{KI}_{0.95}^{\beta_1} = \left[ -3.22, -1.34 \right]  \]
+
+so this actually leads to the same interval. Obviously, this interval does not contain zero what, as we have already seen in section 5.1, leads to rejection of the null hypothesis $\beta_{1,0} = 0$.
+
+## Section 5.3
+
+Instead of using a continuous regressor $X$, we might be interested in running the regression 
+
+\[ Y_i = \beta_0 + \beta_1 D_i + u_i \]
+
+where $D_i$ is binary variable or so-called *dummy variable*. Let us define $D_i$ in the following way:
+
+\[ D_i = \begin{cases}
+        1 \ \ \text{if $stratio$ in $i^{th}$ district < 20} \\
+        0 \ \ \text{if $stratio$ in $i^{th}$ district $\geq$ 20} \\
+      \end{cases} \]
 
 ## Section 5.4
+
+How is $SE(\hat{\beta}_1)$ computed here? The `summary` function uses the homoskedasticity-only formula 
+  \[ SE(\hat{\beta}_1) = \sqrt{ \overset{\sim}{\sigma}^2_{beta_1} } = \sqrt{ \frac{SER^2}{\sum(X_i - \overline{X})^2} }. \]
 
 ```{r Figure 5.2, fig.align='center'}
 library(scales)
