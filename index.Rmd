@@ -2,6 +2,9 @@
 title: "Introduction to Econometrics with R"
 author: "M. Arnold, M. Schmelzer, A. Gerber"
 date: "`r Sys.Date()`"
+output: 
+html_document:
+code_folding: TRUE
 ---
 
 ```{r setup, include=FALSE}
@@ -180,17 +183,57 @@ For testing the hypothesis $H_0: \beta_1 = \beta_{1,0}$, we need to perform the 
 p \text{-value} = \text{Pr}_{H_0} \left[ \left| \frac{ \hat{\beta}_1 - \beta_{1,0} }{ SE(\hat{\beta}_1) } \right| > \left| \frac{ \hat{\beta}_1^{act} - \beta_{1,0} }{ SE(\hat{\beta}_1) } \right| \right] = \text{Pr}_{H_0} (|t| > |t^{act}|) = 2 \Phi(-|t^{act}|)
 \] The last equality holds due to the normal approximation.
 
-Consider again the previous OLS regression that gave us the regression line
+Consider again the previous OLS regression stored in `linear_model that gave us the regression line
   \[ \widehat{score} = \underset{(9.47)}{698.9} - \underset{(0.49)}{2.28} \times tsratio.  \]
-For testing a hypothesis regarding the slope parameter, we need $SE(\hat{\beta}_1)$, the standard error of the respective point estimator. These are presented in parantheses under the respective point estimate. How can we get these values using R? By looking at the second column of the coefficients' summary, we discover both values.
+For testing a hypothesis regarding the slope parameter, we need $SE(\hat{\beta}_1)$, the standard error of the respective point estimator. These are presented in parantheses under the respective point estimate. 
+
+How can we get these values using R? By looking at the second column of the coefficients' summary, we discover both values.
+In the third column, we find $t^{act}$ for tests of hypotheses $H_0: \beta_0=0$ and $H_0: \beta_1=0$. Furthermore we find corresponding $p$-values in the fourth column.
 
 ```{r}
 summary(linear_model)$coefficients
 ```
 
+Let's have a closer look at the test $H_0: \beta_1=0 \, v. \, H_1: \beta_1 \neq 0$. Using our revisited knowledge about $t$-statistics we see that
+
+\[ t^{act} = \frac{-2.279808 - 0}{0.4798255} \approx - 4.75 \]
+
+What does this tell us about the significance of the estimated coefficient? Using R we may visualise how the decision is made:
+
+```{r, fig.align='center'}
+# Plot the standard normal density
+z <- seq(-6,6,0.01)
+tact <- -4.75
+plot(z, dnorm(z,0,1), type = "l", col="steelblue", lwd=2, yaxs="i", bty = "n", axes=F, ylab = "", cex.lab=0.7)
+axis(1, at = c(0,-1.96,1.96,-tact,tact), cex.axis=0.7)
+
+# Shade the critical regions
+polygon(c(-6,seq(-6,-1.96,0.01),-1.96),c(0,dnorm(seq(-6,-1.96,0.01)),0),col='orange')
+polygon(c(1.96,seq(1.96,6,0.01),6),c(0,dnorm(seq(1.96,6,0.01)),0),col='orange')
+
+# Add arrows and text indicating critical regions and the p-value
+arrows(-3.5,0.2,-2.5,0.02, length = 0.1)
+arrows(3.5,0.2,2.5,0.02, length = 0.1)
+
+arrows(-5,0.16,-4.75,0, length = 0.1)
+arrows(5,0.16,4.75,0, length = 0.1)
+
+text(-3.5,0.22, labels = "p-value/2", cex = 0.7)
+text(3.5,0.22, labels = "p-value/2", cex = 0.7)
+
+text(-5,0.18, labels = expression(t^{act}), cex = 0.7)
+text(5,0.18, labels = expression(t^{act}), cex = 0.7)
+
+# Add ticks indicating critical values at the 0.05-level, t^act and -t^act 
+rug(c(-1.96,1.96), ticksize  = 0.145, lwd = 2, col = "darkred")
+rug(c(-tact,tact), ticksize  = -0.0451, lwd = 2, col = "darkgreen")
+
+```
+
+We reject the null hypothesis at the significance level of 0.05 since $|t^{act}| > 1.96$ or, leading to the same result, $p-\text{value} = 2.78*10^{-6}   > 0.05$
+
 How is $SE(\hat{\beta}_1)$ computed? The `summary` function uses the homoskedasticity-only formula 
   \[ SE(\hat{\beta}_1) = \sqrt{ \overset{\sim}{\sigma}^2_{beta_1} } = \sqrt{ \frac{SER^2}{\sum(X_i - \overline{X})^2} }. \]
-
 
 ## Section 5.4
 
