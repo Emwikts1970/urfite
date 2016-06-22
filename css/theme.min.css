@@ -1464,3 +1464,32 @@ td.visible-print,th.visible-print{display:table-cell!important}
     background-color: #dfe4f2;
     color: #004c93;
 }
+
+/* ADDED BY ALEX */
+
+/* Class for key concepts */
+
+.keyconcept {
+ background-color: 	#dfe4f2;
+ border-radius: 25px;
+ color: black;
+ margin: 20px 0 20px 0;
+ padding: 20px;
+}
+ 
+.keyconcept h3.right {
+  float: right;
+  width: 150px;
+  text-align: center;
+}
+
+.keyconcept h3.left {
+  float: left;
+  width: 600px;
+  
+}
+
+.keyconcept p {
+  clear: both;
+}
+ 
