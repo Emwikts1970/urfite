@@ -2,9 +2,7 @@
 title: "Introduction to Econometrics with R"
 author: "M. Arnold, M. Schmelzer, A. Gerber"
 date: "`r Sys.Date()`"
-output: 
-html_document:
-code_folding: TRUE
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -31,6 +29,7 @@ Hier können wir was zum Projekt schreiben! Worum gehts, wie ist es aufgebaut ..
 In order to reproduce the data from table 3.1 you need to download the data from the books source (LINK).
 We simply read in the data and then make use of the powerful package dplyr to subset the data.
 
+<div class="fold o">
 ```{r, echo=T, eval=T}
 library(dplyr, quietly=T)
 # Read in CPS data (taken from http:// ....)
@@ -42,8 +41,11 @@ head(cps_dat)
 avgs <- cps_dat %>% group_by(a_sex, year) %>% summarise(mean(ahe12), sd(ahe12), n())
 print(avgs, digits=2)
 ```
+</div>
 
 Now that we have the numbers we can compute the difference between both genders.
+
+<div class="fold s o">
 ```{r, echo=T}
 male   <- avgs %>% filter(a_sex == 1) 
 female <- avgs %>% filter(a_sex == 2)
@@ -58,7 +60,7 @@ gap_ci_u <- gap + 1.96 * gap_se
 result <- cbind(male[,-1], female[,-(1:2)], gap, gap_se, gap_ci_l, gap_ci_u)
 print(result, digits = 2)
 ```
-
+</div>
 
 # Chapter 4
 ## Linear Regression with One Regressor 
