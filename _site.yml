@@ -1,0 +1,28 @@
+name: "URFITE"
+navbar:
+  title: "URFITE"
+  left:
+    - text: "Chapters"
+      icon: glyphicon-book
+      menu:
+        - text: "Chapter 3"
+          href: "index.html#chapter-3"
+        - text: "Chapter 4"
+          href: "index.html#chapter-4"
+        - text: "Chapter 5"
+          href: "index.html#chapter-5"
+        - text: "Chapter 6"
+          href: "index.html#chapter-6"
+        - text: "Chapter 7"
+          href: "index.html#chapter-7"
+    - text: "About"
+      icon: glyphicon-info-sign
+      href: "index.html#about-urfite"
+    - text: "Back"
+      href: "javascript:history.go(-1)"
+      
+output:
+  html_document:
+    css: css/theme.min.css
+    highlight: textmate
+      

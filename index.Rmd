@@ -1,0 +1,345 @@
+---
+title: "Introduction to Econometrics with R"
+author: "M. Arnold, M. Schmelzer, A. Gerber"
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+<!--Include script for hiding output chunks-->
+<script src="js/hideOutput.js"></script>
+
+# Introduction
+
+Hier können wir was zum Projekt schreiben! Worum gehts, wie ist es aufgebaut ...
+
+
+
+<br>
+<br>
+<br>
+
+# Chapter 3
+## Section 3.5
+
+### Table 3.1 - Not completed (sig. test)
+In order to reproduce the data from table 3.1 you need to download the data from the books source (LINK).
+We simply read in the data and then make use of the powerful package dplyr to subset the data.
+
+```{r, echo=T, eval=T}
+library(dplyr, quietly=T)
+# Read in CPS data (taken from http:// ....)
+cps_dat <- read.csv("data/cps_ch3.csv", sep=";", dec=".")
+# Get an overview of the data structure
+head(cps_dat)
+# Take cps_dat %>% group data by gender and year %>% compute the mean, standard deviation
+# and number of observations for each group
+avgs <- cps_dat %>% group_by(a_sex, year) %>% summarise(mean(ahe12), sd(ahe12), n())
+print(avgs, digits=2)
+```
+
+Now that we have the numbers we can compute the difference between both genders.
+```{r, echo=T}
+male   <- avgs %>% filter(a_sex == 1) 
+female <- avgs %>% filter(a_sex == 2)
+colnames(male)   <- c("Sex", "Year", "Y_bar_m", "s_m", "n_m")
+colnames(female) <- c("Sex", "Year", "Y_bar_f", "s_f", "n_f")
+
+# Gender gap, standard errors and confidence intervals
+gap      <- male$Y_bar_m - female$Y_bar_f
+gap_se   <- sqrt(male$s_m^2 / male$n_m + female$s_f^2 / female$n_f)
+gap_ci_l <- gap - 1.96 * gap_se
+gap_ci_u <- gap + 1.96 * gap_se
+result <- cbind(male[,-1], female[,-(1:2)], gap, gap_se, gap_ci_l, gap_ci_u)
+print(result, digits = 2)
+```
+
+
+# Chapter 4
+## Linear Regression with One Regressor 
+
+This chapter introduces the linear regression model which  relates one variable, $X$, to another variable $Y$. If for example a school cuts the class sizes by hiring new teachers, would this have an impact on the students test scores? With linear regression we can not only examine whether the class size ($X$) does have an impact on the test results ($Y$). We can learn also something about the direction and the strength of the effect.      
+
+```{r}
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+
+CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+```
+
+
+```{r Table 4.1, results='hold'}
+mean(CASchools$tsratio) 
+mean(CASchools$score)
+sd(CASchools$tsratio) 
+sd(CASchools$score)
+quantiles          <- c(0.10, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9)
+quantile(CASchools$tsratio, quantiles)
+quantile(CASchools$score, quantiles)
+```
+
+
+```{r Figure 4.2, fig.align='center', fig.cap='Figure 4.2'}
+plot(score ~ tsratio, 
+     data = CASchools,
+     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
+     xlab = "Student teacher-ratio (X)",
+     ylab = "Test Score (Y)",
+     xlim = c(10,30),
+     ylim = c(600, 720))
+```
+
+## The Ordinary Least Squares Estimator (OLS)
+
+\begin{align}
+\hat{\beta_1} & =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})^2} \\
+
+\hat{\beta_0} & =  \bar{Y} - \hat{\beta_1} \bar{X} 
+\end{align}
+
+
+Let us apply the formulas above to the model ... and add the regression line to our plot (figure 4.2).
+
+```{r}
+attach(CASchools)
+beta_1 <- sum((tsratio - mean(tsratio))*(score - mean(score))) / sum((tsratio - mean(tsratio))^2)
+beta_0 <- mean(score) - beta_1 * mean(tsratio)
+```
+
+```{r, fig.align='center', echo=-1, fig.cap='Figure 4.3'}
+plot(score ~ tsratio, 
+     data = CASchools,
+     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
+     xlab = "Student teacher-ratio (X)",
+     ylab = "Test Score (Y)",
+     xlim = c(10,30),
+     ylim = c(600, 720))
+
+abline(a = beta_0, b = beta_1) # add regression line
+```
+
+There is a function called `lm` (**l**inear **m**odel) that can compute the OLS for you. It also takes care of a lot of other things like the residuals, fitted values, etc. Use `lm` to compute the OLS and add them to the figure 4.2 as well to check whether the coefficients really are the same.
+
+```{r}
+linear_model <- lm(score ~ tsratio, data = CASchools)
+linear_model
+```
+
+```{r Figure 4.3, fig.align='center', echo=3, fig.cap='Figure 4.4'}
+plot(score ~ tsratio, 
+     data = CASchools,
+     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
+     xlab = "Student teacher-ratio (X)",
+     ylab = "Test Score (Y)",
+     xlim = c(10,30),
+     ylim = c(600, 720))
+abline(a = beta_0, b = beta_1, lwd=2)
+abline(linear_model, lty=2, col="red")
+```
+
+# Chapter 5
+
+In this chapter, we continue with the treatment of the simple linear regression model. We will see how we may use our knowledge about the sampling distribution of the OLS estimator in order to make statements regarding its uncertainty.
+<br>
+This chapter covers:
+
+- Testing Hypotheses about regression coefficients
+
+- Confidence intervals for regression coefficients
+
+- Regression when $X$ is a dummy variable
+
+- Heteroskedasticity and Homoskedasticity
+
+## Section 5.1 Two-Sided Hypotheses Concerning $\beta_1$
+
+Using the fact that $\hat{\beta}_1$ is approximately normal distributed in large samples, hypothesis testing about the true value $\beta_1$ can be done with the same approach as discussed in chapter 3.2.
+
+Remember from section 3.2 that a general $t$-statistic has the form
+
+\[
+  t = \frac{\text{estimated value} - \text{hypothesized value}}{\text{standard error of the estimator}}.
+\]
+
+For testing the hypothesis $H_0: \beta_1 = \beta_{1,0}$, we need to perform the following steps:
+
+1. Compute the standard error of $\hat{\beta}_1$, $SE(\hat{\beta}_1)$
+
+\[ SE(\hat{\beta}_1) = \sqrt{ \hat{\sigma}^2_{\hat{\beta}_1} } \ \ , \ \ 
+  \hat{\sigma}^2_{\hat{\beta}_1} = \frac{1}{n} \times \frac{\frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u_i}^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2 \right]^2}
+\]
+
+2. Compute the $t$-statistic.
+
+\[ t = \frac{\hat{\beta}_1 - \beta_{1,0}}{ SE(\hat{\beta}_1) } \]
+
+3. Reject at the $5\%$ level if $|t^{act}| > 1.96$ or, equivalently, if the $p$-value is less than 0.05. \[
+p \text{-value} = \text{Pr}_{H_0} \left[ \left| \frac{ \hat{\beta}_1 - \beta_{1,0} }{ SE(\hat{\beta}_1) } \right| > \left| \frac{ \hat{\beta}_1^{act} - \beta_{1,0} }{ SE(\hat{\beta}_1) } \right| \right] = \text{Pr}_{H_0} (|t| > |t^{act}|) = 2 \Phi(-|t^{act}|)
+\] The last equality holds due to the normal approximation.
+
+Consider again the previous OLS regression that gave us the regression line
+  \[ \widehat{score} = \underset{(9.47)}{698.9} - \underset{(0.49)}{2.28} \times tsratio.  \]
+For testing a hypothesis regarding the slope parameter, we need $SE(\hat{\beta}_1)$, the standard error of the respective point estimator. These are presented in parantheses under the respective point estimate. How can we get these values using R? By looking at the second column of the coefficients' summary, we discover both values.
+
+```{r}
+summary(linear_model)$coefficients
+```
+
+How is $SE(\hat{\beta}_1)$ computed? The `summary` function uses the homoskedasticity-only formula 
+  \[ SE(\hat{\beta}_1) = \sqrt{ \overset{\sim}{\sigma}^2_{beta_1} } = \sqrt{ \frac{SER^2}{\sum(X_i - \overline{X})^2} }. \]
+
+
+## Section 5.4
+
+```{r Figure 5.2, fig.align='center'}
+library(scales)
+
+# Genrate some heteroskedastic data
+
+set.seed(123) 
+x <- rep(c(10,15,20,25),each=25)
+e <- rnorm(100, sd=12)                
+i <- order(runif(100, max=dnorm(e, sd=12))) 
+y <- 720 - 3.3 * x + e[rev(i)]
+
+# Plot data and inspect conditional distributions
+
+mod <- lm(y ~ x)
+plot(x, y, main="An Example of Heteroskedasticity",
+     xlab = "Student teacher-ratio (X)",
+     ylab = "Test Score (Y)",
+     cex=0.5, pch=19, xlim=c(8,27), ylim=c(600,710))
+abline(mod, col="red")
+boxplot(y~x, add=TRUE, at=c(10,15,20,25), col=alpha("gray", 0.4), border="black")
+```
+
+```{r}
+#if(!require(devtools))
+#  install.packages("devtools")
+#library(devtools)
+#install_github("datacamp/tutorial")
+#library(tutorial)
+```
+
+We already have assigned the model's summary to `mod`. Now, use your R knowledge to display coefficients and standard errors!
+
+```{r, ex="create_a", type="pre-exercise-code", include=FALSE}
+# Available in the workspace when the session initializes
+set.seed(123) 
+x <- rep(c(10,15,20,25),each=25)
+e <- rnorm(100, sd=12)                
+i <- order(runif(100, max=dnorm(e, sd=12))) 
+y <- 720 - 3.3 * x + e[rev(i)]
+mod <- summary(lm(y ~ x))
+```
+
+```{r, ex="create_a", type="sample-code", include=FALSE}
+# Access coefficients and standard errors
+
+```
+
+```{r, ex="create_a", type="solution", include=FALSE}
+# Access coefficients and standard errors
+mod$coefficients
+```
+
+```{r, ex="create_a", type="sct", eval=FALSE, include=FALSE}
+test_output_contains("mod$coefficients", incorrect_msg = "Make sure to use `mod$` !")
+success_msg("Econometrics ROXXXXXX111!!!")
+```
+
+```{r, ex="create_a", type="hint", eval=FALSE, include=FALSE}
+Use the dollar operator.
+```
+
+# Chapter 6
+## Section 6.3
+```{r}
+# Multiple Regression - Application to Test Scores and the Student-Teacher Ratio
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+model <- lm(score ~ tsratio + english, data = CASchools)
+```
+
+## Section 6.4
+Taking the code from Section 6.3 you could simply use `summary(model)` to print the $SER$, $R^2$ and adjusted-$R^2$. You find them at the bottom of the output.
+```{r}
+summary(model)
+```
+You can also compute the parameters by hand using the formulas on p. 242.
+```{r}
+n <- nrow(CASchools)    # number of observations (rows)
+k <- 2                  # 2 regressors
+y_mean <- mean(CASchools$score)
+
+SSR <- sum( residuals(model)^2 )
+TSS <- sum( ( CASchools$score - y_mean )^2 )
+ESS <- sum((fitted(model) - y_mean)^2)
+
+SER <- sqrt(1/(n-k-1) * SSR)
+Rsq <- 1 - (SSR / TSS)
+adj_Rsq <- 1 - (n-1)/(n-k-1) * SSR/TSS
+cat(SER, Rsq, adj_Rsq, sep = "    ")
+```
+
+## Section 6.7
+### Examples of Perfect Multicollinearity
+
+If you use `lm` to estimate a model with a set of regressors that suffer from perfect multicollinearity the system will warn you (_1 not defined because of singularities_) and ignore the regressor(s) which is(are) assumed to be a linear combination of the others.
+```{r}
+# Example 1
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+CASchools$FracEL    <- CASchools$english/100
+model <- lm(score ~ tsratio + english + FracEL, data = CASchools)
+summary(model)
+```
+
+
+If you compute OLS by hand you will run into the problem as well but noone is helping you out. The computation simply fails. Why is this the case? Take the following example:
+
+Assume you want to estimate a simple linear regression model with an intercept and one regressor:
+    \[ y_i = \beta_0 + \beta_1 x_i + u_i\]
+When applying perfect multicollinearity $x$ has to be a linear combination of the other regressors. Since the only other regressor is a constant, $x$ has to be constant as well. When you recap the formula for $\beta_1$, namely
+    \[ \hat{\beta_1} =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})^2}\]
+you find the variance of the regressor $x$ in the nominator. Since the variance of a constant is zero, you are not able to compute this fraction. $\hat{\beta}_1$ remains undefined.
+
+<font style="color:#004c93; font-weight:bold;">Note:</font> In this special case the nominator equals zero as well. Can you show that?
+
+
+```{r}
+# Example 2
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+CASchools$NVS      <- ifelse(CASchools$tsratio < 12, 0, 1)      # if tsratio smaller 12, NVS = 0, else NVS = 1
+model <- lm(score ~ tsratio + english + NVS, data = CASchools)
+summary(model)
+```
+
+
+```{r}
+# Example 3
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  <- CASchools$students/CASchools$teachers  # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2  # average test-score
+CASchools$PctES    <- 100 - CASchools$english  # Percentage of english speakers 
+model <- lm(score ~ tsratio + english + PctES, data = CASchools)
+summary(model)
+```
+
+
+# About Urfite
+
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
