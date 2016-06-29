@@ -419,17 +419,40 @@ Group specific predictions can be added to the plot by execution of the followin
 ```{r, eval=F}
 points(CASchools$D, predict(dummy_model), col="red", pch=20)
 ```
+The red dots represent group averages in the sample. Accordingly, $\hat{\beta}_1$ can be seen as the difference in group averages.
 
 By inspection of the output generated with `summary(dummy_model)` we may also find an awnser to the question wether there is a significant difference in group means. This can be assessed by a (two-tailed) test of the hypothesis $H_0: \beta_1 = 0$ for which the $t$-statistic and the corresponding $p$-value are computed defaultly by `summary()`.
 
 Since $t = 3.88 > 1.96$ we reject the null hypothesis at the $5\%$ level of significance. The same conclusion is drawn when using the $p$-value indicating significance to the $0.00012\%$ level. 
 
+Equivalently, we may use the `confint()` function to compute a $95\%$ confidence interval for the true difference in means and see if the hypothesised value is element of this set. 
+
+```{r}
+confint(dummy_model)
+```
+
+We reject the hypothesis at the $5\%$ significance level since $\beta_{1,0} = 0$ lies outside of the interval $[3.54, 10.8]$.
+
 ## Section 5.4 Heteroskedasticity and Homoskedasticity
 
-How is $SE(\hat{\beta}_1)$ computed here? The `summary` function uses the homoskedasticity-only formula 
-  \[ SE(\hat{\beta}_1) = \sqrt{ \overset{\sim}{\sigma}^2_{beta_1} } = \sqrt{ \frac{SER^2}{\sum(X_i - \overline{X})^2} }. \]
+All inference made in previous subsections of Chapter 5 relies on the assumption that the error variance does not vary as regressor values change. But this will not necessarily be the case in practical applications.
 
-```{r Figure 5.2, fig.align='center'}
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 5.4 </h3>          
+<h3 class = "left"> Heteroskedasticity and Homoskedasticity </h3>
+
+- We say the error term of our regression model is homoskedastic if the variance of the conditional distribution of $u_i$ given $X_i$, $var(u_i|X=x)$ is constant for all observations in our sample
+\[ var(u_i|X=x) = \sigma^2 \ \forall \ i=1,\dots,n \]
+
+- If instead there is dependence of the conditional variance of $u_i$ on $X_i$, the error term is said to be heteroskedastic. We then write
+\[  var(u_i|X=x) = \sigma_i^2 \ , \ i=1,\dots,n \]
+
+- Homoskedasticity is a special case of heteroskedasticity
+
+For a better understanding of heteroskedasticity, we generate heteroskedastic data, estimate a linear regression model and then use boxplots for illustration of conditional distrubutions of residuals.
+
+<div class="fold o">
+```{r, fig.align='center'}
 library(scales)
 
 # Genrate some heteroskedastic data
@@ -450,45 +473,46 @@ plot(x, y, main="An Example of Heteroskedasticity",
 abline(mod, col="red")
 boxplot(y~x, add=TRUE, at=c(10,15,20,25), col=alpha("gray", 0.4), border="black")
 ```
+</div>
+In this example, it is straightforward to see that we face unequal conditional variances. Specifically, the variance of the test score (and therefore $var(u_i|X=x)$) increases with $X$.
+</div>
 
+###Should we care about heteroskedasticity?
+
+First, let us see how $SE(\hat{\beta}_1)$ is computed under the assumption of homoskedasticity. The `summary` function uses the homoskedasticity-only formula 
+  \[ SE(\hat{\beta}_1) = \sqrt{ \overset{\sim}{\sigma}^2_{beta_1} } = \sqrt{ \frac{SER^2}{\sum(X_i - \overline{X})^2} }. \]
+
+This in fact is an estimator for the standard deviation of the estimator $\hat{\beta}_1$ that is inconsistent for the true value $SE(\hat{\beta}_1)$. The implication is that $t$-statistics computed in the manner of key concept 5.1 do not have a standard normal distribution, even in large samples. This issue may invalidate inference drawn from the previously treated tools for hypothesis testing.
+
+
+We will now use R to compute the homoskedasticity-only standard error estimator for $\hat{\beta}_1$ by hand and see if it matches the value provided by `summary()`.
 ```{r}
-#if(!require(devtools))
-#  install.packages("devtools")
-#library(devtools)
-#install_github("datacamp/tutorial")
-#library(tutorial)
-```
+# Store model summary in 'mod'
+model <- summary(linear_model)
 
-We already have assigned the model's summary to `mod`. Now, use your R knowledge to display coefficients and standard errors!
+# Extract the standard error of the regression from model summary
+SER <- model$sigma
 
-```{r, ex="create_a", type="pre-exercise-code", include=FALSE}
-# Available in the workspace when the session initializes
-set.seed(123) 
-x <- rep(c(10,15,20,25),each=25)
-e <- rnorm(100, sd=12)                
-i <- order(runif(100, max=dnorm(e, sd=12))) 
-y <- 720 - 3.3 * x + e[rev(i)]
-mod <- summary(lm(y ~ x))
-```
+# Compute the variation in 'tsratio'
+V <- (nrow(CASchools)-1)*var(CASchools$tsratio)
 
-```{r, ex="create_a", type="sample-code", include=FALSE}
-# Access coefficients and standard errors
+# Compute the standard error of the slope parameter's estimator and print it
+SE.beta_1.hat <- sqrt(SER^2/V); SE.beta_1.hat
+
+# Use logical operators to see if the value computed by hand matches the one provided 
+# in mod$coefficients. Round estimates to 4 decimal places.
+
+round(model$coefficients[2,2],4) == round(SE.beta_1.hat,4)
 
 ```
+Indeed, the estimated values are equal.
 
-```{r, ex="create_a", type="solution", include=FALSE}
-# Access coefficients and standard errors
-mod$coefficients
-```
+### Computation of heteroskedasticity-robust standard errors
 
-```{r, ex="create_a", type="sct", eval=FALSE, include=FALSE}
-test_output_contains("mod$coefficients", incorrect_msg = "Make sure to use `mod$` !")
-success_msg("Econometrics ROXXXXXX111!!!")
-```
+Cosistent estimation of $SE(\hat{\beta}_1)$ under heteroskedasticity is granted when the following robust estimator is used.
 
-```{r, ex="create_a", type="hint", eval=FALSE, include=FALSE}
-Use the dollar operator.
-```
+\[ SE(\hat{\beta}_1) = \sqrt{ \frac{ \frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2} } \]
+
 
 # Chapter 6
 ## Section 6.3
