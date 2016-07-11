@@ -1449,10 +1449,6 @@ td.visible-print,th.visible-print{display:table-cell!important}
 
 /* ADDDED BY MARTIN */
 
-.fold {
-  display:inline;
-}
- 
 .showopt {
   background-color: #004c93;
   color: #FFFFFF; 
