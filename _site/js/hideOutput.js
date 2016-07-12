@@ -1,24 +1,47 @@
 $(document).ready(function() {
   // Select all <pre> tags that do not have class 'r'
-  $output = $("pre").not(".r");
-  // Add the "show/hide-button" to each output chunk
-  $output.prepend("<div class=\"showopt\">Show Output</div><br/>");
-  // Select the <pre> tags, then choose their <code> child tags and toggle visibility 
-  $output.children("code").css({display: "none"});
+  
+  $chunks = $('.fold');
 
-  // When the show/hide-button is clicked, toggle the current state and
-  // change the button text
-  $(".showopt").click(function() {
-  	  $btn = $(this);
-      $chunk = $(this).parent().children("code");
-	    if($btn.html() === "Show Output") {
-	        $btn.html("Hide Output");
-	    } else {
-	  	    $btn.html("Show Output");
-	    }
-      $chunk.slideToggle("fast", "swing");
+  $chunks.each(function () {
+    // hide source code
+    if ( $(this).hasClass('s') ) {
+      $('pre.r', this).prepend("<div class=\"showopt\">Show Source</div><br style=\"line-height:22px;\"/>");
+      $('pre.r', this).children('code').attr('class', 'folded');
+    }
+    
+    // hide output
+    if ( $(this).hasClass('o') ) {
+    
+      // text Output
+      $('pre:not(.r)', this).has('code').prepend("<div class=\"showopt\">Show Output</div><br style=\"line-height:22px;\"/>");
+      $('pre:not(.r)', this).children('code:not(r)').addClass('folded');
+      
+      // plots
+      $(this).find('img').wrap('<pre class=\"plot\"></pre>');
+      $('pre.plot', this).prepend("<div class=\"showopt\">Show Plot</div><br style=\"line-height:22px;\"/>");
+      $('pre.plot', this).children('img').addClass('folded');
+      
+    }
+
   });
+  
+  $('.folded').css('display', 'none')
+  
+
+  $(".showopt").click(function() {
+      var label = $(this).html();
+      if(label.indexOf("Show") >= 0) {
+          $(this).html(label.replace("Show", "Hide"));
+      } else {
+          $(this).html(label.replace("Hide", "Show"));
+      }
+      $(this).parent().find('code, img').slideToggle('fast', 'swing');
+  });
+  
 });
+
+
 
 
 

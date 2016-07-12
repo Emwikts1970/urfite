@@ -65,7 +65,7 @@ print(result, digits = 2)
 # Chapter 4
 ## Linear Regression with One Regressor 
 
-This chapter introduces the simple linear regression model which relates one variable, $X$, to another variable $Y$. If for example a school cuts the class sizes by hiring new teachers, how would this effect the performance of the students? With linear regression we can not only examine whether the class size $\left(X\right)$ does have an impact on the test results $\left(Y\right)$. We can also learn something about the direction and the strength of the effect. 
+This chapter introduces the simple linear regression model which relates one variable, $X$, to another variable $Y$. If for example a school cuts the class sizes by hiring new teachers, how would this effect the performance of the students? With linear regression we can not only examine whether the class size $\left(X\right)$ does have an impact on the test results $\left(Y\right)$. We can also learn something about the direction and the strength of this effect. 
 
 To start with an easy example consider the following combinations of average test scores and the average student to teacher ratios in some districts:
 
@@ -81,8 +81,7 @@ If we use a simple linear regression model we assume that the relationship betwe
 
 $$TestScore = 713 - 3 \times ClassSize.$$
 
-Now, we take a look at the data and add the line from above. 
-
+Let us take a look at the data and the line from above. 
 
 ```{r}
 plot(TestScore ~ StudentTeacherRatio, data = class_data, ylim = c(600, 700), xlim = c(10,30))
@@ -91,7 +90,7 @@ abline(a = 713, b = -3)
 
 We find that our line does not touch any of the points and still we argued that it represents the true relationship. The reason for this is the core problem (and also the right to exist) of statistics, randomness. There are almost always effects which cannot be explained in a deterministic fassion and which excaberate the finding of the "truth". 
 
-In order to account for these differences the regression model is extended by an additional term which covers the purely random effect. This term also accounts for all 
+In order to account for the differences the regression model is extended by an **error term** which covers these random effect. This **error term** generally accounts for all differences between the "true" regression line and the actual observed data. This could next to the pure randomness also be measerment errors or the effect of important but not considered independent variables.   
 
 
 <div class = "keyconcept"> 
@@ -114,44 +113,48 @@ where
 </p>
 </div>
 
-Now, let us assume that we observed both variables from a couple of classes.
+##4.2 Estimating the Coefficients of the Linear Regression Model
 
-```{r}
-class_data <- data.frame(TestScore           = c(680, 640, 670, 660, 630, 660, 635), 
-                         StudentTeacherRatio = c(15, 17, 19, 20, 22, 23.5, 25))
-class_data 
-```
-
-It would be a suprise if all this points would lie on a straight line.
-
-
-```{r}
-lm_model    <- lm(TestScore ~ StudentTeacherRatio, data = class_data)
-
-plot(TestScore ~ StudentTeacherRatio, data = class_data, ylim = c(600, 700), xlim = c(10,30))
-
-
-abline(lm_model)
-```
-
+In practical situations the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must use data to estimate the two unknown parameters. We will demonstrate how to do that on a real data example. We want to relate test scores to class sizes in 420 Colifornia school restricts. The test score is the districtwide average of reading and math scores for fifth graders. Class size is measured as the number of students divided by the number of teachers (student-teacher ratio). The California Shool dataset is available in the `AER` package. After installing the package with `install.packages(AER)` and attaching it with `Library()` the dataset can be loaded using the `data()` function. 
 
 ```{r}
 library(AER)                                                    # contains the dataset 
 data(CASchools) 
+```
 
+With `head()` we get a first overview over our data. This function shows only the first 6 rows of the dataset which prevents an overcrowded console output. 
+
+```{r}
+head(CASchools)
+```
+
+We find that the dataset consists of plenty variables but the two we are intersted in (average test scores and student-teacher ratio) are not included. However, it is easily possible to calculate both from the existing data. 
+
+```{r}
 CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
 CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
 ```
 
+
+The next code chunk reproduces table 4.1 from the text book. In order to have a nice display format we gather all data after the computation in a data frame. 
+
 <div class="fold o">
+
 ```{r Table 4.1, results='hold'}
-mean(CASchools$tsratio) 
-mean(CASchools$score)
-sd(CASchools$tsratio) 
-sd(CASchools$score)
-quantiles          <- c(0.10, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9)
-quantile(CASchools$tsratio, quantiles)
-quantile(CASchools$score, quantiles)
+avg_tsratio   <- mean(CASchools$tsratio) 
+avg_tsratio   <- mean(CASchools$score)
+sd_tsratio    <- sd(CASchools$tsratio) 
+sd_tsratio    <- sd(CASchools$score)
+quantiles     <- c(0.10, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9)
+quant_tsratio <- quantile(CASchools$tsratio, quantiles)
+quant_score   <- quantile(CASchools$score, quantiles)
+
+#Gather everything in a data frame 
+DistributionSummary <- data.frame(Average           = c(avg_tsratio, avg_tsratio), 
+                                  StandardDeviation = c(sd_tsratio, sd_tsratio), 
+                                  quantile          = rbind(quant_tsratio, quant_score)
+                                  )
+DistributionSummary
 ```
 </div>
 
@@ -513,6 +516,35 @@ Cosistent estimation of $SE(\hat{\beta}_1)$ under heteroskedasticity is granted 
 
 \[ SE(\hat{\beta}_1) = \sqrt{ \frac{ \frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2} } \]
 
+Stadard error estimates computed this way are also referred to as Eicker-Huber-White standard errors. 
+
+It can be quite cumbersome to do so this calculation by hand. Luckily, there are R function for that purpose. A convenient one, named `vcovHC` is contained in the `sandwich` package. 
+
+Let us now compute robust standard error estimates for coefficients in `linear_model`.
+```{r}
+library(sandwich)
+
+vcov <- vcovHC(linear_model, type = "HC0")
+vcov
+```
+The output is the variance-covariance matrix of coefficient estimates. We are interested in the square root of the diagonal elements of this matrix since these are the standard error estimates we seek:
+
+```{r}
+robust_se <- sqrt(diag(vcov))
+robust_se
+```
+
+
+Now assume we want to generate a coefficient summary that reports robust standard error estimates for coefficient estimates, robust $t$-statistics and corresponding $p$-values for the regression model `linear_model`. This can be done as follows:
+
+```{r}
+# We invoke the function `coeftest()` on our model. Further we specify in the argument `vcov.`
+# that the Eicker-Huber-White estimator, "HC0", is to be used.
+
+coeftest(linear_model, vcov. = vcovHC(linear_model, type = "HC0"))
+```
+
+We see that values reported in the column 'Std. Error' equal the ones received using `sqrt(diag(vcov))`.
 
 # Chapter 6
 ## Section 6.3
