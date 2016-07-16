@@ -1484,13 +1484,13 @@ pre.plot {
  
 .keyconcept h3.right {
   float: right;
-  width: 150px;
+  width: 25%;
   text-align: center;
 }
 
 .keyconcept h3.left {
   float: left;
-  width: 600px;
+  width: 65%;
   
 }
 
