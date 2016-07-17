@@ -1,7 +1,8 @@
 ---
 title: "Introduction to Econometrics with R"
 author: "M. Arnold, M. Schmelzer, A. Gerber"
-date: '`r Sys.Date()`'
+date: "`r Sys.Date()`"
+runtime: shiny
 output: html_document
 ---
 
@@ -207,6 +208,7 @@ The estimated intercept $\left(\hat{\beta_0}\right)$, slope $\left(\hat{\beta_1}
 
 There are many possible ways to compute $\left(\hat{\beta_0}\right)$ and $\left(\hat{\beta_1}\right)$ in R. We could implement the formulas by using some of R's most basic functions `mean()` and `sum()`. But of course their are also other and even more manual ways to do the same tasks. 
 
+
 ```{r}
 attach(CASchools)
 beta_1 <- sum((tsratio - mean(tsratio))*(score - mean(score))) / sum((tsratio - mean(tsratio))^2)
@@ -215,13 +217,32 @@ beta_1
 beta_0
 ```
 
+
 Since OLS is one of the most used methods in statistics there is a function called `lm()` (**l**inear **m**odel) which will do the job automatically. This functions also computes plenty other things e.g. the residuals, fitted values and things we will need later on such as p-values. 
+
+<div class="fold o">
+```{r, fig.align='center', echo=-1, fig.cap='Figure 4.3'}
+plot(score ~ tsratio, 
+     data = CASchools,
+     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
+     xlab = "Student teacher-ratio (X)",
+     ylab = "Test Score (Y)",
+     xlim = c(10,30),
+     ylim = c(600, 720))
+
+abline(a = beta_0, b = beta_1) # add regression line
+```
+</div>
+
+There is a function called `lm` (**l**inear **m**odel) that can compute the OLS for you. It also takes care of a lot of other things like the residuals, fitted values, etc. Use `lm` to compute the OLS and add them to the figure 4.2 as well to check whether the coefficients really are the same.
+>>>>>>> 79efaa3a816cf4f1cf359ff510a590dfa2019937
 
 ```{r}
 linear_model <- lm(score ~ tsratio, data = CASchools)
 linear_model
 ```
 
+<div class="fold o">
 ```{r Figure 4.3, fig.align='center', echo=3, fig.cap='Figure 4.4'}
 plot(score ~ tsratio, 
      data = CASchools,
@@ -232,6 +253,7 @@ plot(score ~ tsratio,
      ylim = c(600, 720))
 abline(linear_model)
 ```
+</div>
 
 #The Sampling Distribution of the OLS Estimator 
 
@@ -306,6 +328,24 @@ abline(fit)
 abline(fitWithoutOutlier)
 ```
 
+```{r}
+library(ggvis)
+library(dplyr)
+
+set.seed(123)
+x     <- sort(runif(15, min = 30, max = 70 ))
+y     <- rnorm(15 , mean = 200, sd = 50)
+df    <- data.frame(y, x)
+
+v <- input_slider(0, 250, value = 0, step = 25, animate = TRUE)
+outlier <- function(y, v) y + c(rep(0, 14), v)
+
+df %>% 
+  ggvis(x = ~x, y = ~y)  %>% 
+  mutate(y = outlier(y, eval(v))) %>% 
+  layer_points() %>%
+  layer_model_predictions(model  = "lm", formula = y ~ x)
+```
 
 
 
@@ -722,6 +762,19 @@ CASchools$PctES    <- 100 - CASchools$english  # Percentage of english speakers
 model <- lm(score ~ tsratio + english + PctES, data = CASchools)
 summary(model)
 ```
+
+<div class="keyconcept">
+## Excursus: The Weak Law of Large Numbers
+
+```{r, echo = FALSE}
+shinyAppDir(
+  "apps/WLLN",
+  options=list(
+    width="100%", height=500
+  )
+)
+```
+</div>
 
 
 # About Urfite
