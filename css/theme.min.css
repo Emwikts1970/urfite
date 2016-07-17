@@ -1497,6 +1497,10 @@ pre.plot {
 .keyconcept p {
   clear: both;
 }
+
+.shiny-frame {
+  background-color: #dfe4f2;
+}
  
 
 

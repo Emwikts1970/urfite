@@ -2,6 +2,7 @@
 title: "Introduction to Econometrics with R"
 author: "M. Arnold, M. Schmelzer, A. Gerber"
 date: "`r Sys.Date()`"
+runtime: shiny
 output: html_document
 ---
 
@@ -180,12 +181,14 @@ plot(score ~ tsratio,
 
 Let us apply the formulas above to the model ... and add the regression line to our plot (figure 4.2).
 
+
 ```{r}
 attach(CASchools)
 beta_1 <- sum((tsratio - mean(tsratio))*(score - mean(score))) / sum((tsratio - mean(tsratio))^2)
 beta_0 <- mean(score) - beta_1 * mean(tsratio)
 ```
 
+<div class="fold o">
 ```{r, fig.align='center', echo=-1, fig.cap='Figure 4.3'}
 plot(score ~ tsratio, 
      data = CASchools,
@@ -197,6 +200,7 @@ plot(score ~ tsratio,
 
 abline(a = beta_0, b = beta_1) # add regression line
 ```
+</div>
 
 There is a function called `lm` (**l**inear **m**odel) that can compute the OLS for you. It also takes care of a lot of other things like the residuals, fitted values, etc. Use `lm` to compute the OLS and add them to the figure 4.2 as well to check whether the coefficients really are the same.
 
@@ -205,6 +209,7 @@ linear_model <- lm(score ~ tsratio, data = CASchools)
 linear_model
 ```
 
+<div class="fold o">
 ```{r Figure 4.3, fig.align='center', echo=3, fig.cap='Figure 4.4'}
 plot(score ~ tsratio, 
      data = CASchools,
@@ -216,6 +221,7 @@ plot(score ~ tsratio,
 abline(a = beta_0, b = beta_1, lwd=2)
 abline(linear_model, lty=2, col="red")
 ```
+</div>
 
 # Chapter 5
 
@@ -627,6 +633,19 @@ CASchools$PctES    <- 100 - CASchools$english  # Percentage of english speakers
 model <- lm(score ~ tsratio + english + PctES, data = CASchools)
 summary(model)
 ```
+
+<div class="keyconcept">
+## Excursus: The Weak Law of Large Numbers
+
+```{r, echo = FALSE}
+shinyAppDir(
+  "apps/WLLN",
+  options=list(
+    width="100%", height=500
+  )
+)
+```
+</div>
 
 
 # About Urfite
