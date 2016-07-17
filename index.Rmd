@@ -17,8 +17,6 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 Hier können wir was zum Projekt schreiben! Worum gehts, wie ist es aufgebaut ...
 
-
-
 <br>
 <br>
 <br>
@@ -116,7 +114,7 @@ where
 
 ##4.2 Estimating the Coefficients of the Linear Regression Model
 
-In practical situations the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must use data to estimate the two unknown parameters. We will demonstrate how to do that on a real data example. We want to relate test scores to class sizes in 420 Colifornia school restricts. The test score is the districtwide average of reading and math scores for fifth graders. Class size is measured as the number of students divided by the number of teachers (student-teacher ratio). The California Shool dataset is available in the `AER` package. After installing the package with `install.packages(AER)` and attaching it with `Library()` the dataset can be loaded using the `data()` function. 
+In practical situations the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must use data to estimate the two unknown parameters. We will demonstrate how to do that on a real data example. We want to relate test scores to class sizes in 420 California school restricts. The test score is the districtwide average of reading and math scores for fifth graders. Class size is measured as the number of students divided by the number of teachers (student-teacher ratio). The California Shool dataset is available in the `AER` package. After installing the package with `install.packages(AER)` and attaching it with `Library()` the dataset can be loaded using the `data()` function. 
 
 ```{r}
 library(AER)                                                    # contains the dataset 
@@ -136,14 +134,13 @@ CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-studen
 CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
 ```
 
-
-The next code chunk reproduces table 4.1 from the text book. In order to have a nice display format we gather all data after the computation in a data frame. 
+The next code chunk reproduces table 4.1 from the text book which summatizes the distribution of test scores and class sizes. In order to have a nice display format we gather all data after the computation in a data frame. 
 
 <div class="fold o">
 
 ```{r Table 4.1, results='hold'}
 avg_tsratio   <- mean(CASchools$tsratio) 
-avg_tsratio   <- mean(CASchools$score)
+avg_score     <- mean(CASchools$score)
 sd_tsratio    <- sd(CASchools$tsratio) 
 sd_tsratio    <- sd(CASchools$score)
 quantiles     <- c(0.10, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9)
@@ -159,8 +156,11 @@ DistributionSummary
 ```
 </div>
 
+Figure 4.2 shows a scatterplot of all observations. We see that the points are scatterd strongly and the correlation is with $-0.23$ rather weak. The task we are facing now is to find the line which fit best to this data. 
+
 <div class="fold o">
-```{r Figure 4.2, fig.align='center', fig.cap='Figure 4.2'}
+```{r Figure 4.2}
+cor(CASchools$tsratio, CASchools$score)
 plot(score ~ tsratio, 
      data = CASchools,
      main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
@@ -170,23 +170,55 @@ plot(score ~ tsratio,
      ylim = c(600, 720))
 ```
 </div>
+
 ## The Ordinary Least Squares Estimator (OLS)
 
-\begin{align}
-\hat{\beta_1} & =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})^2} \\
+The OLS estimator chooses the regression coefficients so that the estimated regression line is as close as possible to the observed data. Closeness is measured by the sum of the squared mistakes made in predicting $Y$ given $X$. Let $b_0$ and $b_1$ be some estimator of $\beta_0$ and $\beta_1$ then the total squared estimation mistakes can be expressed as: 
 
+$$\sum^n_{i = 1} (Y_i - b_0 - b_1 X_i)^2$$.
+
+The OLS Estimator is the pair of estimators for intercept and slope which minimizes this expression. 
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 4.2 </h3>          
+<h3 class = "left"> The OLS Estimator, Predicted Values, and Residuals </h3>
+
+<p> The OLS estimators of the slope $\beta_1$ and the intercept $\beta_0$ are
+
+\begin{align}
+\hat{\beta_1} & =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})^2} = \frac{s_{xy}} {s^2_X}  \\
+\\
 \hat{\beta_0} & =  \bar{Y} - \hat{\beta_1} \bar{X} 
 \end{align}
 
 
-Let us apply the formulas above to the model ... and add the regression line to our plot (figure 4.2).
+The OLS predicted values $\hat{Y_i}$ and residuals $\hat{u_i}$ are
+
+\begin{align}
+\hat{Y_i} & =  \hat{\beta_0} + \hat{\beta_1}X_i\\
+\\
+\\
+\hat{u_i} & =  Y_i - \hat{Y_i} 
+\end{align}
+
+The estimated intercept $\left(\hat{\beta_0}\right)$, slope $\left(\hat{\beta_1}\right)$, and residuals $\left(\hat{u_i}\right)$ are computed from a sample of n observations of $X_i$ and $Y_i$, $i$, $...$,  $n$. These are estimates of the unkown true population intercept $\left(\beta_0 \right)$, slope $\left(\beta_1\right)$, and error term $(u_i)$.
+
+</p>
+</div>
+
+There are many possible ways to compute $\left(\hat{\beta_0}\right)$ and $\left(\hat{\beta_1}\right)$ in R. We could implement the formulas by using some of R's most basic functions `mean()` and `sum()`. But of course their are also other and even more manual ways to do the same tasks. 
 
 
 ```{r}
 attach(CASchools)
 beta_1 <- sum((tsratio - mean(tsratio))*(score - mean(score))) / sum((tsratio - mean(tsratio))^2)
 beta_0 <- mean(score) - beta_1 * mean(tsratio)
+beta_1
+beta_0
 ```
+
+
+Since OLS is one of the most used methods in statistics there is a function called `lm()` (**l**inear **m**odel) which will do the job automatically. This functions also computes plenty other things e.g. the residuals, fitted values and things we will need later on such as p-values. 
 
 <div class="fold o">
 ```{r, fig.align='center', echo=-1, fig.cap='Figure 4.3'}
@@ -203,6 +235,7 @@ abline(a = beta_0, b = beta_1) # add regression line
 </div>
 
 There is a function called `lm` (**l**inear **m**odel) that can compute the OLS for you. It also takes care of a lot of other things like the residuals, fitted values, etc. Use `lm` to compute the OLS and add them to the figure 4.2 as well to check whether the coefficients really are the same.
+>>>>>>> 79efaa3a816cf4f1cf359ff510a590dfa2019937
 
 ```{r}
 linear_model <- lm(score ~ tsratio, data = CASchools)
@@ -218,10 +251,106 @@ plot(score ~ tsratio,
      ylab = "Test Score (Y)",
      xlim = c(10,30),
      ylim = c(600, 720))
-abline(a = beta_0, b = beta_1, lwd=2)
-abline(linear_model, lty=2, col="red")
+abline(linear_model)
 ```
 </div>
+
+#The Sampling Distribution of the OLS Estimator 
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 4.4 </h3>          
+<h3 class = "left"> Large Sample Distribution of $\hat{\beta_0}$ and $\hat{\beta_1}$ </h3>
+
+<p> If the least square saaumption in Key Concept 4.3 hold, then in large-samples $\hat{\beta_0}$ and $\hat{\beta_1}$ have a jointly normal sampling distribution. The large-sample normal distribution of $\hat{\beta_1}$ is $N(\beta_1, \sigma^2_\hat{\beta_1})$, where the variance of the distribution, $\sigma^2_\hat{\beta_1}$, is 
+
+\[
+\sigma^2_\hat{\beta_1} = \frac{1}{n} \frac{var \left[ \left(X_i - \mu_X \right) u_i  \right]}  {\left[  var \left(X_i \right)  \right]^2}
+\]
+
+The large-sample normal distribution of $\hat{\beta_0}$ is $N(\beta_0, \sigma^2_\hat{\beta_0})$, where
+\[
+ \sigma^2_\hat{\beta_0} =  \frac{1}{n} \frac{var \left( H_i u_i \right)}{ \left[  E \left(H_i^2  \right)  \right]^2 }\text{, where } H_i = 1 - \left[ \frac{\mu_X} {E \left( X_1^2\right)} \right] X_i.
+\]
+
+</p>
+</div>
+
+
+
+```{r}
+library(latex2exp)
+#Population Regression
+pop_n      <- 1000
+x          <- runif(pop_n, min = 0, max = 20)
+u          <- rnorm(pop_n, sd = 10)
+y          <- -2 + 3.5*x + u
+population <- data.frame(x, y)
+
+
+latex2exp
+
+n <- 100 # sample size
+sigma_b1 <- var( ( x - mean(x) ) * u ) / (100 * var(x)^2)
+H_i      <- 1 - mean(x) / mean(x^2) * x
+sigma_b0 <- var(H_i * u) / (n * mean(H_i^2)^2 )
+
+#Estimation
+number_of_estimations <- 500
+
+
+fit <- matrix(ncol = 2, nrow = number_of_estimations)
+for (i in 1:number_of_estimations){
+ random_sample  <- population[ sample(1:pop_n, n), ]
+ fit[i, ]       <- lm(y ~ x, data = random_sample)$coefficients
+}
+
+var(fit[ ,1])
+hist(fit[ ,1], main = bquote(The ~ distribution  ~ of ~ 500 ~ beta[1] ~ estimates))
+
+var(fit[ ,2])
+hist(fit[ ,2], , main = bquote(The ~ distribution  ~ of ~ 500 ~ beta[2] ~ estimates))
+```
+
+
+#Sensitivity to Outliers
+
+```{r}
+set.seed(123)
+x     <- sort(runif(15, min = 30, max = 70 ))
+y     <- rnorm(15 , mean = 200, sd = 50)
+y[12] <- 2000
+
+fit               <- lm(y ~ x)
+fitWithoutOutlier <- lm(y[-12] ~ x[-12])
+
+plot(y ~ x)
+abline(fit)
+abline(fitWithoutOutlier)
+```
+
+```{r}
+library(ggvis)
+library(dplyr)
+
+set.seed(123)
+x     <- sort(runif(15, min = 30, max = 70 ))
+y     <- rnorm(15 , mean = 200, sd = 50)
+df    <- data.frame(y, x)
+
+v <- input_slider(0, 250, value = 0, step = 25, animate = TRUE)
+outlier <- function(y, v) y + c(rep(0, 14), v)
+
+df %>% 
+  ggvis(x = ~x, y = ~y)  %>% 
+  mutate(y = outlier(y, eval(v))) %>% 
+  layer_points() %>%
+  layer_model_predictions(model  = "lm", formula = y ~ x)
+```
+
+
+
+
+
 
 # Chapter 5
 
