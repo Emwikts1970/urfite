@@ -312,7 +312,7 @@ hist(fit[ ,2], , main = bquote(The ~ distribution  ~ of ~ 500 ~ beta[2] ~ estima
 ```
 
 
-#Sensitivity to Outliers
+# Sensitivity to Outliers
 
 ```{r}
 set.seed(123)
