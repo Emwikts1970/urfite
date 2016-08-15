@@ -164,7 +164,7 @@ cor(CASchools$tsratio, CASchools$score)
 plot(score ~ tsratio, 
      data = CASchools,
      main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
-     xlab = "Student teacher-ratio (X)",
+     xlab = "Student-Teacher Ratio (X)",
      ylab = "Test Score (Y)",
      xlim = c(10,30),
      ylim = c(600, 720))
@@ -638,7 +638,7 @@ V <- (nrow(CASchools)-1)*var(CASchools$tsratio)
 SE.beta_1.hat <- sqrt(SER^2/V); SE.beta_1.hat
 
 # Use logical operators to see if the value computed by hand matches the one provided 
-# in mod$coefficients. Round estimates to 4 decimal places.
+# in mod$coefficients. Round estimates to four decimal places.
 
 round(model$coefficients[2,2],4) == round(SE.beta_1.hat,4)
 
