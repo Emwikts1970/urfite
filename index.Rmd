@@ -741,7 +741,7 @@ legend('topright', c("OLS","weighted"), col=c("purple","steelblue"),lwd=3)
 What conclusion can we draw from the result?
 
 - Both estimators seem to be unbiased: The means of their estimated distributions are zero.
-- The `weightedestimator` is less efficient than the OLS estimator: There is higher dispersion when weights are $w_i = \frac{1 \pm \epsilon}{n}$ instead of $w_i=\frac{1}{n}$. 
+- The `weightedestimator` is less efficient than the `ols` estimator: There is higher dispersion when weights are $w_i = \frac{1 \pm \epsilon}{n}$ instead of $w_i=\frac{1}{n}$. 
 
 <div>
 
