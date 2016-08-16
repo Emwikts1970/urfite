@@ -732,7 +732,7 @@ for (i in 1:reps)
 
 # Plot estimates of the estimators distribution 
 
-plot(density(ols),col="purple", lwd=3, main="Density of OLS and weighted estimator",xlab="")
+plot(density(ols),col="purple", lwd=3, main="Density of OLS and Weighted Estimator",xlab="")
 lines(density(weightedestimator),col="steelblue", lwd=3) 
 abline(v=0,lty=2)
 legend('topright', c("OLS","weighted"), col=c("purple","steelblue"),lwd=3)
