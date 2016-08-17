@@ -164,7 +164,7 @@ cor(CASchools$tsratio, CASchools$score)
 plot(score ~ tsratio, 
      data = CASchools,
      main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
-     xlab = "Student teacher-ratio (X)",
+     xlab = "Student-Teacher Ratio (X)",
      ylab = "Test Score (Y)",
      xlim = c(10,30),
      ylim = c(600, 720))
@@ -340,7 +340,7 @@ hist(fit[ ,2], , main = bquote(The ~ distribution  ~ of ~ 500 ~ beta[2] ~ estima
 ```
 
 
-#Sensitivity to Outliers
+# Sensitivity to Outliers
 
 ```{r}
 set.seed(123)
@@ -664,7 +664,7 @@ V <- (nrow(CASchools)-1)*var(CASchools$tsratio)
 SE.beta_1.hat <- sqrt(SER^2/V); SE.beta_1.hat
 
 # Use logical operators to see if the value computed by hand matches the one provided 
-# in mod$coefficients. Round estimates to 4 decimal places.
+# in mod$coefficients. Round estimates to four decimal places.
 
 round(model$coefficients[2,2],4) == round(SE.beta_1.hat,4)
 
@@ -706,6 +706,71 @@ coeftest(linear_model, vcov. = vcovHC(linear_model, type = "HC0"))
 ```
 
 We see that values reported in the column 'Std. Error' equal the ones received using `sqrt(diag(vcov))`.
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 5.5 </h3>          
+<h3 class = "left"> The Gauss-Markov-Theorem for $\hat{\beta}_1$ </h3>
+
+Suppose the Assumptions made in Key Concept 4.3 hold *and* that the errors are *homoskedastic*. The OLS estimator is the best (in the sense of smallest variance) linear conditionally unbiased estimator (*BLUE*) in this setting.
+
+Let us have a closer look at what this means:
+
+- Estimators of $\beta_1$ that are linear functions of the $Y_1, \dots, Y_n$ and that are unbiased conditionally on the regressor $X_1, \dots, X_n$ can be written as \[ \overset{\sim}{\beta}_1 = \sum_{i=1}^n a_i Y_i \] where the $a_i$ are weights that are allowed to depend on the $X_i$ but *not* on the $Y_i$. 
+
+- We already know that $\overset{\sim}{\beta}_1$ has a sampling distribution. If now \[ E(\overset{\sim}{\beta}_1 | X_1, \dots, X_n) = \beta_1 \] we say that $\overset{\sim}{\beta}_1$ is a linear unbiased estimator of $\beta_1$, conditionally on the $X_1, \dots, X_n$.
+
+- We may ask if $\overset{\sim}{\beta}_1$ is also the *best* estimator in this class, i.e. the most efficient one. The weights $a_i$ play an important role here.
+
+#### Example
+
+Consider the case of a regression of $Y_i,\dots,Y_n$ on a constant. Here, the $Y_i$ are assumed to be a random sample from a population with mean $\mu$ and variance $\sigma^2$. We know that the OLS estimator is the sample mean: \[ \hat{\beta}_1 = \overline{\beta}_1 = \sum_{i=1}^n \underbrace{\frac{1}{n}}_{=a_i} Y_i \]
+
+Clearly, each observation is weighted by $a_i = \frac{1}{n}$.
+
+We also know that $Var(\hat{\beta}_1)=\frac{\sigma^2}{n}$.
+
+We will now use R for a simulation study to illustrate what happens to the variance of the estimator if different weights \[ w_i = \frac{1 \pm \epsilon}{n} \] are assigned to either half of the sample $Y_1, \dots, Y_n$.
+
+```{r, fig.align='center'}
+
+# Set sample size and number of repititionas
+
+n <- 100      
+reps <- 1e6
+
+# Choose epsilon and create a vector of weights as defined above
+
+epsilon <- 0.8
+w <- c( rep((1+epsilon)/n,n/2), rep((1-epsilon)/n,n/2) )
+
+# Draw random sample y_1,...,y_n from the standard normal distribution 
+# Compute both estimates 1e6 times and store the result in vectors  
+
+ols <- rep(NA,reps)
+weightedestimator <- rep(NA,reps)
+
+for (i in 1:reps)
+{
+  y <- rnorm(n)
+  ols[i] <- mean(y)
+  weightedestimator[i] <- crossprod(w,y)
+}
+
+# Plot estimates of the estimators distribution 
+
+plot(density(ols),col="purple", lwd=3, main="Density of OLS and Weighted Estimator",xlab="")
+lines(density(weightedestimator),col="steelblue", lwd=3) 
+abline(v=0,lty=2)
+legend('topright', c("OLS","weighted"), col=c("purple","steelblue"),lwd=3)
+```
+
+What conclusion can we draw from the result?
+
+- Both estimators seem to be unbiased: The means of their estimated distributions are zero.
+- The `weightedestimator` is less efficient than the `ols` estimator: There is higher dispersion when weights are $w_i = \frac{1 \pm \epsilon}{n}$ instead of $w_i=\frac{1}{n}$. 
+
+<div>
+
 
 # Chapter 6
 ## Section 6.3
