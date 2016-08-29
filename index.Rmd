@@ -2,7 +2,6 @@
 title: "Introduction to Econometrics with R"
 author: "M. Arnold, M. Schmelzer, A. Gerber"
 date: "`r Sys.Date()`"
-runtime: shiny
 output: html_document
 ---
 
@@ -223,11 +222,9 @@ beta_0
 
 OLS is one of the most widly-used estimation techniques. Hence R, as a statistical programming language, already contains a built-in function `lm` (**l**inear **m**odel) which can be used to carry out regression analysis. The first argument of the function is the formula with the basic syntax `y~x` where `y` is the dependent variable and `x` the explanatory variable. The argument `data` specifies the data set to be used in the regression. We now revisit the example from the book where the relationship between students' test scores and the student-teacher ratio is analysed. The following code uses `lm` to replicate quation $(4.11)$ and figure $4.3$. 
 
-Since OLS is one of the most used methods in statistics there is a function called `lm()` (**l**inear **m**odel) which will do the job automatically. This functions also computes plenty other things e.g. the residuals, fitted values and things we will need later on such as p-values. 
-
 <div class="fold o">
 ```{r, fig.align='center', echo=-1, fig.cap='Figure 4.3'}
-'plot(score ~ tsratio, 
+plot(score ~ tsratio, 
      data = CASchools,
      main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
      xlab = "Student teacher-ratio (X)",
@@ -235,7 +232,7 @@ Since OLS is one of the most used methods in statistics there is a function call
      xlim = c(10,30),
      ylim = c(600, 720))
 
-abline(a = beta_0, b = beta_1) # add regression line'
+abline(a = beta_0, b = beta_1) # add regression line
 ```
 </div>
 
@@ -263,10 +260,6 @@ plot(score ~ tsratio,
      xlab = "Student teacher-ratio (X)",
      ylab = "Test Score (Y)"
      )
-=======
-     ylab = "Test Score (Y)",
-     xlim = c(10,30),
-     ylim = c(600, 720))
 
 #Adds the estimated regression line
 abline(linear_model)
@@ -279,7 +272,7 @@ After estimating a linear regression the question occurs how well that regressio
 
 ###The $R^2$
 
-The $R^2$ is the fraction of sample variance of $Y_i$ explained by $X_i$. Mathemethically, the $R^2$ can be written as the explained sum of squares to the total sum of squares. The **explained sum id squares** (**ESS**) is the sum of squared diviations of the predicted values, $\hat(Y_i)$, from average of $Y_i$. The **total sum of squares**(**TSS**) is the sum of squared deviations of $Y_i$ from its average. 
+The $R^2$ is the fraction of sample variance of $Y_i$ explained by $X_i$. Mathemethically, the $R^2$ can be written as the explained sum of squares to the total sum of squares. The **explained sum of squares** (**ESS**) is the sum of squared deviations of the predicted values, $\hat{Y_i}$, from the average of $Y_i$. The **total sum of squares**(**TSS**) is the sum of squared deviations of $Y_i$ from its average. 
 
 \begin{align}
 ESS & =  \sum_{i = 1}^n \left( \hat{Y_i} - \bar{Y} \right)^2   \\
@@ -292,10 +285,40 @@ R^2 & = \frac{ESS}{TSS}
 ###Standard Error of the Regression
 
 The **Standard Error of the Regression** (**SER**) is an estimator of the standard deviation of the regression error $\hat{u_i}$.
-$$SER = s_{\hat{u} } = \frac{1}{n-2} \sum_{i = 1}^n \hat{u_i ^2} = \frac{SSR}{n - 2}$$
+$$SER = s_{\hat{u} } \text{, where } s_{\hat{u} }^2 = \frac{1}{n-2} \sum_{i = 1}^n \hat{u_i ^2} = \frac{SSR}{n - 2}$$
 
-##The Sampling Distribution of the OLS Estimator 
-=======
+##Application to the test score data
+Both measures of fit can be obtained by using the  function `summary()` with the `lm` object as the only argument. Whereas `lm()` only prints out the coefficients, `summary()` provides additional predefined information such as the $R^2$ and the **SER**.  
+
+```{r}
+summary(linear_model)
+```
+
+The $R^2$ in the output is called multiple R-squared and takes the value $0.051$. Hence, $5.1 \%$ of the variance of the dependent variable *TestScore* is explained by the explanatory variable *STR*. That is the regression explains some of the variance but much of the variation of *TestScore* remains unexplained (compare figure 4.3).   
+
+The **SER** is called residual standard error and takes the value 18.58. The unit of the **SER** is the same as the unit of the dependent variable. We interpret the **SER** as follows: on average the deviation of the actual achieved *TestScore* and the regression line is 18.58 points. 
+
+
+#4.4 The Least Square Assumptions
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 4.3 </h3>          
+<h3 class = "left"> The Least Square Assumptions </h3>
+
+<p> If the least square assumption in Key Concept 4.3 hold, then in large-samples $\hat{\beta_0}$ and $\hat{\beta_1}$ have a jointly normal sampling distribution. The large-sample normal distribution of $\hat{\beta_1}$ is $N(\beta_1, \sigma^2_\hat{\beta_1})$, where the variance of the distribution, $\sigma^2_\hat{\beta_1}$, is 
+
+\[
+\sigma^2_\hat{\beta_1} = \frac{1}{n} \frac{var \left[ \left(X_i - \mu_X \right) u_i  \right]}  {\left[  var \left(X_i \right)  \right]^2}
+\]
+
+The large-sample normal distribution of $\hat{\beta_0}$ is $N(\beta_0, \sigma^2_\hat{\beta_0})$, where
+\[
+ \sigma^2_\hat{\beta_0} =  \frac{1}{n} \frac{var \left( H_i u_i \right)}{ \left[  E \left(H_i^2  \right)  \right]^2 }\text{, where } H_i = 1 - \left[ \frac{\mu_X} {E \left( X_1^2\right)} \right] X_i.
+\]
+
+</p>
+</div>
+
 #4.5 The Sampling Distribution of the OLS Estimator 
 
 Because the OLS estimators $\hat{\beta_0}$ and $\hat{\beta_1}$ are computed from a randomly drawn sample, the estimators themselves are random variables with a probability distribution -the sampling distribution- that describes the values they could take over different random samples. Although the sampling distribution of $\hat{\beta_0}$ and $\hat{\beta_1}$ can be complicated when the sample size is small, it is possible to make certain statements about it that hold for all $n$. In particular 
@@ -322,7 +345,6 @@ The large-sample normal distribution of $\hat{\beta_0}$ is $N(\beta_0, \sigma^2_
 
 Whether this really holds we can verify using R. First we build our own population of $1000$ observations in total (n_pop). To do this we need values for our independent variable $x$, for the error term $u$, and the regression parameters $\beta_0$ and $\beta_1$. With all this we can also compute our dependent variable $y$. In our example we generate the numbers $x_i$, $i = 1$, ... ,$1000$ by drawing a random sample from a uniform distriburion in the range $[0,20]$. The realisations of the error term  $u_i$, $i = 1$, ... ,$1000$ are drawn from a standard distribution with $\mu = 0$ and $\sigma^2 = 100$ (note that `rnorm()` requires $\sigma$ as input). Furthermore we chose $\beta_0 = -2$ and $\beta_1 = 3.5$.  
 
-
 ```{r}
 #Population Regression
 pop_n      <- 1000
@@ -334,19 +356,7 @@ population <- data.frame(x, y)
 
 From now on we will consider the previously generated data as the truth (which we of course would not know in a real world example). This knowledge about the true relationship between $y$ and $x$ can be used to verify the statements of key concept 4.4. Now let us assume that we do not know the true values for $\beta_0$ and $\beta_1$ and we also can not observe the whole population. However, we can observe a random sample of 100 observations. Using OLS it would be possible to estimate $\beta_0$ and $\beta_1$. However, the estimates would depend on which observations of the population we have drawn and it is very unlikly that 2 sample of 100 observation would result in the same parameter estimates. 
 
-
-
-
 To do so we first calculate the variances $\sigma^2_\hat{\beta_0}$ and $\sigma^2_\hat{\beta_1}$. 
-
-
-
-
-
-
-
-
-
 
 
 
@@ -390,7 +400,7 @@ abline(fit)
 abline(fitWithoutOutlier)
 ```
 
-```{r}
+```{r, eval = FALSE}
 library(ggvis)
 library(dplyr)
 
@@ -891,7 +901,7 @@ summary(model)
 <div class="keyconcept">
 ## Excursus: The Weak Law of Large Numbers
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 shinyAppDir(
   "apps/WLLN",
   options=list(
