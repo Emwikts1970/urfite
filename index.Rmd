@@ -83,11 +83,11 @@ $$TestScore = 713 - 3 \times ClassSize.$$
 Let us take a look at the data and the line from above. 
 
 ```{r}
-plot(TestScore ~ StudentTeacherRatio, data = class_data, ylim = c(600, 700), xlim = c(10,30))
+plot(TestScore ~ StudentTeacherRatio, data = class_data)
 abline(a = 713, b = -3)
 ```
 
-We find that our line does not touch any of the points and still we argued that it represents the true relationship. The reason for this is the core problem (and also the right to exist) of statistics, randomness. There are almost always effects which cannot be explained in a deterministic fassion and which excaberate the finding of the "truth". 
+We find that our line does not touch any of the points and still we argued that it represents the true relationship. The reason for this is the core problem of statistics, randomness. There are almost always effects which cannot be explained in a deterministic fassion and which excaberate the finding of the "truth". 
 
 In order to account for the differences the regression model is extended by an **error term** which covers these random effect. This **error term** generally accounts for all differences between the "true" regression line and the actual observed data. This could next to the pure randomness also be measerment errors or the effect of important but not considered independent variables.   
 
@@ -114,7 +114,7 @@ where
 
 ##4.2 Estimating the Coefficients of the Linear Regression Model
 
-In practical situations the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must use data to estimate the two unknown parameters. We will demonstrate how to do that on a real data example. We want to relate test scores to class sizes in 420 California school restricts. The test score is the districtwide average of reading and math scores for fifth graders. Class size is measured as the number of students divided by the number of teachers (student-teacher ratio). The California Shool dataset is available in the `AER` package. After installing the package with `install.packages(AER)` and attaching it with `Library()` the dataset can be loaded using the `data()` function. 
+In practical situations the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must use data to estimate the two unknown parameters. We will demonstrate how to do that on a real data example. We want to relate test scores to class sizes in 420 California school restricts. The test score is the districtwide average of reading and math scores for fifth graders. Class size is measured as the number of students divided by the number of teachers (student-teacher ratio). The California Shool dataset is available in the `AER` package. After installing the package with `install.packages("AER")` and attaching it with `Library()` the dataset can be loaded using the `data()` function. 
 
 ```{r}
 library(AER)                                                    # contains the dataset 
@@ -127,14 +127,14 @@ With `head()` we get a first overview over our data. This function shows only th
 head(CASchools)
 ```
 
-We find that the dataset consists of plenty variables but the two we are intersted in (average test scores and student-teacher ratio) are not included. However, it is easily possible to calculate both from the existing data. 
+We find that the dataset consists of plenty variables but the two we are intersted in (average test scores and student-teacher ratio) are not included. However, it is possible to calculate both from the existing data. To obtain the student to teacher-ratio we divide the number of students by the number of teachers. The avarage test score is the arithmetic mean of the test score for reading and the score for math test.  
 
 ```{r}
 CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
 CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
 ```
 
-The next code chunk reproduces table 4.1 from the text book which summatizes the distribution of test scores and class sizes. In order to have a nice display format we gather all data after the computation in a data frame. 
+The next code chunk reproduces table 4.1 from the text book which summarizes the distribution of test scores and class sizes. In order to have a nice display format we gather all data after the computation in a data frame. 
 
 <div class="fold o">
 
@@ -159,7 +159,7 @@ DistributionSummary
 Figure 4.2 shows a scatterplot of all observations. We see that the points are scatterd strongly and the correlation is with $-0.23$ rather weak. The task we are facing now is to find the line which fit best to this data. 
 
 <div class="fold o">
-```{r Figure 4.2}
+```{r}
 cor(CASchools$tsratio, CASchools$score)
 plot(score ~ tsratio, 
      data = CASchools,
@@ -185,11 +185,13 @@ The OLS Estimator is the pair of estimators for intercept and slope which minimi
 
 <p> The OLS estimators of the slope $\beta_1$ and the intercept $\beta_0$ are
 
+
 \begin{align}
-\hat{\beta_1} & =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})^2} = \frac{s_{xy}} {s^2_X}  \\
+\hat{\beta_1} & = \frac{ \sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y}) } { \sum_{i=1}^n (X_i - \bar{X})^2}  \\
 \\
 \hat{\beta_0} & =  \bar{Y} - \hat{\beta_1} \bar{X} 
 \end{align}
+
 
 
 The OLS predicted values $\hat{Y_i}$ and residuals $\hat{u_i}$ are
@@ -206,7 +208,7 @@ The estimated intercept $\left(\hat{\beta_0}\right)$, slope $\left(\hat{\beta_1}
 </p>
 </div>
 
-There are many possible ways to compute $\left(\hat{\beta_0}\right)$ and $\left(\hat{\beta_1}\right)$ in R. We could implement the formulas by using some of R's most basic functions `mean()` and `sum()`. But of course their are also other and even more manual ways to do the same tasks. 
+There are many possible ways to compute $\left(\hat{\beta_0}\right)$ and $\left(\hat{\beta_1}\right)$ in R. We could implement the formulas by two of R's most basic functions `mean()` and `sum()`. But of course their are also other and even more manual ways to do the same tasks. 
 
 
 ```{r}
@@ -218,24 +220,8 @@ beta_0
 ```
 
 
-Since OLS is one of the most used methods in statistics there is a function called `lm()` (**l**inear **m**odel) which will do the job automatically. This functions also computes plenty other things e.g. the residuals, fitted values and things we will need later on such as p-values. 
+OLS is one of the most widly-used estimation techniques. Hence R, as a statistical programming language, already contains a built-in function `lm` (**l**inear **m**odel) which can be used to carry out regression analysis. The first argument of the function is the formula with the basic syntax `y~x` where `y` is the dependent variable and `x` the explanatory variable. The argument `data` specifies the data set to be used in the regression. We now revisit the example from the book where the relationship between students' test scores and the student-teacher ratio is analysed. The following code uses `lm` to replicate quation $(4.11)$ and figure $4.3$. 
 
-<div class="fold o">
-```{r, fig.align='center', echo=-1, fig.cap='Figure 4.3'}
-plot(score ~ tsratio, 
-     data = CASchools,
-     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
-     xlab = "Student teacher-ratio (X)",
-     ylab = "Test Score (Y)",
-     xlim = c(10,30),
-     ylim = c(600, 720))
-
-abline(a = beta_0, b = beta_1) # add regression line
-```
-</div>
-
-There is a function called `lm` (**l**inear **m**odel) that can compute the OLS for you. It also takes care of a lot of other things like the residuals, fitted values, etc. Use `lm` to compute the OLS and add them to the figure 4.2 as well to check whether the coefficients really are the same.
->>>>>>> 79efaa3a816cf4f1cf359ff510a590dfa2019937
 
 ```{r}
 linear_model <- lm(score ~ tsratio, data = CASchools)
@@ -243,25 +229,45 @@ linear_model
 ```
 
 <div class="fold o">
-```{r Figure 4.3, fig.align='center', echo=3, fig.cap='Figure 4.4'}
+```{r, fig.align='center', echo=3, fig.cap='Figure 4.3'}
 plot(score ~ tsratio, 
      data = CASchools,
      main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
      xlab = "Student teacher-ratio (X)",
-     ylab = "Test Score (Y)",
-     xlim = c(10,30),
-     ylim = c(600, 720))
+     ylab = "Test Score (Y)"
+     )
 abline(linear_model)
 ```
 </div>
 
-#The Sampling Distribution of the OLS Estimator 
+##Measures of fit
+
+After estimating a linear regression the question occurs how well that regression line describes the data. Are the observations tightly clustered arround the regression line, or are they spread out? The $R^2$ and the standard error of the regression (**SER**) measure how well the OLS Regression line fits the data. 
+
+###The $R^2$
+
+The $R^2$ is the fraction of sample variance of $Y_i$ explained by $X_i$. Mathemethically, the $R^2$ can be written as the explained sum of squares to the total sum of squares. The **explained sum id squares** (**ESS**) is the sum of squared diviations of the predicted values, $\hat(Y_i)$, from average of $Y_i$. The **total sum of squares**(**TSS**) is the sum of squared deviations of $Y_i$ from its average. 
+
+\begin{align}
+ESS & =  \sum_{i = 1}^n \left( \hat{Y_i} - \bar{Y} \right)^2   \\
+\\
+TSS & =  \sum_{i = 1}^n \left( Y_i - \bar{Y} \right)^2   \\
+\\
+R^2 & = \frac{ESS}{TSS}
+\end{align}
+
+###Standard Error of the Regression
+
+The **Standard Error of the Regression** (**SER**) is an estimator of the standard deviation of the regression error $\hat{u_i}$.
+$$SER = s_{\hat{u} } = \frac{1}{n-2} \sum_{i = 1}^n \hat{u_i ^2} = \frac{SSR}{n - 2}$$
+
+##The Sampling Distribution of the OLS Estimator 
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 4.4 </h3>          
 <h3 class = "left"> Large Sample Distribution of $\hat{\beta_0}$ and $\hat{\beta_1}$ </h3>
 
-<p> If the least square saaumption in Key Concept 4.3 hold, then in large-samples $\hat{\beta_0}$ and $\hat{\beta_1}$ have a jointly normal sampling distribution. The large-sample normal distribution of $\hat{\beta_1}$ is $N(\beta_1, \sigma^2_\hat{\beta_1})$, where the variance of the distribution, $\sigma^2_\hat{\beta_1}$, is 
+<p> If the least square assumption in Key Concept 4.3 hold, then in large-samples $\hat{\beta_0}$ and $\hat{\beta_1}$ have a jointly normal sampling distribution. The large-sample normal distribution of $\hat{\beta_1}$ is $N(\beta_1, \sigma^2_\hat{\beta_1})$, where the variance of the distribution, $\sigma^2_\hat{\beta_1}$, is 
 
 \[
 \sigma^2_\hat{\beta_1} = \frac{1}{n} \frac{var \left[ \left(X_i - \mu_X \right) u_i  \right]}  {\left[  var \left(X_i \right)  \right]^2}
