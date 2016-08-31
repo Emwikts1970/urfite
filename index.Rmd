@@ -304,20 +304,68 @@ The **SER** is called residual standard error and takes the value 18.58. The uni
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 4.3 </h3>          
 <h3 class = "left"> The Least Square Assumptions </h3>
+<p> 
+$$Y_i = \beta_0 + \beta_1 X_i + u_i \text{, } i = 1, ...,n \text{, where} $$
 
-<p> If the least square assumption in Key Concept 4.3 hold, then in large-samples $\hat{\beta_0}$ and $\hat{\beta_1}$ have a jointly normal sampling distribution. The large-sample normal distribution of $\hat{\beta_1}$ is $N(\beta_1, \sigma^2_\hat{\beta_1})$, where the variance of the distribution, $\sigma^2_\hat{\beta_1}$, is 
-
-\[
-\sigma^2_\hat{\beta_1} = \frac{1}{n} \frac{var \left[ \left(X_i - \mu_X \right) u_i  \right]}  {\left[  var \left(X_i \right)  \right]^2}
-\]
-
-The large-sample normal distribution of $\hat{\beta_0}$ is $N(\beta_0, \sigma^2_\hat{\beta_0})$, where
-\[
- \sigma^2_\hat{\beta_0} =  \frac{1}{n} \frac{var \left( H_i u_i \right)}{ \left[  E \left(H_i^2  \right)  \right]^2 }\text{, where } H_i = 1 - \left[ \frac{\mu_X} {E \left( X_1^2\right)} \right] X_i.
-\]
-
+1. The error term $u_i$ has conditional mean zero given $X_i$: $E(u_i|X_i) = 0$
+2. $(X_i,Y_i), i = 1,...,n$ are independent and identically distributed (i.i.d.) draws from their joint distribution
+3. Large outliers are unlikely: $X_i$ and $Y_i$ have nonzero finite fourth moments
 </p>
 </div>
+
+##Error Term has conditional mean of zero
+
+```{r}
+set.seed(321)
+x <- runif(50, -5, 5)
+u <- rnorm(50, sd = 5)
+y <- x^2 + 2*x + u 
+plot(y~x)
+
+l <- predict(lm(y~x +  I(x^2)), data.frame(x = sort(x)))
+abline(lm(y~x), col = "red")
+lines(sort(x), l)
+
+```
+
+
+## Sensitivity to Outliers
+
+```{r}
+set.seed(123)
+x     <- sort(runif(10, min = 30, max = 70 ))
+y     <- rnorm(10 , mean = 200, sd = 50)
+y[9] <- 2000
+
+fit               <- lm(y ~ x)
+fitWithoutOutlier <- lm(y[-9] ~ x[-9])
+
+plot(y ~ x)
+abline(fit)
+abline(fitWithoutOutlier, col = "red")
+```
+
+```{r, eval = FALSE}
+library(ggvis)
+library(dplyr)
+
+set.seed(123)
+x     <- sort(runif(15, min = 30, max = 70 ))
+y     <- rnorm(15 , mean = 200, sd = 50)
+df    <- data.frame(y, x)
+
+v <- input_slider(0, 250, value = 0, step = 25, animate = TRUE)
+outlier <- function(y, v) y + c(rep(0, 14), v)
+
+df %>% 
+  ggvis(x = ~x, y = ~y)  %>% 
+  mutate(y = outlier(y, eval(v))) %>% 
+  layer_points() %>%
+  layer_model_predictions(model  = "lm", formula = y ~ x)
+```
+
+
+
 
 #4.5 The Sampling Distribution of the OLS Estimator 
 
@@ -383,41 +431,6 @@ var(fit[ ,2])
 hist(fit[ ,2], , main = bquote(The ~ distribution  ~ of ~ 500 ~ beta[2] ~ estimates))
 ```
 
-
-# Sensitivity to Outliers
-
-```{r}
-set.seed(123)
-x     <- sort(runif(15, min = 30, max = 70 ))
-y     <- rnorm(15 , mean = 200, sd = 50)
-y[12] <- 2000
-
-fit               <- lm(y ~ x)
-fitWithoutOutlier <- lm(y[-12] ~ x[-12])
-
-plot(y ~ x)
-abline(fit)
-abline(fitWithoutOutlier)
-```
-
-```{r, eval = FALSE}
-library(ggvis)
-library(dplyr)
-
-set.seed(123)
-x     <- sort(runif(15, min = 30, max = 70 ))
-y     <- rnorm(15 , mean = 200, sd = 50)
-df    <- data.frame(y, x)
-
-v <- input_slider(0, 250, value = 0, step = 25, animate = TRUE)
-outlier <- function(y, v) y + c(rep(0, 14), v)
-
-df %>% 
-  ggvis(x = ~x, y = ~y)  %>% 
-  mutate(y = outlier(y, eval(v))) %>% 
-  layer_points() %>%
-  layer_model_predictions(model  = "lm", formula = y ~ x)
-```
 
 
 
@@ -911,6 +924,50 @@ shinyAppDir(
 ```
 </div>
 
+# Chapter 7
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 7.1 </h3>          
+<h3 class = "left"> Testing the hypothesis $\beta_j = \beta_{j,0}$ <br>
+                    against the alternative $\beta_j \neq \beta_{j,0}$ </h3>
+
+<p>
+1. Compute the standard error of $\hat{\beta_j}$
+2. Compute the t-statistic,
+$$t = \frac{\hat{\beta}_j - \beta_{j,0}} {SE(\hat{\beta_j})}$$
+3. Compute the p-value,
+$$p-value = 2 \phi(-|t^{act}|)$$
+
+where $t^{act}$ is the value of the t-statistic actually computed. Reject the hypothesis at the 5\% significance level if the p-value is less than $0.05$ or, equivalently, if $|t^{act}| > 1.96$. The standard error and (typically) the t-statistic and p-value testing $\beta_j = 0$ are computed automativally by statistical software.  
+</p>
+  
+</div>
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 7.2 </h3>          
+<h3 class = "left"> Confidence Intervals for a single coefficient in multipe regression </h3>
+
+<p>
+A $95\%$ two-sided confidence interval for coefficient $\beta_j$ is an interval that contains the true value of $\beta_j$ with a $95 \%$ probability; that is, it contains the true value of $\beta_j$ in $95 \%$ of all randomly drawn samples. Equivalently, it is the set of values of $\beta_j$ that cannot be rejected by a $5 \%$ two-sided hypothesis test. When the sample size is large, the $95 \%$ confidence interval for $\beta_j$ is
+$$[\hat{\beta_j}- 1.96 SE(\hat{\beta}_j), \hat{\beta_j} + 1.96 SE(\hat{\beta_j})]$$
+</p>
+  
+</div>
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 7.3 </h3>          
+<h3 class = "left"> Omitted variable bias in multiple regression</h3>
+
+<p>
+
+Omitted Variable bias is the bias in the OLS estimator that arises when one or more included regressors are correlated with an omitted variable. For omitted variable bias to arise, twho things must be true: 
+
+1. At least one of the included regressors mut be correlated with the omitted variable 
+2. The omitted variable must be a determinant of the dependent variable, $Y$.
+
+</p>
+  
+</div>
 
 # About Urfite
 
