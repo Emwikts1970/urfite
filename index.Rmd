@@ -86,7 +86,7 @@ plot(TestScore ~ StudentTeacherRatio, data = class_data)
 abline(a = 713, b = -3)
 ```
 
-We find that our line does not touch any of the points and still we argued that it represents the true relationship. The reason for this is the core problem of statistics, randomness. There are almost always effects which cannot be explained in a deterministic fassion and which excaberate the finding of the "truth". 
+We find that our line does not touch any of the points and still we argued that it represents the true relationship. The reason for this is the core problem of statistics, randomness. There are almost always effects which cannot be explained in a deterministic fashion and which excaberate the finding of the "truth". 
 
 In order to account for the differences the regression model is extended by an **error term** which covers these random effect. This **error term** generally accounts for all differences between the "true" regression line and the actual observed data. This could next to the pure randomness also be measerment errors or the effect of important but not considered independent variables.   
 
@@ -102,7 +102,7 @@ $$Y_i = \beta_0 + \beta_1 X_1 + u_i $$
 where
 
 - the subscript i runs over observations, $i = 1$, ..., $n$
-- $Y_i$ is the *dependent variable*, the *regressand*, or simply the *left-hand variable*
+- $Y_i$ is the *dependent variable*, the *regressand*Library, or simply the *left-hand variable*
 - $X_i$ is the *independent variable*, the *regressor*, or simply the *left-hand variable*
 - $\beta_0 + \beta_1 X$ is *population the regression line* or the *population regression function*
 - $\beta_0$ is the *intercept* of the population regression line
@@ -113,7 +113,7 @@ where
 
 ##4.2 Estimating the Coefficients of the Linear Regression Model
 
-In practical situations the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must use data to estimate the two unknown parameters. We will demonstrate how to do that on a real data example. We want to relate test scores to class sizes in 420 California school restricts. The test score is the districtwide average of reading and math scores for fifth graders. Class size is measured as the number of students divided by the number of teachers (student-teacher ratio). The California Shool dataset is available in the `AER` package. After installing the package with `install.packages("AER")` and attaching it with `Library()` the dataset can be loaded using the `data()` function. 
+In practical situations the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must use data to estimate the two unknown parameters. We will demonstrate how to do that on a real data example. We want to relate test scores to class sizes in 420 California school restricts. The test score is the districtwide average of reading and math scores for fifth graders. Class size is measured as the number of students divided by the number of teachers (student-teacher ratio). The California Shool dataset is available in the `AER` package. After installing the package with `install.packages("AER")` and attaching it with `library()` the dataset can be loaded using the `data()` function. 
 
 ```{r}
 library(AER)                                                    # contains the dataset 
@@ -126,7 +126,7 @@ With `head()` we get a first overview over our data. This function shows only th
 head(CASchools)
 ```
 
-We find that the dataset consists of plenty variables but the two we are intersted in (average test scores and student-teacher ratio) are not included. However, it is possible to calculate both from the existing data. To obtain the student to teacher-ratio we divide the number of students by the number of teachers. The avarage test score is the arithmetic mean of the test score for reading and the score for math test.  
+We find that the dataset consists of plenty variables but the two we are intersted in (average test scores and student-teacher ratio) are not included. However, it is possible to calculate both from the existing data. To obtain the student to teacher-ratio we divide the number of students by the number of teachers. The avarage test score is the arithmetic mean of the test score for reading and the score of the math test.  
 
 ```{r}
 CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
@@ -141,34 +141,41 @@ The next code chunk reproduces table 4.1 from the text book which summarizes the
 avg_tsratio   <- mean(CASchools$tsratio) 
 avg_score     <- mean(CASchools$score)
 sd_tsratio    <- sd(CASchools$tsratio) 
-sd_tsratio    <- sd(CASchools$score)
+sd_score      <- sd(CASchools$score)
 quantiles     <- c(0.10, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9)
 quant_tsratio <- quantile(CASchools$tsratio, quantiles)
 quant_score   <- quantile(CASchools$score, quantiles)
 
 #Gather everything in a data frame 
-DistributionSummary <- data.frame(Average           = c(avg_tsratio, avg_tsratio), 
-                                  StandardDeviation = c(sd_tsratio, sd_tsratio), 
+DistributionSummary <- data.frame(Average           = c(avg_tsratio, avg_score), 
+                                  StandardDeviation = c(sd_tsratio, sd_score), 
                                   quantile          = rbind(quant_tsratio, quant_score)
                                   )
 DistributionSummary
 ```
 </div>
 
-Figure 4.2 shows a scatterplot of all observations. We see that the points are scatterd strongly and the correlation is with $-0.23$ rather weak. The task we are facing now is to find the line which fit best to this data. 
+Before we start with the regression it is a good idea to take a closer look at our data set by plotting it. This allows us to detect specific characteristics of our data, such as outliers, which are hard to discover by looking at mere numbers. The easiest way to do so in `R` is the function `plot()`.   
+Figure 4.2 shows a scatterplot of all observations. We see that the points are scatterd strongly and a apparent relationship cannot be detected with the naked eye.
 
 <div class="fold o">
 ```{r}
-cor(CASchools$tsratio, CASchools$score)
 plot(score ~ tsratio, 
      data = CASchools,
      main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
      xlab = "Student-Teacher Ratio (X)",
-     ylab = "Test Score (Y)",
-     xlim = c(10,30),
-     ylim = c(600, 720))
+     ylab = "Test Score (Y)"
+)
 ```
 </div>
+
+With the commad `cor()` the correlation between 2 variables can be computed. As the scatterplot already suggested the correlation is with $-0.23$ rather weak. 
+
+```{r}
+cor(CASchools$tsratio, CASchools$score)
+```
+
+The task we are facing now is to find the line which fits best to this data.  
 
 ## The Ordinary Least Squares Estimator (OLS)
 
@@ -217,7 +224,6 @@ beta_0 <- mean(score) - beta_1 * mean(tsratio)
 beta_1
 beta_0
 ```
-
 
 
 OLS is one of the most widly-used estimation techniques. Hence R, as a statistical programming language, already contains a built-in function `lm` (**l**inear **m**odel) which can be used to carry out regression analysis. The first argument of the function is the formula with the basic syntax `y~x` where `y` is the dependent variable and `x` the explanatory variable. The argument `data` specifies the data set to be used in the regression. We now revisit the example from the book where the relationship between students' test scores and the student-teacher ratio is analysed. The following code uses `lm` to replicate quation $(4.11)$ and figure $4.3$. 
@@ -926,48 +932,10 @@ shinyAppDir(
 
 # Chapter 7
 
-<div class = "keyconcept"> 
-<h3 class = "right"> Key Concept 7.1 </h3>          
-<h3 class = "left"> Testing the hypothesis $\beta_j = \beta_{j,0}$ <br>
-                    against the alternative $\beta_j \neq \beta_{j,0}$ </h3>
+```{r child = 'chap7.Rmd', eval = TRUE}
+```
 
-<p>
-1. Compute the standard error of $\hat{\beta_j}$
-2. Compute the t-statistic,
-$$t = \frac{\hat{\beta}_j - \beta_{j,0}} {SE(\hat{\beta_j})}$$
-3. Compute the p-value,
-$$p-value = 2 \phi(-|t^{act}|)$$
 
-where $t^{act}$ is the value of the t-statistic actually computed. Reject the hypothesis at the 5\% significance level if the p-value is less than $0.05$ or, equivalently, if $|t^{act}| > 1.96$. The standard error and (typically) the t-statistic and p-value testing $\beta_j = 0$ are computed automativally by statistical software.  
-</p>
-  
-</div>
-
-<div class = "keyconcept"> 
-<h3 class = "right"> Key Concept 7.2 </h3>          
-<h3 class = "left"> Confidence Intervals for a single coefficient in multipe regression </h3>
-
-<p>
-A $95\%$ two-sided confidence interval for coefficient $\beta_j$ is an interval that contains the true value of $\beta_j$ with a $95 \%$ probability; that is, it contains the true value of $\beta_j$ in $95 \%$ of all randomly drawn samples. Equivalently, it is the set of values of $\beta_j$ that cannot be rejected by a $5 \%$ two-sided hypothesis test. When the sample size is large, the $95 \%$ confidence interval for $\beta_j$ is
-$$[\hat{\beta_j}- 1.96 SE(\hat{\beta}_j), \hat{\beta_j} + 1.96 SE(\hat{\beta_j})]$$
-</p>
-  
-</div>
-
-<div class = "keyconcept"> 
-<h3 class = "right"> Key Concept 7.3 </h3>          
-<h3 class = "left"> Omitted variable bias in multiple regression</h3>
-
-<p>
-
-Omitted Variable bias is the bias in the OLS estimator that arises when one or more included regressors are correlated with an omitted variable. For omitted variable bias to arise, twho things must be true: 
-
-1. At least one of the included regressors mut be correlated with the omitted variable 
-2. The omitted variable must be a determinant of the dependent variable, $Y$.
-
-</p>
-  
-</div>
 
 # About Urfite
 
