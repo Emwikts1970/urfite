@@ -935,7 +935,7 @@ shinyAppDir(
 ```{r child = 'chap7.Rmd', eval = TRUE}
 ```
 
-
+# Chapter 8 Nonlinear Regression Functions
 
 # About Urfite
 
