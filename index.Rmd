@@ -507,7 +507,7 @@ Let's have a closer look at the test $H_0: \beta_1=0 \, v. \, H_1: \beta_1 \neq 
 
 \[ t^{act} = \frac{-2.279808 - 0}{0.4798255} \approx - 4.75 \]
 
-What does this tell us about the significance of the estimated coefficient? Using R we may visualise how such a statement can be made:
+What does this tell about the significance of the estimated coefficient? Using R we may visualise how such a statement can be made:
 
 ```{r, fig.align='center'}
 # Plot the standard normal density
