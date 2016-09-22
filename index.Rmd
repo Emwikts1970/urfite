@@ -799,15 +799,15 @@ We will now use R for a simulation study to illustrate what happens to the varia
 # Set sample size and number of repititionas
 
 n <- 100      
-reps <- 1e6
+reps <- 1e5
 
 # Choose epsilon and create a vector of weights as defined above
 
 epsilon <- 0.8
 w <- c( rep((1+epsilon)/n,n/2), rep((1-epsilon)/n,n/2) )
 
-# Draw random sample y_1,...,y_n from the standard normal distribution 
-# Compute both estimates 1e6 times and store the result in vectors  
+# Draw random sample y_1,...,y_N from the standard normal distribution 
+# Compute both estimates 1e5 times and store the result in vectors  
 
 ols <- rep(NA,reps)
 weightedestimator <- rep(NA,reps)
