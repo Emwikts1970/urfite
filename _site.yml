@@ -14,7 +14,7 @@ navbar:
         - text: "Chapter 6"
           href: "index.html#chapter-6"
         - text: "Chapter 7"
-          href: "chap7.html"
+          href: "index.html#chapter-7"
     - text: "About"
       icon: glyphicon-info-sign
       href: "index.html#about-urfite"

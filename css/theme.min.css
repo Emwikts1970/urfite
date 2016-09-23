@@ -1466,8 +1466,19 @@ td.visible-print,th.visible-print{display:table-cell!important}
     color: #004c93;
 }
 
-pre.plot {
+.plot {
   background-color: white !important;
+}
+
+.image {
+  display: block;
+  margin: auto;
+}
+
+.imgContainer::after {
+  content: attr(cap);
+  display: block;
+  text-align: center;
 }
 
 /* ADDED BY ALEX */

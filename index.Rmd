@@ -14,11 +14,33 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 # Introduction
 
-Hier können wir was zum Projekt schreiben! Worum gehts, wie ist es aufgebaut ...
 
-<br>
-<br>
-<br>
+
+
+# Chapter 1: Prerequisites
+
+In order to reproduce the examples in this script you need the statistical software package R. Additionally we recommend using the R editor software RStudio which will improve your R working experience.
+
+### Installation of R and RStudio
+
+Go to the following webpages and download the software adequate for your operating system:
+
+
+  1. <b>The Statistical Software Package R:</b> <a href="http://cran.r-project.org/">http://cran.r-project.org</a><br>
+    <br>
+  2. <b>The GUI RStudio</b>: <a href="http://www.rstudio.com/products/rstudio/download/">http://www.rstudio.com/products/rstudio/download/</a> <br>
+
+
+Install R first and then procede with RStudio. Afterwards start RStudio.
+
+### Working with RStudio 
+
+<div class="imgContainer" cap="Fig. 1: Test">
+  <img class="image" src="Images/rstudio.png" width="50%"/>
+</div>
+
+
+
 
 # Chapter 2 
 ## Section 2.1
@@ -91,10 +113,12 @@ $$TestScore = 713 - 3 \times ClassSize.$$
 
 Now we use the `plot()` function to produce a scatterplot of the data from above. Furthermore, we add the line using the function `abline()`. 
 
+<div class="fold o">
 ```{r}
 plot(TestScore ~ StudentTeacherRatio, data = class_data)
 abline(a = 713, b = -3)
 ```
+</div>
 
 We find that our line does not touch any of the points and still we argued that it represents the true relationship. The reason for this is the core problem of statistics, randomness. There are almost always effects which cannot be explained in a deterministic fashion and which excaberate the finding of the "truth". 
 
@@ -266,8 +290,6 @@ linear_model
 </div>
 
 <div class="fold o">
-
-
 ```{r, results='hold',fig.align='center', fig.cap='Figure 4.4'}
 #Produces the scatterplot
 plot(score ~ tsratio, 
@@ -330,7 +352,7 @@ $$Y_i = \beta_0 + \beta_1 X_i + u_i \text{, } i = 1, ...,n \text{, where} $$
 </div>
 
 ##Error Term has conditional mean of zero
-
+<div class="fold o">
 ```{r}
 set.seed(321)
 x <- runif(50, -5, 5)
@@ -341,12 +363,12 @@ plot(y~x)
 l <- predict(lm(y~x +  I(x^2)), data.frame(x = sort(x)))
 abline(lm(y~x), col = "red")
 lines(sort(x), l)
-
 ```
-
+</div>
 
 ## Sensitivity to Outliers
 
+<div class="fold o">
 ```{r}
 set.seed(123)
 x     <- sort(runif(10, min = 30, max = 70 ))
@@ -360,7 +382,9 @@ plot(y ~ x)
 abline(fit)
 abline(fitWithoutOutlier, col = "red")
 ```
+</div>
 
+<div class="fold o">
 ```{r, eval = FALSE}
 library(ggvis)
 library(dplyr)
@@ -379,11 +403,11 @@ df %>%
   layer_points() %>%
   layer_model_predictions(model  = "lm", formula = y ~ x)
 ```
+</div>
 
 
 
-
-#4.5 The Sampling Distribution of the OLS Estimator 
+# 4.5 The Sampling Distribution of the OLS Estimator 
 
 Because the OLS estimators $\hat{\beta_0}$ and $\hat{\beta_1}$ are computed from a randomly drawn sample, the estimators themselves are random variables with a probability distribution -the sampling distribution- that describes the values they could take over different random samples. Although the sampling distribution of $\hat{\beta_0}$ and $\hat{\beta_1}$ can be complicated when the sample size is small, it is possible to make certain statements about it that hold for all $n$. In particular 
 $$ E(\hat{\beta_0}) = \beta_0 \text{ and } E(\hat{\beta_1}) = \beta_1,$$
@@ -422,8 +446,7 @@ From now on we will consider the previously generated data as the truth (which w
 
 To do so we first calculate the variances $\sigma^2_\hat{\beta_0}$ and $\sigma^2_\hat{\beta_1}$. 
 
-
-
+<div class="fold o">
 ```{r}
 n <- 100 # sample size
 sigma_b1 <- var( ( x - mean(x) ) * u ) / (100 * var(x)^2)
@@ -446,7 +469,7 @@ hist(fit[ ,1], main = bquote(The ~ distribution  ~ of ~ 500 ~ beta[1] ~ estimate
 var(fit[ ,2])
 hist(fit[ ,2], , main = bquote(The ~ distribution  ~ of ~ 500 ~ beta[2] ~ estimates))
 ```
-
+</div>
 
 
 
