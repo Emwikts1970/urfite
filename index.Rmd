@@ -84,11 +84,12 @@ class_data
 ```
 
 
-If we use a simple linear regression model we assume that the relationship between the two variables can be represented by a straight line ($y = mx + n$). Lets suppose that the "true" function which relates test scores and student to teacher ratio is
+If we use a simple linear regression model we assume that the relationship between the two variables can be represented by a
+straight line ($y = mx + n$). Lets suppose that the "true" function which relates test scores and student to teacher ratio is
 
 $$TestScore = 713 - 3 \times ClassSize.$$
 
-Let us take a look at the data and the line from above. 
+Now we use the `plot()` function to produce a scatterplot of the data from above. Furthermore, we add the line using the function `abline()`. 
 
 ```{r}
 plot(TestScore ~ StudentTeacherRatio, data = class_data)
@@ -97,7 +98,7 @@ abline(a = 713, b = -3)
 
 We find that our line does not touch any of the points and still we argued that it represents the true relationship. The reason for this is the core problem of statistics, randomness. There are almost always effects which cannot be explained in a deterministic fashion and which excaberate the finding of the "truth". 
 
-In order to account for the differences the regression model is extended by an **error term** which covers these random effect. This **error term** generally accounts for all differences between the "true" regression line and the actual observed data. This could next to the pure randomness also be measerment errors or the effect of important but not considered independent variables.   
+In order to account for the differences we extend the regression model by an **error term** which covers these random effect. In general the **error term** accounts for all differences between the "true" regression line and the actual observed data. This could next to the pure randomness also be measerment errors or the effect of important but not considered independent variables.   
 
 
 <div class = "keyconcept"> 
@@ -516,7 +517,7 @@ Let's have a closer look at the test $H_0: \beta_1=0 \, v. \, H_1: \beta_1 \neq 
 
 \[ t^{act} = \frac{-2.279808 - 0}{0.4798255} \approx - 4.75 \]
 
-What does this tell us about the significance of the estimated coefficient? Using R we may visualise how such a statement can be made:
+What does this tell about the significance of the estimated coefficient? Using R we may visualise how such a statement can be made:
 
 ```{r, fig.align='center'}
 # Plot the standard normal density
@@ -808,15 +809,15 @@ We will now use R for a simulation study to illustrate what happens to the varia
 # Set sample size and number of repititionas
 
 n <- 100      
-reps <- 1e6
+reps <- 1e5
 
 # Choose epsilon and create a vector of weights as defined above
 
 epsilon <- 0.8
 w <- c( rep((1+epsilon)/n,n/2), rep((1-epsilon)/n,n/2) )
 
-# Draw random sample y_1,...,y_n from the standard normal distribution 
-# Compute both estimates 1e6 times and store the result in vectors  
+# Draw random sample y_1,...,y_N from the standard normal distribution 
+# Compute both estimates 1e5 times and store the result in vectors  
 
 ols <- rep(NA,reps)
 weightedestimator <- rep(NA,reps)
@@ -953,7 +954,7 @@ Testing joint hypothesis in a multiple regression framework.
 ```{r child = 'chap7.Rmd', eval = TRUE}
 ```
 
-
+# Chapter 8 Nonlinear Regression Functions
 
 
 # About Urfite
