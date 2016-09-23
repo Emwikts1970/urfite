@@ -27,8 +27,19 @@ $$[\hat{\beta_j}- 1.96 SE(\hat{\beta}_j), \hat{\beta_j} + 1.96 SE(\hat{\beta_j})
 
 ##Application to Test Scores and the Student-Teacher Ratio
 
+Let us take a look at the regression in section 6.3 again.
 
-
+<div class="fold o">
+```{r, echo=5:7, warning=F, message=F}
+library(AER)
+data(CASchools)
+CASchools$tsratio  <- CASchools$students/CASchools$teachers
+CASchools$score    <- (CASchools$read + CASchools$math)/2
+# Confidence Intervals - Application to Test Scores and the Student-Teacher Ratio
+model <- lm(score ~ tsratio + english, data = CASchools)
+summary(model)
+```
+</div>
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.3 </h3>          
