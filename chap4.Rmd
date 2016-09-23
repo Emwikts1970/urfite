@@ -1,0 +1,378 @@
+## Linear Regression with One Regressor 
+
+This chapter introduces the simple linear regression model which relates one variable, $X$, to another variable $Y$. If for example a school cuts the class sizes by hiring new teachers, how would this effect the performance of the students? With linear regression we can not only examine whether the class size $\left(X\right)$ does have an impact on the test results $\left(Y\right)$. We can also learn something about the direction and the strength of this effect. 
+
+To start with an easy example consider the following combinations of average test scores and the average student to teacher ratios in some districts:
+
+```{r}
+class_data <- data.frame(TestScore           = c(680, 640, 670, 660, 630, 660, 635), 
+                         StudentTeacherRatio = c(15, 17, 19, 20, 22, 23.5, 25)
+                         )
+class_data 
+```
+
+
+If we use a simple linear regression model we assume that the relationship between the two variables can be represented by a
+straight line ($y = mx + n$). Lets suppose that the "true" function which relates test scores and student to teacher ratio is
+
+$$TestScore = 713 - 3 \times ClassSize.$$
+
+Now we use the `plot()` function to produce a scatterplot of the data from above. Furthermore, we add the line using the function `abline()`. 
+
+<div class="fold o">
+```{r}
+plot(TestScore ~ StudentTeacherRatio, data = class_data)
+abline(a = 713, b = -3)
+```
+</div>
+
+We find that our line does not touch any of the points and still we argued that it represents the true relationship. The reason for this is the core problem of statistics, randomness. There are almost always effects which cannot be explained in a deterministic fashion and which excaberate the finding of the "truth". 
+
+In order to account for the differences we extend the regression model by an **error term** which covers these random effect. In general the **error term** accounts for all differences between the "true" regression line and the actual observed data. This could next to the pure randomness also be measerment errors or the effect of important but not considered independent variables.   
+
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 4.1 </h3>          
+<h3 class = "left"> Terminology for the Linear Regression Model with a Single Regressor </h3>
+
+<p> The linear regression model is 
+
+$$Y_i = \beta_0 + \beta_1 X_1 + u_i $$
+
+where
+
+- the subscript i runs over observations, $i = 1$, ..., $n$
+- $Y_i$ is the *dependent variable*, the *regressand*Library, or simply the *left-hand variable*
+- $X_i$ is the *independent variable*, the *regressor*, or simply the *left-hand variable*
+- $\beta_0 + \beta_1 X$ is *population the regression line* or the *population regression function*
+- $\beta_0$ is the *intercept* of the population regression line
+- $\beta_1$ is the *slope* of the population regression line
+- $u_i$ is the *error term*
+</p>
+</div>
+
+##4.2 Estimating the Coefficients of the Linear Regression Model
+
+In practical situations the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must use data to estimate the two unknown parameters. We will demonstrate how to do that on a real data example. We want to relate test scores to class sizes in 420 California school restricts. The test score is the districtwide average of reading and math scores for fifth graders. Class size is measured as the number of students divided by the number of teachers (student-teacher ratio). The California Shool dataset is available in the `AER` package. After installing the package with `install.packages("AER")` and attaching it with `library()` the dataset can be loaded using the `data()` function. 
+
+```{r}
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+```
+
+With `head()` we get a first overview over our data. This function shows only the first 6 rows of the dataset which prevents an overcrowded console output. 
+
+```{r}
+head(CASchools)
+```
+
+We find that the dataset consists of plenty variables but the two we are intersted in (average test scores and student-teacher ratio) are not included. However, it is possible to calculate both from the existing data. To obtain the student to teacher-ratio we divide the number of students by the number of teachers. The avarage test score is the arithmetic mean of the test score for reading and the score of the math test.  
+
+```{r}
+CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+```
+
+The next code chunk reproduces table 4.1 from the text book which summarizes the distribution of test scores and class sizes. In order to have a nice display format we gather all data after the computation in a data frame. 
+
+<div class="fold o">
+
+```{r Table 4.1, results='hold'}
+avg_tsratio   <- mean(CASchools$tsratio) 
+avg_score     <- mean(CASchools$score)
+sd_tsratio    <- sd(CASchools$tsratio) 
+sd_score      <- sd(CASchools$score)
+quantiles     <- c(0.10, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9)
+quant_tsratio <- quantile(CASchools$tsratio, quantiles)
+quant_score   <- quantile(CASchools$score, quantiles)
+
+#Gather everything in a data frame 
+DistributionSummary <- data.frame(Average           = c(avg_tsratio, avg_score), 
+                                  StandardDeviation = c(sd_tsratio, sd_score), 
+                                  quantile          = rbind(quant_tsratio, quant_score)
+                                  )
+DistributionSummary
+```
+</div>
+
+Before we start with the regression it is a good idea to take a closer look at our data set by plotting it. This allows us to detect specific characteristics of our data, such as outliers, which are hard to discover by looking at mere numbers. The easiest way to do so in `R` is the function `plot()`.   
+Figure 4.2 shows a scatterplot of all observations. We see that the points are scatterd strongly and a apparent relationship cannot be detected with the naked eye.
+
+<div class="fold o">
+```{r}
+plot(score ~ tsratio, 
+     data = CASchools,
+     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
+     xlab = "Student-Teacher Ratio (X)",
+     ylab = "Test Score (Y)"
+)
+```
+</div>
+
+With the commad `cor()` the correlation between 2 variables can be computed. As the scatterplot already suggested the correlation is with $-0.23$ rather weak. 
+
+```{r}
+cor(CASchools$tsratio, CASchools$score)
+```
+
+The task we are facing now is to find the line which fits best to this data.  
+
+## The Ordinary Least Squares Estimator (OLS)
+
+The OLS estimator chooses the regression coefficients so that the estimated regression line is as close as possible to the observed data. Closeness is measured by the sum of the squared mistakes made in predicting $Y$ given $X$. Let $b_0$ and $b_1$ be some estimator of $\beta_0$ and $\beta_1$ then the total squared estimation mistakes can be expressed as: 
+
+$$\sum^n_{i = 1} (Y_i - b_0 - b_1 X_i)^2$$.
+
+The OLS Estimator is the pair of estimators for intercept and slope which minimizes this expression. 
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 4.2 </h3>          
+<h3 class = "left"> The OLS Estimator, Predicted Values, and Residuals </h3>
+
+<p> The OLS estimators of the slope $\beta_1$ and the intercept $\beta_0$ are
+
+
+\begin{align}
+\hat{\beta_1} & = \frac{ \sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y}) } { \sum_{i=1}^n (X_i - \bar{X})^2}  \\
+\\
+\hat{\beta_0} & =  \bar{Y} - \hat{\beta_1} \bar{X} 
+\end{align}
+
+
+
+The OLS predicted values $\hat{Y_i}$ and residuals $\hat{u_i}$ are
+
+\begin{align}
+\hat{Y_i} & =  \hat{\beta_0} + \hat{\beta_1}X_i\\
+\\
+\\
+\hat{u_i} & =  Y_i - \hat{Y_i} 
+\end{align}
+
+The estimated intercept $(\hat{\beta_0})$, slope $(\hat{\beta_1})$, and residuals $\left(\hat{u_i}\right)$ are computed from a sample of n observations of $X_i$ and $Y_i$, $i$, $...$,  $n$. These are estimates of the unkown true population intercept $\left(\beta_0 \right)$, slope $\left(\beta_1\right)$, and error term $(u_i)$.
+
+</p>
+</div>
+
+There are many possible ways to compute $\left(\hat{\beta_0}\right)$ and $\left(\hat{\beta_1}\right)$ in R. We could implement the formulas by two of R's most basic functions `mean()` and `sum()`. But of course their are also other and even more manual ways to do the same tasks. 
+
+
+```{r}
+attach(CASchools)
+beta_1 <- sum((tsratio - mean(tsratio))*(score - mean(score))) / sum((tsratio - mean(tsratio))^2)
+beta_0 <- mean(score) - beta_1 * mean(tsratio)
+beta_1
+beta_0
+```
+
+
+OLS is one of the most widly-used estimation techniques. Hence R, as a statistical programming language, already contains a built-in function `lm` (**l**inear **m**odel) which can be used to carry out regression analysis. The first argument of the function is the formula with the basic syntax `y~x` where `y` is the dependent variable and `x` the explanatory variable. The argument `data` specifies the data set to be used in the regression. We now revisit the example from the book where the relationship between students' test scores and the student-teacher ratio is analysed. The following code uses `lm` to replicate quation $(4.11)$ and figure $4.3$. 
+
+<div class="fold o">
+```{r, fig.align='center', echo=-1, fig.cap='Figure 4.3'}
+plot(score ~ tsratio, 
+     data = CASchools,
+     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
+     xlab = "Student teacher-ratio (X)",
+     ylab = "Test Score (Y)",
+     xlim = c(10,30),
+     ylim = c(600, 720))
+
+abline(a = beta_0, b = beta_1) # add regression line
+```
+</div>
+
+There is a function called `lm` (**l**inear **m**odel) that can compute the OLS for you. It also takes care of a lot of other things like the residuals, fitted values, etc. Use `lm` to compute the OLS and add them to the figure 4.2 as well to check whether the coefficients really are the same.
+
+
+<div class="fold o">
+```{r}
+#Assigns the results of the lm estimation to linear_model
+linear_model <- lm(score ~ tsratio, data = CASchools)
+
+#Prints the standard output of the estimated lm object 
+linear_model
+```
+</div>
+
+<div class="fold o">
+```{r, results='hold',fig.align='center', fig.cap='Figure 4.4'}
+#Produces the scatterplot
+plot(score ~ tsratio, 
+     data = CASchools,
+     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
+     xlab = "Student teacher-ratio (X)",
+     ylab = "Test Score (Y)"
+     )
+
+#Adds the estimated regression line
+abline(linear_model)
+```
+</div>
+
+##Measures of fit
+
+After estimating a linear regression the question occurs how well that regression line describes the data. Are the observations tightly clustered arround the regression line, or are they spread out? The $R^2$ and the standard error of the regression (**SER**) measure how well the OLS Regression line fits the data. 
+
+###The $R^2$
+
+The $R^2$ is the fraction of sample variance of $Y_i$ explained by $X_i$. Mathemethically, the $R^2$ can be written as the explained sum of squares to the total sum of squares. The **explained sum of squares** (**ESS**) is the sum of squared deviations of the predicted values, $\hat{Y_i}$, from the average of $Y_i$. The **total sum of squares**(**TSS**) is the sum of squared deviations of $Y_i$ from its average. 
+
+\begin{align}
+ESS & =  \sum_{i = 1}^n \left( \hat{Y_i} - \bar{Y} \right)^2   \\
+\\
+TSS & =  \sum_{i = 1}^n \left( Y_i - \bar{Y} \right)^2   \\
+\\
+R^2 & = \frac{ESS}{TSS}
+\end{align}
+
+###Standard Error of the Regression
+
+The **Standard Error of the Regression** (**SER**) is an estimator of the standard deviation of the regression error $\hat{u_i}$.
+$$SER = s_{\hat{u} } \text{, where } s_{\hat{u} }^2 = \frac{1}{n-2} \sum_{i = 1}^n \hat{u_i ^2} = \frac{SSR}{n - 2}$$
+
+##Application to the test score data
+Both measures of fit can be obtained by using the  function `summary()` with the `lm` object as the only argument. Whereas `lm()` only prints out the coefficients, `summary()` provides additional predefined information such as the $R^2$ and the **SER**.  
+
+```{r}
+summary(linear_model)
+```
+
+The $R^2$ in the output is called multiple R-squared and takes the value $0.051$. Hence, $5.1 \%$ of the variance of the dependent variable *TestScore* is explained by the explanatory variable *STR*. That is the regression explains some of the variance but much of the variation of *TestScore* remains unexplained (compare figure 4.3).   
+
+The **SER** is called residual standard error and takes the value 18.58. The unit of the **SER** is the same as the unit of the dependent variable. We interpret the **SER** as follows: on average the deviation of the actual achieved *TestScore* and the regression line is 18.58 points. 
+
+
+#4.4 The Least Square Assumptions
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 4.3 </h3>          
+<h3 class = "left"> The Least Square Assumptions </h3>
+<p> 
+$$Y_i = \beta_0 + \beta_1 X_i + u_i \text{, } i = 1, ...,n \text{, where} $$
+
+1. The error term $u_i$ has conditional mean zero given $X_i$: $E(u_i|X_i) = 0$
+2. $(X_i,Y_i), i = 1,...,n$ are independent and identically distributed (i.i.d.) draws from their joint distribution
+3. Large outliers are unlikely: $X_i$ and $Y_i$ have nonzero finite fourth moments
+</p>
+</div>
+
+##Error Term has conditional mean of zero
+<div class="fold o">
+```{r}
+set.seed(321)
+x <- runif(50, -5, 5)
+u <- rnorm(50, sd = 5)
+y <- x^2 + 2*x + u 
+plot(y~x)
+
+l <- predict(lm(y~x +  I(x^2)), data.frame(x = sort(x)))
+abline(lm(y~x), col = "red")
+lines(sort(x), l)
+```
+</div>
+
+## Sensitivity to Outliers
+
+<div class="fold o">
+```{r}
+set.seed(123)
+x     <- sort(runif(10, min = 30, max = 70 ))
+y     <- rnorm(10 , mean = 200, sd = 50)
+y[9] <- 2000
+
+fit               <- lm(y ~ x)
+fitWithoutOutlier <- lm(y[-9] ~ x[-9])
+
+plot(y ~ x)
+abline(fit)
+abline(fitWithoutOutlier, col = "red")
+```
+</div>
+
+<div class="fold o">
+```{r, eval = FALSE}
+library(ggvis)
+library(dplyr)
+
+set.seed(123)
+x     <- sort(runif(15, min = 30, max = 70 ))
+y     <- rnorm(15 , mean = 200, sd = 50)
+df    <- data.frame(y, x)
+
+v <- input_slider(0, 250, value = 0, step = 25, animate = TRUE)
+outlier <- function(y, v) y + c(rep(0, 14), v)
+
+df %>% 
+  ggvis(x = ~x, y = ~y)  %>% 
+  mutate(y = outlier(y, eval(v))) %>% 
+  layer_points() %>%
+  layer_model_predictions(model  = "lm", formula = y ~ x)
+```
+</div>
+
+
+
+# 4.5 The Sampling Distribution of the OLS Estimator 
+
+Because the OLS estimators $\hat{\beta_0}$ and $\hat{\beta_1}$ are computed from a randomly drawn sample, the estimators themselves are random variables with a probability distribution -the sampling distribution- that describes the values they could take over different random samples. Although the sampling distribution of $\hat{\beta_0}$ and $\hat{\beta_1}$ can be complicated when the sample size is small, it is possible to make certain statements about it that hold for all $n$. In particular 
+$$ E(\hat{\beta_0}) = \beta_0 \text{ and } E(\hat{\beta_1}) = \beta_1,$$
+that is, $\hat{\beta_0}$ and $\hat{\beta_1}$ are unbiased estimators of $\beta_0$ and $\beta_1$. If the sample is sufficiently large, by the central limit theorem the sampling distribiution of the estimators is well approximated by the bivariate normal distribution. This implies that the marginal distributions are also normal in large samples.
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 4.4 </h3>          
+<h3 class = "left"> Large Sample Distribution of $\hat{\beta_0}$ and $\hat{\beta_1}$ </h3>
+
+<p> If the least square assumption in Key Concept 4.3 hold, then in large-samples $\hat{\beta_0}$ and $\hat{\beta_1}$ have a jointly normal sampling distribution. The large-sample normal distribution of $\hat{\beta_1}$ is $N(\beta_1, \sigma^2_\hat{\beta_1})$, where the variance of the distribution, $\sigma^2_\hat{\beta_1}$, is 
+
+\[
+\sigma^2_\hat{\beta_1} = \frac{1}{n} \frac{var \left[ \left(X_i - \mu_X \right) u_i  \right]}  {\left[  var \left(X_i \right)  \right]^2}
+\]
+
+The large-sample normal distribution of $\hat{\beta_0}$ is $N(\beta_0, \sigma^2_\hat{\beta_0})$, where
+\[
+ \sigma^2_\hat{\beta_0} =  \frac{1}{n} \frac{var \left( H_i u_i \right)}{ \left[  E \left(H_i^2  \right)  \right]^2 }\text{, where } H_i = 1 - \left[ \frac{\mu_X} {E \left( X_1^2\right)} \right] X_i.
+\]
+
+</p>
+</div>
+
+Whether this really holds we can verify using R. First we build our own population of $1000$ observations in total (n_pop). To do this we need values for our independent variable $x$, for the error term $u$, and the regression parameters $\beta_0$ and $\beta_1$. With all this we can also compute our dependent variable $y$. In our example we generate the numbers $x_i$, $i = 1$, ... ,$1000$ by drawing a random sample from a uniform distriburion in the range $[0,20]$. The realisations of the error term  $u_i$, $i = 1$, ... ,$1000$ are drawn from a standard distribution with $\mu = 0$ and $\sigma^2 = 100$ (note that `rnorm()` requires $\sigma$ as input). Furthermore we chose $\beta_0 = -2$ and $\beta_1 = 3.5$.  
+
+```{r}
+#Population Regression
+pop_n      <- 1000
+x          <- runif(pop_n, min = 0, max = 20)
+u          <- rnorm(pop_n, sd = 10)
+y          <- -2 + 3.5*x + u
+population <- data.frame(x, y)
+```
+
+From now on we will consider the previously generated data as the truth (which we of course would not know in a real world example). This knowledge about the true relationship between $y$ and $x$ can be used to verify the statements of key concept 4.4. Now let us assume that we do not know the true values for $\beta_0$ and $\beta_1$ and we also can not observe the whole population. However, we can observe a random sample of 100 observations. Using OLS it would be possible to estimate $\beta_0$ and $\beta_1$. However, the estimates would depend on which observations of the population we have drawn and it is very unlikly that 2 sample of 100 observation would result in the same parameter estimates. 
+
+To do so we first calculate the variances $\sigma^2_\hat{\beta_0}$ and $\sigma^2_\hat{\beta_1}$. 
+
+<div class="fold o">
+```{r}
+n <- 100 # sample size
+sigma_b1 <- var( ( x - mean(x) ) * u ) / (100 * var(x)^2)
+H_i      <- 1 - mean(x) / mean(x^2) * x
+sigma_b0 <- var(H_i * u) / (n * mean(H_i^2)^2 )
+
+#Estimation
+number_of_estimations <- 500
+
+
+fit <- matrix(ncol = 2, nrow = number_of_estimations)
+for (i in 1:number_of_estimations){
+ random_sample  <- population[ sample(1:pop_n, n), ]
+ fit[i, ]       <- lm(y ~ x, data = random_sample)$coefficients
+}
+
+var(fit[ ,1])
+hist(fit[ ,1], main = bquote(The ~ distribution  ~ of ~ 500 ~ beta[1] ~ estimates))
+
+var(fit[ ,2])
+hist(fit[ ,2], , main = bquote(The ~ distribution  ~ of ~ 500 ~ beta[2] ~ estimates))
+```
+</div>

@@ -1,3 +1,7 @@
+## Section 7.2
+
+Testing joint hypothesis in a multiple regression framework.
+
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.1 </h3>          
 <h3 class = "left"> Testing the hypothesis $\beta_j = \beta_{j,0}$ <br>

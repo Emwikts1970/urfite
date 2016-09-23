@@ -1,0 +1,96 @@
+## Section 6.1 (Omitted Variable Bias)
+
+## Section 6.3
+```{r}
+# Multiple Regression - Application to Test Scores and the Student-Teacher Ratio
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+model <- lm(score ~ tsratio + english, data = CASchools)
+
+```
+
+## Section 6.4
+Taking the code from Section 6.3 you could simply use `summary(model)` to print the $SER$, $R^2$ and adjusted-$R^2$. You find them at the bottom of the output.
+```{r}
+summary(model)
+```
+You can also compute the parameters by hand using the formulas on p. 242.
+```{r}
+n <- nrow(CASchools)    # number of observations (rows)
+k <- 2                  # 2 regressors
+y_mean <- mean(CASchools$score)
+
+SSR <- sum( residuals(model)^2 )
+TSS <- sum( ( CASchools$score - y_mean )^2 )
+ESS <- sum((fitted(model) - y_mean)^2)
+
+SER <- sqrt(1/(n-k-1) * SSR)
+Rsq <- 1 - (SSR / TSS)
+adj_Rsq <- 1 - (n-1)/(n-k-1) * SSR/TSS
+cat(SER, Rsq, adj_Rsq, sep = "    ")
+```
+
+## Section 6.7
+### Examples of Perfect Multicollinearity
+
+If you use `lm` to estimate a model with a set of regressors that suffer from perfect multicollinearity the system will warn you (_1 not defined because of singularities_) and ignore the regressor(s) which is(are) assumed to be a linear combination of the others.
+```{r}
+# Example 1
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+CASchools$FracEL    <- CASchools$english/100
+model <- lm(score ~ tsratio + english + FracEL, data = CASchools)
+summary(model)
+```
+
+
+If you compute OLS by hand you will run into the problem as well but noone is helping you out. The computation simply fails. Why is this the case? Take the following example:
+
+Assume you want to estimate a simple linear regression model with an intercept and one regressor:
+    \[ y_i = \beta_0 + \beta_1 x_i + u_i\]
+When applying perfect multicollinearity $x$ has to be a linear combination of the other regressors. Since the only other regressor is a constant, $x$ has to be constant as well. When you recap the formula for $\beta_1$, namely
+    \[ \hat{\beta_1} =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})^2}\]
+you find the variance of the regressor $x$ in the nominator. Since the variance of a constant is zero, you are not able to compute this fraction. $\hat{\beta}_1$ remains undefined.
+
+<font style="color:#004c93; font-weight:bold;">Note:</font> In this special case the nominator equals zero as well. Can you show that?
+
+
+```{r}
+# Example 2
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+CASchools$NVS      <- ifelse(CASchools$tsratio < 12, 0, 1)      # if tsratio smaller 12, NVS = 0, else NVS = 1
+model <- lm(score ~ tsratio + english + NVS, data = CASchools)
+summary(model)
+```
+
+
+```{r}
+# Example 3
+library(AER)                                                    # contains the dataset 
+data(CASchools) 
+CASchools$tsratio  <- CASchools$students/CASchools$teachers  # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2  # average test-score
+CASchools$PctES    <- 100 - CASchools$english  # Percentage of english speakers 
+model <- lm(score ~ tsratio + english + PctES, data = CASchools)
+summary(model)
+```
+
+<div class="keyconcept">
+## Excursus: The Weak Law of Large Numbers
+
+```{r, echo = FALSE, eval = FALSE}
+shinyAppDir(
+  "apps/WLLN",
+  options=list(
+    width="100%", height=500
+  )
+)
+```
+</div>
