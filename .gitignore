@@ -2,8 +2,11 @@
 .DS_Store
 index.html
 urfite.Rproj
+<<<<<<< HEAD
 .RData
 .Rhistory
 .gitignore
 sceenshots.Rmd
 
+=======
+>>>>>>> edd2dfc57be378aa395bd510efe4ee1000073759
