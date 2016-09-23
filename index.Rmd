@@ -938,6 +938,42 @@ shinyAppDir(
 
 # Chapter 8 Nonlinear Regression Functions
 
+Until now, it was assumed the regression funtion to be linear, i.e. the slope of the regression function was constant, implying that the level of $X$ has no influence on the effect a one unit change in $X$ induces in $Y$. If we want the effect of a change in $X$ on $Y$ to depend on the value of $X$, we have to use a nonlinear regression function.
+
+Let us have a look at an example where using a nonlinear regression function might be better to decribe a relationship rather than a linear function: The relation between District Income and Test Score.
+
+First, we compute correlation between both variables.
+
+```{r}
+cor(CASchools$income, CASchools$score)
+```
+
+We see that the correlation coefficient is about $0.71$. Can we use this to assess wether a linear OLS regression line does fit the data adequately? Hardly. To see this, let us visualize the data and add a linear regression line to the plot.
+
+```{r, fig.align = 'center', , fig.cap='Figure 8.1'}
+# Plot observations
+plot(CASchools$income, CASchools$score, pch=19, cex=0.4, col = "steelblue", xlab="District Income (thousands of dollars)", ylab="Test Score")
+
+# Estimate a linear model and add the regression line to the plot
+abline(lm(CASchools$score ~ CASchools$income), col="red", lwd=2)
+```
+
+Clearly, the fit is pretty bad. The relation does not seem to be a straight line. A better way to approximate the ideal line is use a quatratic function modeling test scores as a function of income and the square of income.
+
+\[ TestScore_i = \beta_0 + \beta_1 Income_i + \beta_2 Income_i^2 + u_i \]
+
+The previously stated equation is called the *quadratic regression model*.
+
+```{r, fig.align = 'center', , fig.cap='Figure 8.2'}
+# Plot observations
+plot(CASchools$income, CASchools$score, pch=19, cex=0.4, col = "steelblue", xlab="District Income (thousands of dollars)", ylab="Test Score")
+
+# Estimate a quadratic regression model and add the line to the plot
+abline(lm(CASchools$score ~ CASchools$income), col="black", lwd=2)
+
+lines(sort(CASchools$income), fitted(lm(CASchools$score ~ CASchools$income + I(CASchools$income^2)))[order(CASchools$income)], type='l', col="red", lwd=2) 
+```
+
 # About Urfite
 
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
