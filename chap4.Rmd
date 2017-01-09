@@ -1,26 +1,36 @@
-## Linear Regression with One Regressor 
+## 4. Linear Regression with One Regressor 
 
 This chapter introduces the simple linear regression model which relates one variable, $X$, to another variable $Y$. If for example a school cuts the class sizes by hiring new teachers, how would this effect the performance of the students? With linear regression we can not only examine whether the class size $\left(X\right)$ does have an impact on the test results $\left(Y\right)$. We can also learn something about the direction and the strength of this effect. 
 
-To start with an easy example consider the following combinations of average test scores and the average student to teacher ratios in some districts:
-
-```{r}
-class_data <- data.frame(TestScore           = c(680, 640, 670, 660, 630, 660, 635), 
-                         StudentTeacherRatio = c(15, 17, 19, 20, 22, 23.5, 25)
-                         )
-class_data 
-```
-
-
-If we use a simple linear regression model we assume that the relationship between the two variables can be represented by a
-straight line ($y = mx + n$). Lets suppose that the "true" function which relates test scores and student to teacher ratio is
-
-$$TestScore = 713 - 3 \times ClassSize.$$
-
-Now we use the `plot()` function to produce a scatterplot of the data from above. Furthermore, we add the line using the function `abline()`. 
+To start with an easy example consider the following combinations of average test scores and the average student to teacher ratios in some school districts:
 
 <div class="fold o">
 ```{r}
+#Creating sample data
+class_data <- data.frame(TestScore           = c(680, 640, 670, 660, 630, 660, 635), 
+                         StudentTeacherRatio = c(15, 17, 19, 20, 22, 23.5, 25)
+                         )
+#Print out sample data
+class_data 
+```
+</div>
+
+If we use a simple linear regression model we assume that the relationship 
+between the two variables can be represented by a straight line ($y = bx + a$). 
+
+Lets suppose that the "true" function which relates test scores and student to teacher ratio 
+to each other is
+
+$$TestScore = 713 - 3 \times ClassSize.$$
+
+If it is possible it is always a good idea to visualize the data you work with in an appropriate way.
+For our purpose we can use the function `plot()` to produce a scatterplot with `StudentTeacherRatio` on the $X$-axis and `TestScore` on the $Y$-axis. An easy way to do so is to call `plot(y_variable ~ x_variable)`.   
+We might furthermore want to add the true relationship to the plot. To draw a straight line `R` provides the
+function `abline()`. We just have to call this function with arguments `a` (representing the intercept) 
+and `b` (representing the slope) after we executed `plot()` in order to add the line to our scatterplot. The following code reproduces figure 4.1 from the book. 
+
+<div class="fold o">
+```{r Figure 4.1}
 plot(TestScore ~ StudentTeacherRatio, data = class_data)
 abline(a = 713, b = -3)
 ```
@@ -28,7 +38,7 @@ abline(a = 713, b = -3)
 
 We find that our line does not touch any of the points and still we argued that it represents the true relationship. The reason for this is the core problem of statistics, randomness. There are almost always effects which cannot be explained in a deterministic fashion and which excaberate the finding of the "truth". 
 
-In order to account for the differences we extend the regression model by an **error term** which covers these random effect. In general the **error term** accounts for all differences between the "true" regression line and the actual observed data. This could next to the pure randomness also be measerment errors or the effect of important but not considered independent variables.   
+In order to account for the differences we extend our function from above by an **error term** which covers these random effects. In general the **error term** accounts for all differences between the "true" regression line and the actual observed data. Beside the pure randomness these could be measerment errors or the effect of important but not considered independent variables.   
 
 
 <div class = "keyconcept"> 
@@ -41,10 +51,10 @@ $$Y_i = \beta_0 + \beta_1 X_1 + u_i $$
 
 where
 
-- the subscript i runs over observations, $i = 1$, ..., $n$
+- the subscript $i$ runs over observations, $i = 1$, ..., $n$
 - $Y_i$ is the *dependent variable*, the *regressand*Library, or simply the *left-hand variable*
 - $X_i$ is the *independent variable*, the *regressor*, or simply the *left-hand variable*
-- $\beta_0 + \beta_1 X$ is *population the regression line* or the *population regression function*
+- $\beta_0 + \beta_1 X$ is *population regression line* or the *population regression function*
 - $\beta_0$ is the *intercept* of the population regression line
 - $\beta_1$ is the *slope* of the population regression line
 - $u_i$ is the *error term*
@@ -53,30 +63,43 @@ where
 
 ##4.2 Estimating the Coefficients of the Linear Regression Model
 
-In practical situations the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must use data to estimate the two unknown parameters. We will demonstrate how to do that on a real data example. We want to relate test scores to class sizes in 420 California school restricts. The test score is the districtwide average of reading and math scores for fifth graders. Class size is measured as the number of students divided by the number of teachers (student-teacher ratio). The California Shool dataset is available in the `AER` package. After installing the package with `install.packages("AER")` and attaching it with `library()` the dataset can be loaded using the `data()` function. 
+In practical situations the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must use data to estimate the two unknown parameters. We will demonstrate how to do that on a real data example. We want to relate test scores to class sizes in $420$ California school restricts. The test score is the districtwide average of reading and math scores for fifth graders. Class size is measured as the number of students divided by the number of teachers (student-teacher ratio). The California School dataset is available in the `AER` package. After installing the package with `install.packages()` and attaching it with `library()` the dataset can be loaded using the `data()` function. 
 
-```{r}
-library(AER)                                                    # contains the dataset 
-data(CASchools) 
+```{r, message=FALSE, warning=FALSE}
+library(AER)                                                    # contains the data set 
+data(CASchools)                                                 # loads the the data set in the workspace 
 ```
 
-With `head()` we get a first overview over our data. This function shows only the first 6 rows of the dataset which prevents an overcrowded console output. 
+For several reasons it is interesting to know what kind of object we are dealing with. 
+`class(object_name)` returns the type (class) of the object. Depending on the class of an object different
+functions (such as `plot`) behave differently (example link).
 
+```{r}
+class(CASchools)
+```
+
+It turns out that our object is of class `data.frame` which is a convienient format to work with. 
+
+With `head()` we get a first overview over our data. This function shows only the first 6 rows of the dataset which prevents an overcrowded console output. An alternative to `class()` and `head()` is `str()` which means structure and gives an comprehensive overview of the object.  
+
+<div class="fold o">
 ```{r}
 head(CASchools)
 ```
+</div>
 
 We find that the dataset consists of plenty variables but the two we are intersted in (average test scores and student-teacher ratio) are not included. However, it is possible to calculate both from the existing data. To obtain the student to teacher-ratio we divide the number of students by the number of teachers. The avarage test score is the arithmetic mean of the test score for reading and the score of the math test.  
 
+<div class="fold o">
 ```{r}
 CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
 CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
 ```
+</div>
 
 The next code chunk reproduces table 4.1 from the text book which summarizes the distribution of test scores and class sizes. In order to have a nice display format we gather all data after the computation in a data frame. 
 
 <div class="fold o">
-
 ```{r Table 4.1, results='hold'}
 avg_tsratio   <- mean(CASchools$tsratio) 
 avg_score     <- mean(CASchools$score)
