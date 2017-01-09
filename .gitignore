@@ -3,5 +3,6 @@
 .Rhistory
 .Rproj.user
 *.html
+*.png
 *.Rproj
 sceenshots.Rmd

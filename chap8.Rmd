@@ -1,14 +1,25 @@
-Until now, it was assumed the regression funtion to be linear, i.e. the slope of the regression function was constant, implying that the level of $X$ has no influence on the effect a one unit change in $X$ induces in $Y$. If we want the effect of a change in $X$ on $Y$ to depend on the value of $X$, we have to use a nonlinear regression function.
+#Chapter 8 Nonlinear Regression
 
-Let us have a look at an example where using a nonlinear regression function might be better to decribe a relationship rather than a linear function: The relation between District Income and Test Score.
+Until now we assumed the regression function to be linear, i.e. the slope of the regression function to be constant. This implies that the effect on $Y$ of a unit change in $X$ does not depend on the value of $X$. If the effect of a change in $X$ on $Y$ depends on the value of $X$, we have to use a nonlinear regression function.
 
-First, we compute correlation between both variables.
+Let us have a look at an example where using a nonlinear regression function might be better suited to decribe the relationship between $X$ and $Y$: the relation between `District Income` and `Test Scores` (Stock and Watson, 2012 Figure 8.2).
+
+```{r, results='hide', echo=TRUE, message=FALSE}
+#Preparing the data
+library(lmtest)
+library(AER)                                                    # contains the dataset 
+data(CASchools)
+CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+```
+
+We start our analysis by computing the correlation between the two variables. 
 
 ```{r}
 cor(CASchools$income, CASchools$score)
 ```
 
-We see that the correlation coefficient is about $0.71$. Can we use this to assess wether a linear OLS regression line does fit the data adequately? Hardly. To see this, let us visualize the data and add a linear regression line to the plot.
+The correlation coefficient is about $0.71$. This means that income and test scores are positively correlated. In other words, children whose parents have an above average income tend to achieve above average test scores. Can we use the correlation coefficient to assess whether a linear regression model does fit the data adequately? To answer this question we visualize the data and add a linear regression line to the plot.
 
 ```{r, fig.align = 'center', , fig.cap='Figure 8.1'}
 # Plot observations
@@ -18,18 +29,153 @@ plot(CASchools$income, CASchools$score, pch=19, cex=0.4, col = "steelblue", xlab
 abline(lm(CASchools$score ~ CASchools$income), col="red", lwd=2)
 ```
 
-Clearly, the fit is pretty bad. The relation does not seem to be a straight line. A better way to approximate the ideal line is use a quatratic function modeling test scores as a function of income and the square of income.
+As Stock and Watson point out, the linear regression line seems to overestimates the true relationship when income is very high or very low and underestimates it in the midrange.    
 
-\[ TestScore_i = \beta_0 + \beta_1 Income_i + \beta_2 Income_i^2 + u_i \]
+Fortunatly, OLS is not restricted to linear functions. We can for example model `Test Scores` as a function of `income` and the square of `income`.
 
-The previously stated equation is called the *quadratic regression model*.
+$$TestScore_i = \beta_0 + \beta_1 Income_i + \beta_2 Income_i^2 + u_i$$
+
+This equation is called the *quadratic regression model*. Note, that $Income^2$ is treated as an additional explanatory variable. Hence, the quatratic model is a special case of the multiple regression model. When fitting the model with `lm` we can use the `^` operater in addition with the function `I()` to add the quadratic term to our regression model. 
 
 ```{r, fig.align = 'center', , fig.cap='Figure 8.2'}
 # Plot observations
 plot(CASchools$income, CASchools$score, pch=19, cex=0.4, col = "steelblue", xlab="District Income (thousands of dollars)", ylab="Test Score")
 
-# Estimate a quadratic regression model and add the line to the plot
-abline(lm(CASchools$score ~ CASchools$income), col="black", lwd=2)
+#Fit models
+linear_model    <- lm(CASchools$score ~ CASchools$income)
+quadratic_model <- lm(CASchools$score ~ CASchools$income + I(CASchools$income^2))
 
-lines(sort(CASchools$income), fitted(lm(CASchools$score ~ CASchools$income + I(CASchools$income^2)))[order(CASchools$income)], type='l', col="red", lwd=2) 
+#Model Output
+summary(linear_model)
+summary(quadratic_model)
+
+#Add linear function to the plot
+abline(linear_model , col="black", lwd=2)
+
+#Add quatratic function to the plot
+order_id <- order(CASchools$income)
+lines(CASchools$income[order_id], fitted(quadratic_model)[order_id], type='l', col="red", lwd=2) 
 ```
+
+The approach we used to obtain a quadratic model can be generalized to polynomial models of arbitrary order. 
+$$Y_i = \beta_0 + \beta_1 X_i + \beta_2 X_i^2 + \ldots + \beta_r X_i^r + u_i$$
+
+
+```{r cubic}
+cubic_model <- lm(score ~ income + I(income^2) + I(income^3), data = CASchools)
+coeftest(cubic_model, vcov = vcovHC(cubic_model, type = "HC1"))
+```
+
+```{r f-test}
+linear_model <- lm(score ~ income, data = CASchools)
+anova(linear_model, cubic_model, test="F")
+
+( (sum(linear_model$residuals^2) - sum(cubic_model$residuals^2)) / 2 ) /
+  (sum(cubic_model$residuals^2) / ( (nrow(CASchools) - 4 ) ) )    ##Seite 307 F-statistic = 37.7?
+```
+
+
+
+
+
+
+
+
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 8.1 </h3>          
+<h3 class = "left"> The Expected Effects on Y of a Change in $X_1$ in the Nonlinear Regression Model </h3>
+
+<p> The expected change in $Y$, $\Delta Y$, associated with the change in $X_1$, $\Delta X_1$, holding $X_2, \cdots , X_k$ constant. That is, the expected change in $Y$ is the difference: 
+
+$$\Delta Y = f(X_1 + \Delta X_1, X_2, \cdots, X_k) - f(X_1, X_2, \cdots, X_k).$$
+
+The estimator of this unknown population difference is the difference between the predicted values for these two cases. Let $\hat{f}(X_1, X_2, \cdots, X_k)$ be the predicted value of of $Y$ based on the estimator $\hat{f}$ of the population regression function. Then the predicted change in $Y$ is
+
+$$\Delta \hat{Y} = \hat{f}(X_1 + \Delta X_1, X_2, \cdots, X_k) - \hat{f}(X_1, X_2, \cdots, X_k).$$
+
+</p>
+</div>
+
+```{r quadratic}
+quadriatic_model<- lm(score ~ income + I(income^2), data = CASchools)
+new_data <- data.frame(income = c(10,11,40,41))
+changes <- matrix(predict(quadriatic_model,newdata = new_data), nrow = 2, byrow = TRUE)
+changes[ ,2] - changes[ ,1]
+```
+
+##8.2 Nonlinear Functions of a Single Independent Variable
+
+##Logarithms
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 8.2 </h3>          
+<h3 class = "left"> Logarithms in Regression: Three Cases </h3>
+
+<p> Logarithms can be used to transform the dependent variable $Y$, an independent variable $X$, or both 
+(but the variable being transformed must be positive). The following table summarizes these three cases and the interpretation of the regression coefficient $\beta_1$. In each case, $\beta_1$, can be estimated applying OLS after taking the logarithm if the dependent and/or independent variable.
+
+<table>
+<thead>
+<tr class="header">
+<th align="left">Case</th>
+<th align="left">Model Specification</th>
+<th align="left">Interpretation of $\beta_1$</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">I</td>
+<td align="left">$Y_i = \beta_0 + \beta_1 \ln{X_i} + u_i$</td>
+<td align="left">A $1 \%$ change in $X$ is associated with a change in $Y$ of $0.01 \beta_1$.</td>
+</tr>
+<tr class="even">
+<td align="left">II</td>
+<td align="left">$\ln(Y_i) = \beta_0 + \beta_1 X_i + u_i$</td>
+<td align="left">A change in $X$ by one unit ($\Delta X = 1$) is associated with a $100\beta_1 \%$ change in $Y$.</td>
+</tr>
+<tr class="odd">
+<td align="left">III</td>
+<td align="left">$\ln(Y_i) = \beta_0 + \beta_1 \ln(X_i) + u_i$</td>
+<td align="left">A $1 \%$ change in $X$ is associated with a $100\beta_1 \%$ change in $Y$, so $\beta_1$ is the elasticity of $Y$ with respect to $X$.</td>
+</tr>
+</tbody>
+</table>
+
+</p>
+</div>
+
+
+
+
+```{r linear log}
+linearLog_model <- lm(score ~ log(income), data = CASchools)
+coeftest(linearLog_model, vcov = vcovHC(linearLog_model, type = "HC1"))
+plot(score ~ income, data = CASchools)
+lines(sort(CASchools$income), fitted(linearLog_model)[order(CASchools$income)], col = "red", lwd = 2)
+
+changes <- matrix(predict(linearLog_model,newdata = new_data), nrow = 2, byrow = TRUE)
+changes[ ,2] - changes[ ,1]
+
+```
+
+```{r log log}
+logLog_model <- lm(log(score) ~ log(income), data = CASchools)
+coeftest(logLog_model, vcov = vcovHC(logLog_model, type = "HC1"))
+plot(log(score) ~ income, data = CASchools)
+lines(sort(CASchools$income), fitted(logLog_model)[order(CASchools$income)], col = "red", lwd = 2)
+
+changes <- matrix(predict(linearLog_model,newdata = new_data), nrow = 2, byrow = TRUE)
+changes[ ,2] - changes[ ,1]
+
+```
+
+
+```{r poly log}
+polyLog_model <- lm(score ~ log(income) + I(log(income)^2) + I(log(income)^3), data = CASchools)
+coeftest(polyLog_model, vcov = vcovHC(polyLog_model, type = "HC1"))
+
+```
+
+
+
