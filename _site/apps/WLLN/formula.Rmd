@@ -1,0 +1,21 @@
+---
+output: html_document
+---
+<style type="text/css">
+ div.formula { font-size: 1.3em !important; }
+</style>
+
+<script type='text/x-mathjax-config'>
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<p>The weak law of large numbers states, that for a given sequence of random numbers $\bar{X}_n$,</p>
+
+<div class="formula">
+$\lim\limits_{n \rightarrow \infty}{P(| \bar{X}_n - \mu | \gt \varepsilon)} = 0 \;$
+where
+$\; \mu = E(X) \;$ 
+and
+$\; \bar{X}_n = \frac{1}{n}\sum_{i=1}^n X_i.$
+</div>
+
+

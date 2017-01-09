@@ -333,7 +333,7 @@ hr{margin-top:20px;margin-bottom:20px;border:0;border-top:1px solid #eee}
 .h1 .small,.h1 small,.h2 .small,.h2 small,.h3 .small,.h3 small,h1 .small,h1 small,h2 .small,h2 small,h3 .small,h3 small{font-size:65%}
 .h4,.h5,.h6,h4,h5,h6{margin-top:10px;margin-bottom:10px}
 .h4 .small,.h4 small,.h5 .small,.h5 small,.h6 .small,.h6 small,h4 .small,h4 small,h5 .small,h5 small,h6 .small,h6 small{font-size:75%}
-.h1,h1{font-size:36px}
+.h1,h1{font-size:36px, margin-top: 25px;}
 .h2,h2{font-size:30px}
 .h3,h3{font-size:24px}
 .h4,h4{font-size:18px}
@@ -1448,6 +1448,7 @@ td.visible-print,th.visible-print{display:table-cell!important}
 
 
 /* ADDDED BY MARTIN */
+
 .showopt {
   background-color: #004c93;
   color: #FFFFFF; 
@@ -1465,6 +1466,21 @@ td.visible-print,th.visible-print{display:table-cell!important}
     color: #004c93;
 }
 
+.plot {
+  background-color: white !important;
+}
+
+.image {
+  display: block;
+  margin: auto;
+}
+
+.imgContainer::after {
+  content: attr(cap);
+  display: block;
+  text-align: center;
+}
+
 /* ADDED BY ALEX */
 
 /* Class for key concepts */
@@ -1479,17 +1495,23 @@ td.visible-print,th.visible-print{display:table-cell!important}
  
 .keyconcept h3.right {
   float: right;
-  width: 150px;
+  width: 25%;
   text-align: center;
 }
 
 .keyconcept h3.left {
   float: left;
-  width: 600px;
+  width: 65%;
   
 }
 
 .keyconcept p {
   clear: both;
 }
+
+.shiny-frame {
+  background-color: #dfe4f2;
+}
  
+
+
