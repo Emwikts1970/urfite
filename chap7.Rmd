@@ -53,9 +53,23 @@ summary(model)
 
 Omitted Variable bias is the bias in the OLS estimator that arises when one or more included regressors are correlated with an omitted variable. For omitted variable bias to arise, twho things must be true: 
 
-1. At least one of the included regressors mut be correlated with the omitted variable 
+1. At least one of the included regressors must be correlated with the omitted variable. 
 2. The omitted variable must be a determinant of the dependent variable, $Y$.
 
 </p>
   
 </div>
+
+We will now discuss an example were we face potential omitted variable bias in a multiple regression model:
+
+Consider again the estimated regression model
+
+$$ \widehat{TestScore} = \underset{(8.7)}{686.0} - \underset{(0.43)}{1.10} \times STR - \underset{(0.031)}{0.650} \times PctEL. $$
+
+There might be a bias arising from omitting "outside learning opportunities" from our regression sice a measure like this could be a determinant of the students' test scores and could also be correlated with both regressors already included in the model. Now, "outside learning opportunities" is a complicated concept that is difficult to quantify. A surrogate we can consider instead is a students economic backgroud which should be strongly related the the outside learning opportunities.  We thus augment the model with the variable `LchPct`, the percentage of students that qualify for a free or subsidized lunch in school due to a family income below a certain threshold, and estimate the model again.   
+
+
+
+
+
+
