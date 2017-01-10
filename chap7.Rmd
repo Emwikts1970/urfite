@@ -1,5 +1,4 @@
 ## Section 7.2 Hypothesis Tests and Confidence Intervals in Multiple Regression
-### Application to Test Scores and the Student-Teacher Ratio
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.1 </h3>          
@@ -68,11 +67,21 @@ confint(model)
 
 We note that intervals for all three coefficients are computed. 
 
-If we want to compute confidence intervalls at another level of $\alpha$, 0.1 say, we have the change the argument `level` of the `confint` function accordingly.
+If we want to compute confidence intervalls at another level of $\alpha$, 0.1 say, we have to set the argument `level` of the `confint` function accordingly.
 
 ```{r, warning=F, message=F}
 confint(model, level = 0.9)
 ```
+
+#### An Application to Test Scores and th Student-Teacher Ratio
+
+Knowing how to use R to draw inference for multiple Regression models, you can now answer the following question: Can the null hypothesis that a change in the student-teacher ratio has no significant effect on test scores if we control for the percentage of students learning English in the district be rejected?
+ 
+The outputs above tell us that 0 is not an element of the computed confidence intervals for the coefficient of `tsratio` such that we can reject the null hypothesis at significance levels of 5\% and 10\% (Note that rejection at the 5\%-level implies rejection at the 10\% level. Why?). The same conclusion can be made when beholding the $p$-value for `tsratio`: $0.00398 < 0.05 = \alpha$.
+
+The 95\% confidence intervall tells us that we can be 95\% confident that a one-unit decrease in the student-teacher ratio has an effect on test scores that lies in the intervall $[-1.8487969,  -0.3537944]$
+
+#### Tests of Joint Hypotheses
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.3 </h3>          
