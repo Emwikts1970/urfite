@@ -81,7 +81,54 @@ The outputs above tell us that 0 is not an element of the computed confidence in
 
 The 95\% confidence intervall tells us that we can be 95\% confident that a one-unit decrease in the student-teacher ratio has an effect on test scores that lies in the intervall $[-1.8487969,  -0.3537944]$
 
-#### Tests of Joint Hypotheses
+#### Another Augmentation of the Model
+
+What is the effect on test scores of reducing the student-teacher ratio when the expenditures per pupil and the percentage of english learning pupils are held constant?
+
+We can pursue this by augmenting our model equation yet again and perform joint significant testing.
+
+The model we want the estimate now is 
+
+$$ TestScore = \beta_0 + \beta_1 \times STR + \beta_2 \times english + \beta_3 \times Expn + u $$
+
+with $Expn$ the total amount of expenditures per pupil in the district (thousands of dollars).
+
+Estimating the model equation yields:
+
+```{r, echo=6:8, warning=F, message=F}
+library(AER)
+data(CASchools)
+CASchools$tsratio  <- CASchools$students/CASchools$teachers
+CASchools$score    <- (CASchools$read + CASchools$math)/2
+
+CASchools$expenditure <- CASchools$expenditure/1000
+model <- lm(score ~ tsratio + english + expenditure, data = CASchools)
+summary(model)
+```
+
+We see that the estimated effect of a change in the student-teacher ratio on test scores with expenditures per pupil and the share of english learning pupils held constant is rather small (`-0.29`). What is more, the coefficient of `tsratio` is not significantly different from zero anymore ($p\text{-value}=$`0.55) so the new model provides no evidence that changing the student-teacher ratio has any effect on the test scores in this case.
+
+```{r, echo=5:7, warning=F, message=F}
+library(AER)
+data(CASchools)
+CASchools$tsratio  <- CASchools$students/CASchools$teachers
+CASchools$score    <- (CASchools$read + CASchools$math)/2
+
+model <- lm(score ~ tsratio + english, data = CASchools)
+summary(model)
+```
+
+#### Joint Hypothesis testing using the $F$-Statistic
+
+Now, can we reject the hypothesis that $\beta_1$ \underline{and} $\beta_3$ are zero? To answer this question, we have to resort to methods that allow joint testing of two hypotheses. This is different from conducting individual $t$-tests.
+
+The homoskedasticity-only $F$-Statistic is given by
+
+$$ F = \frac{(SSR_{restricted} - SSR_{unrestricted})/q}{SSR_{unrestricted} / (n-k_{unrestricted}-1)} $$
+
+with $SSR_{restricted}$ the sum of squared residuals from the restricted regression, i.e. the regression where we impose the restriction. $SSR_{unrestricted}$ is the sum of squared residuals from the full model, $q$ is the number of restriction under the null and $k$ is the number of regressors in the unrestricted regression.
+
+Luckily, it is fairly easy to conduct an $F$-test in R
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.3 </h3>          
@@ -89,7 +136,7 @@ The 95\% confidence intervall tells us that we can be 95\% confident that a one-
 
 <p>
 
-Omitted Variable bias is the bias in the OLS estimator that arises when one or more included regressors are correlated with an omitted variable. For omitted variable bias to arise, twho things must be true: 
+Omitted Variable bias is the bias in the OLS estimator that arises when one or more included regressors are correlated with an omitted variable. For omitted variable bias to arise, two things must be true: 
 
 1. At least one of the included regressors must be correlated with the omitted variable. 
 2. The omitted variable must be a determinant of the dependent variable, $Y$.
