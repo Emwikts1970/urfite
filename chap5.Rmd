@@ -48,7 +48,7 @@ p \text{-value} = \text{Pr}_{H_0} \left[ \left| \frac{ \hat{\beta}_1 - \beta_{1,
 </div>
 
 Consider again the previous OLS regression stored in `linear_model` that gave us the regression line
-  \[ \widehat{score} = \underset{(9.47)}{698.9} - \underset{(0.49)}{2.28} \times tsratio.  \]
+  \[ \widehat{score} = \underset{(9.47)}{698.9} - \underset{(0.49)}{2.28} \times size.  \]
 For testing a hypothesis regarding the slope parameter, we need $SE(\hat{\beta}_1)$, the standard error of the respective point estimator. These are presented in parantheses under the respective point estimate. 
 
 How can we get these values using R? By looking at the second column of the coefficients' summary, we discover both values.
@@ -146,7 +146,7 @@ Let us see how these data points look like.
 ```{r, eval=F}
 # Create the dummy variable as defined above
 for (i in 1:nrow(CASchools)) {
-  if (CASchools$tsratio[i] < 20) { 
+  if (CASchools$size[i] < 20) { 
     CASchools$D[i] <- 1
     } else {
       CASchools$D[i] <- 0
@@ -164,7 +164,7 @@ plot(CASchools$D, CASchools$score,
 ```{r, fig.align='center', echo=F}
 # Create the dummy variable as defined above
 for (i in 1:nrow(CASchools)) {
-  if (CASchools$tsratio[i] < 20) { 
+  if (CASchools$size[i] < 20) { 
     CASchools$D[i] <- 1
     } else {
       CASchools$D[i] <- 0
@@ -184,9 +184,9 @@ We see that it is not useful to think of $\beta_1$ as a slope parameter since $D
 
 The interpretation of estimated coefficients from such a regression model is as follows:
 
-- $E(Y_i | D_i = 0) = \beta_0$ so $\beta_0$ is the expectation of $score$ in districts where $D_i=0$ i.e. where $tsratio$ is below $20$.
+- $E(Y_i | D_i = 0) = \beta_0$ so $\beta_0$ is the expectation of $score$ in districts where $D_i=0$ i.e. where $size$ is below $20$.
 
-- $E(Y_i | D_i = 1) = \beta_0 + \beta_1$ or, using the result above, $\beta_1 = E(Y_i | D_i = 1) - E(Y_i | D_i = 0)$. Thus, $\beta_1$ is the difference in group specific expectations, i.e. the difference in expected $score$ between districts where $tsratio < 20$ and those with $tsratio \geq 20$. 
+- $E(Y_i | D_i = 1) = \beta_0 + \beta_1$ or, using the result above, $\beta_1 = E(Y_i | D_i = 1) - E(Y_i | D_i = 0)$. Thus, $\beta_1$ is the difference in group specific expectations, i.e. the difference in expected $score$ between districts where $size < 20$ and those with $size \geq 20$. 
 
 We will now use R to estimate the dummy regression.
 
@@ -195,7 +195,7 @@ dummy_model <- lm(score ~ D, data = CASchools)
 summary(dummy_model)
 ```
 
-One can see that the expected test score in districts with $tsratio < 20$ ($D_i = 1$) is predicted to be $650.1 + 7.17 = 657.27$ while districs with $tsratio \geq 20$ ($D_i = 0$) are expected to have an average test score of only $650.1$.
+One can see that the expected test score in districts with $size < 20$ ($D_i = 1$) is predicted to be $650.1 + 7.17 = 657.27$ while districs with $size \geq 20$ ($D_i = 0$) are expected to have an average test score of only $650.1$.
 
 Group specific predictions can be added to the plot by execution of the following code chunk.
 ```{r, eval=F}
@@ -275,8 +275,8 @@ model <- summary(linear_model)
 # Extract the standard error of the regression from model summary
 SER <- model$sigma
 
-# Compute the variation in 'tsratio'
-V <- (nrow(CASchools)-1)*var(CASchools$tsratio)
+# Compute the variation in 'size'
+V <- (nrow(CASchools)-1)*var(CASchools$size)
 
 # Compute the standard error of the slope parameter's estimator and print it
 SE.beta_1.hat <- sqrt(SER^2/V); SE.beta_1.hat
