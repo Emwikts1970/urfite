@@ -19,9 +19,9 @@ where $t^{act}$ is the value of the t-statistic actually computed. Reject the hy
 
 It is easy to verify that principles of testing single hypothesis about the significance of coefficients in the multiple regression model are just as in in the simple regression model. 
 
-You can easily see this by inspection of the summary the regression model
+You can easily see this by inspecting the summary of the regression model
 
-$$ TestScore = \beta_0 - \beta_1 \times STR - \beta_2 \times english + u $$
+$$ TestScore = \beta_0 - \beta_1 \times size - \beta_2 \times english + u $$
 
 already discussed in chapter 6.3.
 
@@ -29,10 +29,10 @@ already discussed in chapter 6.3.
 ```{r, echo=5:7, warning=F, message=F}
 library(AER)
 data(CASchools)
-CASchools$tsratio  <- CASchools$students/CASchools$teachers
+CASchools$size  <- CASchools$students/CASchools$teachers
 CASchools$score    <- (CASchools$read + CASchools$math)/2
 
-model <- lm(score ~ tsratio + english, data = CASchools)
+model <- lm(score ~ size + english, data = CASchools)
 summary(model)
 ```
 </div>
@@ -52,7 +52,7 @@ Using the definition of the $p$-value for a two sided test, we can confirm the $
 
 <p>
 A $95\%$ two-sided confidence interval for coefficient $\beta_j$ is an interval that contains the true value of $\beta_j$ with a $95 \%$ probability; that is, it contains the true value of $\beta_j$ in $95 \%$ of all randomly drawn samples. Equivalently, it is the set of values of $\beta_j$ that cannot be rejected by a $5 \%$ two-sided hypothesis test. When the sample size is large, the $95 \%$ confidence interval for $\beta_j$ is
-$$[\hat{\beta_j}- 1.96 SE(\hat{\beta}_j), \hat{\beta_j} + 1.96 SE(\hat{\beta_j})]$$
+$$[\hat{\beta_j}- 1.96 \times SE(\hat{\beta}_j), \hat{\beta_j} + 1.96 \times SE(\hat{\beta_j})]$$
 </p>
 </div>
 
@@ -61,7 +61,7 @@ Let us take a look at the regression from section 6.3 again.
 Computing individual confidence intervals for the coefficients in the multiple regression model can be done analogously as in the simple regression model using the function `confint`:
 
 ```{r, warning=F, message=F}
-model <- lm(score ~ tsratio + english, data = CASchools)
+model <- lm(score ~ size + english, data = CASchools)
 confint(model)
 ```
 
@@ -77,7 +77,7 @@ confint(model, level = 0.9)
 
 Knowing how to use R to draw inference for multiple Regression models, you can now answer the following question: Can the null hypothesis that a change in the student-teacher ratio has no significant effect on test scores if we control for the percentage of students learning English in the district be rejected?
  
-The outputs above tell us that 0 is not an element of the computed confidence intervals for the coefficient of `tsratio` such that we can reject the null hypothesis at significance levels of 5\% and 10\% (Note that rejection at the 5\%-level implies rejection at the 10\% level. Why?). The same conclusion can be made when beholding the $p$-value for `tsratio`: $0.00398 < 0.05 = \alpha$.
+The outputs above tell us that 0 is not an element of the computed confidence intervals for the coefficient of `size` such that we can reject the null hypothesis at significance levels of 5\% and 10\% (Note that rejection at the 5\%-level implies rejection at the 10\% level. Why?). The same conclusion can be made when beholding the $p$-value for `size`: $0.00398 < 0.05 = \alpha$.
 
 The 95\% confidence intervall tells us that we can be 95\% confident that a one-unit decrease in the student-teacher ratio has an effect on test scores that lies in the intervall $[-1.8487969,  -0.3537944]$
 
@@ -89,7 +89,7 @@ We can pursue this by augmenting our model equation yet again and perform joint 
 
 The model we want the estimate now is 
 
-$$ TestScore = \beta_0 + \beta_1 \times STR + \beta_2 \times english + \beta_3 \times Expn + u $$
+$$ TestScore = \beta_0 + \beta_1 \times size + \beta_2 \times english + \beta_3 \times Expn + u $$
 
 with $Expn$ the total amount of expenditures per pupil in the district (thousands of dollars).
 
@@ -98,23 +98,23 @@ Estimating the model equation yields:
 ```{r, echo=6:8, warning=F, message=F}
 library(AER)
 data(CASchools)
-CASchools$tsratio  <- CASchools$students/CASchools$teachers
+CASchools$size  <- CASchools$students/CASchools$teachers
 CASchools$score    <- (CASchools$read + CASchools$math)/2
 
 CASchools$expenditure <- CASchools$expenditure/1000
-model <- lm(score ~ tsratio + english + expenditure, data = CASchools)
+model <- lm(score ~ size + english + expenditure, data = CASchools)
 summary(model)
 ```
 
-We see that the estimated effect of a change in the student-teacher ratio on test scores with expenditures per pupil and the share of english learning pupils held constant is rather small (`-0.29`). What is more, the coefficient of `tsratio` is not significantly different from zero anymore ($p\text{-value}=$`0.55) so the new model provides no evidence that changing the student-teacher ratio has any effect on the test scores in this case.
+We see that the estimated effect of a change in the student-teacher ratio on test scores with expenditures per pupil and the share of english learning pupils held constant is rather small (`-0.29`). What is more, the coefficient of `size` is not significantly different from zero anymore ($p\text{-value}=$`0.55) so the new model provides no evidence that changing the student-teacher ratio has any effect on the test scores in this case.
 
 ```{r, echo=5:7, warning=F, message=F}
 library(AER)
 data(CASchools)
-CASchools$tsratio  <- CASchools$students/CASchools$teachers
+CASchools$size  <- CASchools$students/CASchools$teachers
 CASchools$score    <- (CASchools$read + CASchools$math)/2
 
-model <- lm(score ~ tsratio + english, data = CASchools)
+model <- lm(score ~ size + english, data = CASchools)
 summary(model)
 ```
 
@@ -128,7 +128,44 @@ $$ F = \frac{(SSR_{restricted} - SSR_{unrestricted})/q}{SSR_{unrestricted} / (n-
 
 with $SSR_{restricted}$ the sum of squared residuals from the restricted regression, i.e. the regression where we impose the restriction. $SSR_{unrestricted}$ is the sum of squared residuals from the full model, $q$ is the number of restriction under the null and $k$ is the number of regressors in the unrestricted regression.
 
-Luckily, it is fairly easy to conduct an $F$-test in R
+Luckily, it is fairly easy to conduct an $F$-test in R. We can use the function `linearHypothesis` coming with the `car` package.
+
+```{r, warning=F, message=F}
+model <- lm(score ~ size + english + expenditure, data = CASchools)
+# execute the function on the model object and provide the linear restriction to be tested as strings
+linearHypothesis(model, c("size=0","expenditure=0"))
+```
+
+From the output we can infer that the $F$-statistic for this joint hypothesis test is around `-8.01` and the corresponding $p$-value is `0.000386`. Thus we can reject the null hypothesis that both coefficients are zero at any level of significance common in practice.
+
+<b>Note</b>:
+
+The standard output of a model summary also reports a related $p$-value corresponding to a $F$-test. The null hypothesis belonging to this quantity is that <u>all</u> population coefficients in the model except for the intercept are zero which is different from testing if only $\beta_1$ and $\beta_3$ are zero.
+
+We will now check that the $F$-statistic belonging to the $p$-values listed in the model's summary coincides with the result reportet by `linearHypothesis`:
+
+```{r, warning=F, message=F}
+# execute the function on the model object and provide the linear restriction to be tested as strings
+linearHypothesis(model, c("size=0","english=0","expenditure=0"))
+# Access the F-statistic from the model's summary
+summary(model)$fstatistic
+```
+
+#### Confidence Sets for Multiple Coefficients
+
+Based on the $F$-statistic that we have previously encountered, we can specify confidence sets i.e. sets consisting of combinations of coefficients that contain the true combination of coefficients in, 95\% say, of all cases if we could infinitely draw random samples, just as in the univariate case. Put differently, it is the set of coefficient combinations for which we cannot reject the null hypothesis related to the computed $F$-statistic.  
+
+If we consider two coefficients, their confidence set is an ellipse. Again, there is a very convenient way to plot the "confidence ellipse" for coefficients of model objects, namely the function `ellipse` which is also coming with the `car` package.
+
+In the following, we plot the 95\% confidence ellipse for the coefficients on `size` and `expenditure` from the last regression we conducted.
+By specifying the additional argument `fill`, the confidence set colored which gives a better impression which set of coefficient pairs is meant.
+
+```{r, warning=F, message=F}
+# Draw the 95% confidence set for coefficients on size and expenditure
+confidenceEllipse(model, fill = T, which.coef = c("size","expenditure"))
+```
+
+
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.3 </h3>          
@@ -149,7 +186,7 @@ We will now discuss an example were we face potential omitted variable bias in a
 
 Consider again the estimated regression model
 
-$$ \widehat{TestScore} = \underset{(8.7)}{686.0} - \underset{(0.43)}{1.10} \times STR - \underset{(0.031)}{0.650} \times english. $$
+$$ \widehat{TestScore} = \underset{(8.7)}{686.0} - \underset{(0.43)}{1.10} \times size - \underset{(0.031)}{0.650} \times english. $$
 
 There might be a bias arising from omitting "outside learning opportunities" from our regression sice a measure like this could be a determinant of the students test scores and could also be correlated with both regressors already included in the model. Now, "outside learning opportunities" is a complicated concept that is difficult to quantify. A surrogate we can consider instead is the students' economic backgroud which should be strongly related the the outside learning opportunities. We thus augment the model with the variable `lunch`, the percentage of students that qualify for a free or subsidized lunch in school due to family incomes below a certain threshold, and estimate the model again.   
 
@@ -157,18 +194,18 @@ There might be a bias arising from omitting "outside learning opportunities" fro
 ```{r, echo=6:7, warning=F, message=F}
 library(AER)
 data(CASchools)
-CASchools$tsratio  <- CASchools$students/CASchools$teachers
+CASchools$size  <- CASchools$students/CASchools$teachers
 CASchools$score    <- (CASchools$read + CASchools$math)/2
 
-model <- lm(score ~ tsratio + english + lunch, data = CASchools)
+model <- lm(score ~ size + english + lunch, data = CASchools)
 summary(model)
 ```
 </div>
 
 Thus, the estimated regression line is
 
-$$ \widehat{TestScore} = \underset{(4.7)}{700.2} - \underset{(0.24)}{1.00} \times STR - \underset{(0.032)}{0.122} \times english + \underset{(0.022)}{0.547} \times lunch. $$
+$$ \widehat{TestScore} = \underset{(4.7)}{700.2} - \underset{(0.24)}{1.00} \times size - \underset{(0.032)}{0.122} \times english + \underset{(0.022)}{0.547} \times lunch. $$
 
-We observe no substantial changes in the conclusion about the effect of `STR`: the coefficient changes by only $0.1$ and keeps its significance. 
+We observe no substantial changes in the conclusion about the effect of `size`: the coefficient changes by only $0.1$ and keeps its significance. 
 
 
