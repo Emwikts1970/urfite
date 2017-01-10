@@ -5,4 +5,5 @@
 *.html
 *.png
 *.Rproj
+_site/
 sceenshots.Rmd
