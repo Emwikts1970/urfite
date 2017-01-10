@@ -2,36 +2,37 @@
 
 This chapter introduces the simple linear regression model which relates one variable, $X$, to another variable $Y$. If for example a school cuts the class sizes by hiring new teachers, how would this effect the performance of the students? With linear regression we can not only examine whether the class size $\left(X\right)$ does have an impact on the test results $\left(Y\right)$. We can also learn something about the direction and the strength of this effect. 
 
-To start with an easy example consider the following combinations of average test scores and the average student to teacher ratios in some school districts:
+To start with an easy example consider the following combinations of average test scores and the average class size in some school districts:
 
 <div class="fold o">
 ```{r}
 #Creating sample data
-class_data <- data.frame(TestScore           = c(680, 640, 670, 660, 630, 660, 635), 
-                         StudentTeacherRatio = c(15, 17, 19, 20, 22, 23.5, 25)
-                         )
+TestScore   <- c(680, 640, 670, 660, 630, 660, 635) 
+ClassSize   <- c(15, 17, 19, 20, 22, 23.5, 25)
+                         
 #Print out sample data
-class_data 
+TestScore 
+ClassSize
 ```
 </div>
 
 If we use a simple linear regression model we assume that the relationship 
 between the two variables can be represented by a straight line ($y = bx + a$). 
 
-Lets suppose that the "true" function which relates test scores and student to teacher ratio 
+Lets suppose that the "true" function which relates test scores and class size
 to each other is
 
 $$TestScore = 713 - 3 \times ClassSize.$$
 
 If it is possible it is always a good idea to visualize the data you work with in an appropriate way.
-For our purpose we can use the function `plot()` to produce a scatterplot with `StudentTeacherRatio` on the $X$-axis and `TestScore` on the $Y$-axis. An easy way to do so is to call `plot(y_variable ~ x_variable)`.   
-We might furthermore want to add the true relationship to the plot. To draw a straight line `R` provides the
+For our purpose we can use the function `plot()` to produce a scatterplot with `ClassSize` on the $X$-axis and `TestScore` on the $Y$-axis. An easy way to do so is to call `plot(y_variable ~ x_variable)`.   
+We might furthermore want to add the true relationship to the plot. To draw a straight line R provides the
 function `abline()`. We just have to call this function with arguments `a` (representing the intercept) 
 and `b` (representing the slope) after we executed `plot()` in order to add the line to our scatterplot. The following code reproduces figure 4.1 from the book. 
 
 <div class="fold o">
 ```{r Figure 4.1}
-plot(TestScore ~ StudentTeacherRatio, data = class_data)
+plot(TestScore ~ ClassSize)
 abline(a = 713, b = -3)
 ```
 </div>
@@ -52,7 +53,7 @@ $$Y_i = \beta_0 + \beta_1 X_1 + u_i $$
 where
 
 - the subscript $i$ runs over observations, $i = 1$, ..., $n$
-- $Y_i$ is the *dependent variable*, the *regressand*Library, or simply the *left-hand variable*
+- $Y_i$ is the *dependent variable*, the *regressand*, or simply the *left-hand variable*
 - $X_i$ is the *independent variable*, the *regressor*, or simply the *left-hand variable*
 - $\beta_0 + \beta_1 X$ is *population regression line* or the *population regression function*
 - $\beta_0$ is the *intercept* of the population regression line
@@ -71,7 +72,7 @@ data(CASchools)                                                 # loads the the 
 ```
 
 For several reasons it is interesting to know what kind of object we are dealing with. 
-`class(object_name)` returns the type (class) of the object. Depending on the class of an object different
+`class(object_name)` returns the type (class) of the object. Depending on the class of an object several
 functions (such as `plot`) behave differently (example link).
 
 ```{r}
@@ -80,7 +81,7 @@ class(CASchools)
 
 It turns out that our object is of class `data.frame` which is a convienient format to work with. 
 
-With `head()` we get a first overview over our data. This function shows only the first 6 rows of the dataset which prevents an overcrowded console output. An alternative to `class()` and `head()` is `str()` which means structure and gives an comprehensive overview of the object.  
+With `head()` we get a first overview of our data. This function shows only the first 6 rows of the dataset which prevents an overcrowded console output. An alternative to `class()` and `head()` is `str()` which means structure and gives an comprehensive overview of the object.  
 
 <div class="fold o">
 ```{r}
@@ -88,57 +89,67 @@ head(CASchools)
 ```
 </div>
 
-We find that the dataset consists of plenty variables but the two we are intersted in (average test scores and student-teacher ratio) are not included. However, it is possible to calculate both from the existing data. To obtain the student to teacher-ratio we divide the number of students by the number of teachers. The avarage test score is the arithmetic mean of the test score for reading and the score of the math test.  
+We find that the dataset consists of plenty variables but the two we are intersted in (average test scores and class size) are not included. However, it is possible to calculate both from the existing data. To obtain the average class size we divide the number of students by the number of teachers. The avarage test score is the arithmetic mean of the test score for reading and the score of the math test.  
 
 <div class="fold o">
 ```{r}
-CASchools$tsratio  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
+CASchools$size     <- CASchools$students/CASchools$teachers     # class size
 CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
 ```
 </div>
 
-The next code chunk reproduces table 4.1 from the text book which summarizes the distribution of test scores and class sizes. In order to have a nice display format we gather all data after the computation in a data frame. 
+The next code chunk reproduces table 4.1 from the text book which summarizes the distribution of test scores and class sizes. 
+For this we use the functions `mean` (computes the arithmetic mean of the provided numbers), `sd` (computes the standard deviation), and 
+`quantiles` (returns a vector of the desired quantiles).
+
+In order to have a nice display format we gather all data after the computation in a `data.frame`. 
 
 <div class="fold o">
 ```{r Table 4.1, results='hold'}
-avg_tsratio   <- mean(CASchools$tsratio) 
+avg_size      <- mean(CASchools$size) 
 avg_score     <- mean(CASchools$score)
-sd_tsratio    <- sd(CASchools$tsratio) 
+sd_size       <- sd(CASchools$size) 
 sd_score      <- sd(CASchools$score)
 quantiles     <- c(0.10, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9)
-quant_tsratio <- quantile(CASchools$tsratio, quantiles)
+quant_size    <- quantile(CASchools$size, quantiles)
 quant_score   <- quantile(CASchools$score, quantiles)
 
 #Gather everything in a data frame 
-DistributionSummary <- data.frame(Average           = c(avg_tsratio, avg_score), 
-                                  StandardDeviation = c(sd_tsratio, sd_score), 
-                                  quantile          = rbind(quant_tsratio, quant_score)
+DistributionSummary <- data.frame(Average           = c(avg_size, avg_score), 
+                                  StandardDeviation = c(sd_size, sd_score), 
+                                  quantile          = rbind(quant_size, quant_score)
                                   )
 DistributionSummary
 ```
 </div>
 
-Before we start with the regression it is a good idea to take a closer look at our data set by plotting it. This allows us to detect specific characteristics of our data, such as outliers, which are hard to discover by looking at mere numbers. The easiest way to do so in `R` is the function `plot()`.   
-Figure 4.2 shows a scatterplot of all observations. We see that the points are scatterd strongly and a apparent relationship cannot be detected with the naked eye.
+R already contains a `summary()`function which can be applied to `data.frames`. Check it out! 
+
+As we did for the sample data we use `plot()` for a visual survey. This allows us to detect specific characteristics of our data, 
+such as outliers, which are hard to discover by looking at mere numbers. This time the `plot()` command was extended by a few more arguments. 
+The first argument `score ~ size` is again a formula representing the y and the x variables. However, this time the two variables are not 
+saved in seperate varibales but are contained in a `data.frame`. R would not find the variables without the argument `data`. Here we put in the name of the `data.frame` to which the variables belong. The other three arguments change the appearance of the plot. `main` adds a title and `xlab` and `ylab` are adding custom labels to the axes.  
 
 <div class="fold o">
 ```{r}
-plot(score ~ tsratio, 
+plot(score ~ size, 
      data = CASchools,
-     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
-     xlab = "Student-Teacher Ratio (X)",
+     main = "Scatterplot of Test Score vs. Class Size", 
+     xlab = "Class Size (X)",
      ylab = "Test Score (Y)"
 )
 ```
 </div>
 
+The plot (figure 4.2 in the book) shows the scatterplot of all observations. We see that the points are strongly scatterd and an apparent relationship cannot be detected with the naked eye.
+
 With the commad `cor()` the correlation between 2 variables can be computed. As the scatterplot already suggested the correlation is with $-0.23$ rather weak. 
 
 ```{r}
-cor(CASchools$tsratio, CASchools$score)
+cor(CASchools$size, CASchools$score)
 ```
 
-The task we are facing now is to find the line which fits best to this data.  
+The task we are facing now is to find the line which fits best to the data.  
 
 ## The Ordinary Least Squares Estimator (OLS)
 
@@ -177,41 +188,24 @@ The estimated intercept $(\hat{\beta_0})$, slope $(\hat{\beta_1})$, and residual
 </p>
 </div>
 
-There are many possible ways to compute $\left(\hat{\beta_0}\right)$ and $\left(\hat{\beta_1}\right)$ in R. We could implement the formulas by two of R's most basic functions `mean()` and `sum()`. But of course their are also other and even more manual ways to do the same tasks. 
+There are many possible ways to compute $\left(\hat{\beta_0}\right)$ and $\left(\hat{\beta_1}\right)$ in R. We could implement the formulas with two of R's most basic functions `mean()` and `sum()`. But of course their are also other and even more manual ways to do the same tasks. 
 
 
 ```{r}
-attach(CASchools)
-beta_1 <- sum((tsratio - mean(tsratio))*(score - mean(score))) / sum((tsratio - mean(tsratio))^2)
-beta_0 <- mean(score) - beta_1 * mean(tsratio)
+attach(CASchools) #allows to use the variables contained in CASchools directly
+beta_1 <- sum((size - mean(size))*(score - mean(score))) / sum((size - mean(size))^2)
+beta_0 <- mean(score) - beta_1 * mean(size)
 beta_1
 beta_0
 ```
 
 
-OLS is one of the most widly-used estimation techniques. Hence R, as a statistical programming language, already contains a built-in function `lm` (**l**inear **m**odel) which can be used to carry out regression analysis. The first argument of the function is the formula with the basic syntax `y~x` where `y` is the dependent variable and `x` the explanatory variable. The argument `data` specifies the data set to be used in the regression. We now revisit the example from the book where the relationship between students' test scores and the student-teacher ratio is analysed. The following code uses `lm` to replicate quation $(4.11)$ and figure $4.3$. 
-
-<div class="fold o">
-```{r, fig.align='center', echo=-1, fig.cap='Figure 4.3'}
-plot(score ~ tsratio, 
-     data = CASchools,
-     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
-     xlab = "Student teacher-ratio (X)",
-     ylab = "Test Score (Y)",
-     xlim = c(10,30),
-     ylim = c(600, 720))
-
-abline(a = beta_0, b = beta_1) # add regression line
-```
-</div>
-
-There is a function called `lm` (**l**inear **m**odel) that can compute the OLS for you. It also takes care of a lot of other things like the residuals, fitted values, etc. Use `lm` to compute the OLS and add them to the figure 4.2 as well to check whether the coefficients really are the same.
-
+OLS is one of the most widly-used estimation techniques. Hence R, as a statistical programming language, already contains a built-in function `lm` (**l**inear **m**odel) which can be used to carry out regression analysis. The first argument of the function is the formula with the basic syntax `y~x` where `y` is the dependent variable and `x` the explanatory variable. The argument `data` specifies the data set to be used in the regression. We now revisit the example from the book where the relationship between students' test scores and the class size is analysed. The following code uses `lm` to replicate equation $(4.11)$ and figure $4.3$. 
 
 <div class="fold o">
 ```{r}
 #Assigns the results of the lm estimation to linear_model
-linear_model <- lm(score ~ tsratio, data = CASchools)
+linear_model <- lm(score ~ size, data = CASchools)
 
 #Prints the standard output of the estimated lm object 
 linear_model
@@ -219,19 +213,20 @@ linear_model
 </div>
 
 <div class="fold o">
-```{r, results='hold',fig.align='center', fig.cap='Figure 4.4'}
-#Produces the scatterplot
-plot(score ~ tsratio, 
+```{r, fig.align='center', echo=-1, fig.cap='Figure 4.3'}
+plot(score ~ size, 
      data = CASchools,
-     main = "Scatterplot of Test Score vs. Student-Teacher Ratio", 
-     xlab = "Student teacher-ratio (X)",
-     ylab = "Test Score (Y)"
-     )
+     main = "Scatterplot of Test Score vs. Class Size", 
+     xlab = "Class Size (X)",
+     ylab = "Test Score (Y)",
+     xlim = c(10,30),
+     ylim = c(600, 720))
 
-#Adds the estimated regression line
-abline(linear_model)
+abline(linear_model) # add regression line
 ```
 </div>
+
+Did you note that we this time did not pass the intercept and slope parameters to `abline`? If you call `abline()` with an object of class `lm` and only one regressor variable R does automatically draws the regression line. 
 
 ##Measures of fit
 
@@ -261,12 +256,20 @@ Both measures of fit can be obtained by using the  function `summary()` with the
 summary(linear_model)
 ```
 
-The $R^2$ in the output is called multiple R-squared and takes the value $0.051$. Hence, $5.1 \%$ of the variance of the dependent variable *TestScore* is explained by the explanatory variable *STR*. That is the regression explains some of the variance but much of the variation of *TestScore* remains unexplained (compare figure 4.3).   
+The $R^2$ in the output is called multiple R-squared and takes the value $0.051$. Hence, $5.1 \%$ of the variance of the dependent variable `TestScore` is explained by the explanatory variable *STR*. That is the regression explains some of the variance but much of the variation of `TestScore` remains unexplained (compare figure 4.3).   
 
 The **SER** is called residual standard error and takes the value 18.58. The unit of the **SER** is the same as the unit of the dependent variable. We interpret the **SER** as follows: on average the deviation of the actual achieved *TestScore* and the regression line is 18.58 points. 
 
 
+
+#Ab hier keine Beispiele aus dem Buch mehr für diese Kapitel. Was wollen wir machen? 
+
+
 #4.4 The Least Square Assumptions
+
+OLS performs well under a great variety of different circumstances. However, there are some assumptions which are posed on the data 
+which need to be satisfied in order to achieve reliable results.  
+
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 4.3 </h3>          
@@ -280,22 +283,33 @@ $$Y_i = \beta_0 + \beta_1 X_i + u_i \text{, } i = 1, ...,n \text{, where} $$
 </p>
 </div>
 
-##Error Term has conditional mean of zero
+## Assumption #1 Error Term has conditional mean of zero
+
+This means that no matter which X-value we choose the error term should not show any systematic pattern and have a mean of $0$.
+Consider the case that $E(u) = 0$ but for low and high values of $X$ the error term tends to be positive and for midrange values of
+X the error tends to be negative. We can use R to construct such an example. To do so we generate our own data using R's build in
+random number generators. We can start by creating a vector of X-values. For our example we decide to generate uniformly distributed numbers 
+which can be done with the function `runif()`. We also need to simulate the error term. For this we generate normally distributed numbers with 
+a mean equal to $0$. Finally, the y-value is obtained as a quadratic function of the X-values and the error term.
+
 <div class="fold o">
 ```{r}
 set.seed(321)
-x <- runif(50, -5, 5)
-u <- rnorm(50, sd = 5)
-y <- x^2 + 2*x + u 
-plot(y~x)
+x <- runif(50, min = -5, max = 5)
+u <- rnorm(50, sd = 5)             
+y <- x^2 + 2*x + u                 # the truth 
 
+plot(y~x)
 l <- predict(lm(y~x +  I(x^2)), data.frame(x = sort(x)))
 abline(lm(y~x), col = "red")
 lines(sort(x), l)
 ```
 </div>
 
-## Sensitivity to Outliers
+####Assumption #2 Identical and independtly distributed
+
+
+##Assumption #3 Sensitivity to Outliers
 
 <div class="fold o">
 ```{r}
@@ -340,7 +354,7 @@ df %>%
 
 Because the OLS estimators $\hat{\beta_0}$ and $\hat{\beta_1}$ are computed from a randomly drawn sample, the estimators themselves are random variables with a probability distribution -the sampling distribution- that describes the values they could take over different random samples. Although the sampling distribution of $\hat{\beta_0}$ and $\hat{\beta_1}$ can be complicated when the sample size is small, it is possible to make certain statements about it that hold for all $n$. In particular 
 $$ E(\hat{\beta_0}) = \beta_0 \text{ and } E(\hat{\beta_1}) = \beta_1,$$
-that is, $\hat{\beta_0}$ and $\hat{\beta_1}$ are unbiased estimators of $\beta_0$ and $\beta_1$. If the sample is sufficiently large, by the central limit theorem the sampling distribiution of the estimators is well approximated by the bivariate normal distribution. This implies that the marginal distributions are also normal in large samples.
+that is, $\hat{\beta_0}$ and $\hat{\beta_1}$ are unbiased estimators of $\beta_0$ and $\beta_1$. If the sample is sufficiently large, by the central limit theorem the sampling distribution of the estimators is well approximated by the bivariate normal distribution. This implies that the marginal distributions are also normal in large samples.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 4.4 </h3>          
@@ -360,7 +374,7 @@ The large-sample normal distribution of $\hat{\beta_0}$ is $N(\beta_0, \sigma^2_
 </p>
 </div>
 
-Whether this really holds we can verify using R. First we build our own population of $1000$ observations in total (n_pop). To do this we need values for our independent variable $x$, for the error term $u$, and the regression parameters $\beta_0$ and $\beta_1$. With all this we can also compute our dependent variable $y$. In our example we generate the numbers $x_i$, $i = 1$, ... ,$1000$ by drawing a random sample from a uniform distriburion in the range $[0,20]$. The realisations of the error term  $u_i$, $i = 1$, ... ,$1000$ are drawn from a standard distribution with $\mu = 0$ and $\sigma^2 = 100$ (note that `rnorm()` requires $\sigma$ as input). Furthermore we chose $\beta_0 = -2$ and $\beta_1 = 3.5$.  
+Whether this really holds we can verify using R. First we build our own population of $1000$ observations in total (n_pop). To do this we need values for our independent variable $x$, for the error term $u$, and the regression parameters $\beta_0$ and $\beta_1$. With all this we can also compute our dependent variable $y$. In our example we generate the numbers $x_i$, $i = 1$, ... ,$1000$ by drawing a random sample from a uniform distribution in the range $[0,20]$. The realisations of the error term  $u_i$, $i = 1$, ... ,$1000$ are drawn from a standard distribution with $\mu = 0$ and $\sigma^2 = 100$ (note that `rnorm()` requires $\sigma$ as input). Furthermore we chose $\beta_0 = -2$ and $\beta_1 = 3.5$.  
 
 ```{r}
 #Population Regression
