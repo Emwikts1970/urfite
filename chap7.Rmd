@@ -1,6 +1,5 @@
-## Section 7.2
-
-Testing joint hypothesis in a multiple regression framework.
+## Section 7.2 Hypothesis Tests and Confidence Intervals in Multiple Regression
+### Application to Test Scores and the Student-Teacher Ratio
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.1 </h3>          
@@ -12,12 +11,41 @@ Testing joint hypothesis in a multiple regression framework.
 2. Compute the t-statistic,
 $$t = \frac{\hat{\beta}_j - \beta_{j,0}} {SE(\hat{\beta_j})}$$
 3. Compute the p-value,
-$$p-value = 2 \phi(-|t^{act}|)$$
+$$p\text{-value} = 2 \Phi(-|t^{act}|)$$
 
 where $t^{act}$ is the value of the t-statistic actually computed. Reject the hypothesis at the 5\% significance level if the p-value is less than $0.05$ or, equivalently, if $|t^{act}| > 1.96$. The standard error and (typically) the t-statistic and p-value testing $\beta_j = 0$ are computed automativally by statistical software.  
 </p>
   
 </div>
+
+It is easy to verify that principles of testing single hypothesis about the significance of coefficients in the multiple regression model are just as in in the simple regression model. 
+
+You can easily see this by inspection of the summary the regression model
+
+$$ TestScore = \beta_0 - \beta_1 \times STR - \beta_2 \times english + u $$
+
+already discussed in chapter 6.3.
+
+<div class="fold o">
+```{r, echo=5:7, warning=F, message=F}
+library(AER)
+data(CASchools)
+CASchools$tsratio  <- CASchools$students/CASchools$teachers
+CASchools$score    <- (CASchools$read + CASchools$math)/2
+
+model <- lm(score ~ tsratio + english, data = CASchools)
+summary(model)
+```
+</div>
+
+You may check this by computing the $t$-statistics or $p$-values by hand using the output above and R as a calculator!
+
+Using the definition of the $p$-value for a two sided test, we can confirm the $p$-value for the intercept coeffiecient to be approximatley zero:
+
+```{r, warning=F, message=F}
+2*(1-pnorm(abs(92.566)))
+```
+
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.2 </h3>          
@@ -29,21 +57,22 @@ $$[\hat{\beta_j}- 1.96 SE(\hat{\beta}_j), \hat{\beta_j} + 1.96 SE(\hat{\beta_j})
 </p>
 </div>
 
-##Application to Test Scores and the Student-Teacher Ratio
+Let us take a look at the regression from section 6.3 again.
 
-Let us take a look at the regression in section 6.3 again.
+Computing individual confidence intervals for the coefficients in the multiple regression model can be done analogously as in the simple regression model using the function `confint`:
 
-<div class="fold o">
-```{r, echo=5:7, warning=F, message=F}
-library(AER)
-data(CASchools)
-CASchools$tsratio  <- CASchools$students/CASchools$teachers
-CASchools$score    <- (CASchools$read + CASchools$math)/2
-# Confidence Intervals - Application to Test Scores and the Student-Teacher Ratio
+```{r, warning=F, message=F}
 model <- lm(score ~ tsratio + english, data = CASchools)
-summary(model)
+confint(model)
 ```
-</div>
+
+We note that intervals for all three coefficients are computed. 
+
+If we want to compute confidence intervalls at another level of $\alpha$, 0.1 say, we have the change the argument `level` of the `confint` function accordingly.
+
+```{r, warning=F, message=F}
+confint(model, level = 0.9)
+```
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.3 </h3>          
@@ -64,12 +93,26 @@ We will now discuss an example were we face potential omitted variable bias in a
 
 Consider again the estimated regression model
 
-$$ \widehat{TestScore} = \underset{(8.7)}{686.0} - \underset{(0.43)}{1.10} \times STR - \underset{(0.031)}{0.650} \times PctEL. $$
+$$ \widehat{TestScore} = \underset{(8.7)}{686.0} - \underset{(0.43)}{1.10} \times STR - \underset{(0.031)}{0.650} \times english. $$
 
-There might be a bias arising from omitting "outside learning opportunities" from our regression sice a measure like this could be a determinant of the students' test scores and could also be correlated with both regressors already included in the model. Now, "outside learning opportunities" is a complicated concept that is difficult to quantify. A surrogate we can consider instead is a students economic backgroud which should be strongly related the the outside learning opportunities.  We thus augment the model with the variable `LchPct`, the percentage of students that qualify for a free or subsidized lunch in school due to a family income below a certain threshold, and estimate the model again.   
+There might be a bias arising from omitting "outside learning opportunities" from our regression sice a measure like this could be a determinant of the students test scores and could also be correlated with both regressors already included in the model. Now, "outside learning opportunities" is a complicated concept that is difficult to quantify. A surrogate we can consider instead is the students' economic backgroud which should be strongly related the the outside learning opportunities. We thus augment the model with the variable `lunch`, the percentage of students that qualify for a free or subsidized lunch in school due to family incomes below a certain threshold, and estimate the model again.   
 
+<div class="fold o">
+```{r, echo=6:7, warning=F, message=F}
+library(AER)
+data(CASchools)
+CASchools$tsratio  <- CASchools$students/CASchools$teachers
+CASchools$score    <- (CASchools$read + CASchools$math)/2
 
+model <- lm(score ~ tsratio + english + lunch, data = CASchools)
+summary(model)
+```
+</div>
 
+Thus, the estimated regression line is
 
+$$ \widehat{TestScore} = \underset{(4.7)}{700.2} - \underset{(0.24)}{1.00} \times STR - \underset{(0.032)}{0.122} \times english + \underset{(0.022)}{0.547} \times lunch. $$
+
+We observe no substantial changes in the conclusion about the effect of `STR`: the coefficient changes by only $0.1$ and keeps its significance. 
 
 
