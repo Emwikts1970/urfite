@@ -54,9 +54,11 @@ For testing a hypothesis regarding the slope parameter, we need $SE(\hat{\beta}_
 How can we get these values using R? By looking at the second column of the coefficients' summary, we discover both values.
 In the third column, we find $t^{act}$ for tests of hypotheses $H_0: \beta_0=0$ and $H_0: \beta_1=0$. Furthermore we find corresponding $p$-values in the fourth column.
 
+<div class="fold o">
 ```{r}
 summary(linear_model)$coefficients
 ```
+</div>
 
 Let's have a closer look at the test $H_0: \beta_1=0 \, v. \, H_1: \beta_1 \neq 0$. Using our revisited knowledge about $t$-statistics we see that
 
@@ -64,6 +66,7 @@ Let's have a closer look at the test $H_0: \beta_1=0 \, v. \, H_1: \beta_1 \neq 
 
 What does this tell about the significance of the estimated coefficient? Using R we may visualise how such a statement can be made:
 
+<div class="fold o">
 ```{r, fig.align='center'}
 # Plot the standard normal density
 z <- seq(-6,6,0.01)
@@ -93,6 +96,7 @@ rug(c(-1.96,1.96), ticksize  = 0.145, lwd = 2, col = "darkred")
 rug(c(-tact,tact), ticksize  = -0.0451, lwd = 2, col = "darkgreen")
 
 ```
+</div>
 
 We reject the null hypothesis at the 5\% level since $|t^{act}| > 1.96$ or, alternatively and leading to the same result, $p\text{-value} = 2.78*10^{-6} > 0.05$. Hence, we conclude that the coefficient is significantly different from zero. 
 
@@ -113,9 +117,11 @@ Equivalently, this interval can be seen as the set of null hypotheses for which 
 
 Let us now turn back to the regression model stored in `linear_model`. An easy way to get $95\%$ confidence intervals for $\beta_0$ and $\beta_1$ is to use the function `confint()`. We only have to provide a fitted model object as an argument. 
 
+<div class="fold o">
 ```{r}
 confint(linear_model)
 ```
+</div>
 
 Let us check if the calculation is done as we expect it to be. For $\beta_1$, according to the formula presented above, interval borders are computed as
 
@@ -143,6 +149,7 @@ The regression model now is
 
 Let us see how these data points look like.
 
+<div class="fold o">
 ```{r, eval=F}
 # Create the dummy variable as defined above
 for (i in 1:nrow(CASchools)) {
@@ -160,7 +167,9 @@ plot(CASchools$D, CASchools$score,
      main = "Dummy Regression"
      )
 ```
+</div>
 
+<div class="fold o">
 ```{r, fig.align='center', echo=F}
 # Create the dummy variable as defined above
 for (i in 1:nrow(CASchools)) {
@@ -179,6 +188,7 @@ plot(CASchools$D, CASchools$score,
      )
 points(CASchools$D, predict(dummy_model), col="red", pch=20)
 ```
+</div>
 
 We see that it is not useful to think of $\beta_1$ as a slope parameter since $D_i \in \{0,1\}$, i.e. we only observe two discrete values instead of continuous regressor values lying (in some range) on the real line. Simply put, there is no continuous line depicting the conditional expectation function $E(score | D_i)$ since this function is solely defined for positions $0$ and $1$.
 
@@ -190,10 +200,12 @@ The interpretation of estimated coefficients from such a regression model is as 
 
 We will now use R to estimate the dummy regression.
 
+<div class="fold o">
 ```{r}
 dummy_model <- lm(score ~ D, data = CASchools)
 summary(dummy_model)
 ```
+</div>
 
 One can see that the expected test score in districts with $size < 20$ ($D_i = 1$) is predicted to be $650.1 + 7.17 = 657.27$ while districs with $size \geq 20$ ($D_i = 0$) are expected to have an average test score of only $650.1$.
 
@@ -209,9 +221,11 @@ Since $t = 3.88 > 1.96$ we reject the null hypothesis at the $5\%$ level of sign
 
 Equivalently, we may use the `confint()` function to compute a $95\%$ confidence interval for the true difference in means and see if the hypothesised value is element of this set. 
 
+<div class="fold o">
 ```{r}
 confint(dummy_model)
 ```
+</div>
 
 We reject the hypothesis at the $5\%$ significance level since $\beta_{1,0} = 0$ lies outside of the interval $[3.54, 10.8]$.
 
@@ -259,6 +273,9 @@ boxplot(y~x, add=TRUE, at=c(10,15,20,25), col=alpha("gray", 0.4), border="black"
 In this example, it is straightforward to see that we face unequal conditional variances. Specifically, the variance of the test score (and therefore $var(u_i|X=x)$) increases with $X$.
 </div>
 
+
+
+
 ### Should we care about heteroskedasticity?
 
 First, let us see how $SE(\hat{\beta}_1)$ is computed under the assumption of homoskedasticity. The `summary` function uses the homoskedasticity-only formula 
@@ -268,6 +285,8 @@ This in fact is an estimator for the standard deviation of the estimator $\hat{\
 
 
 We will now use R to compute the homoskedasticity-only standard error estimator for $\hat{\beta}_1$ by hand and see if it matches the value provided by `summary()`.
+
+<div class="fold o">
 ```{r}
 # Store model summary in 'mod'
 model <- summary(linear_model)
@@ -287,6 +306,8 @@ SE.beta_1.hat <- sqrt(SER^2/V); SE.beta_1.hat
 round(model$coefficients[2,2],4) == round(SE.beta_1.hat,4)
 
 ```
+</div>
+
 Indeed, the estimated values are equal.
 
 ### Computation of heteroskedasticity-robust standard errors
@@ -300,28 +321,35 @@ Stadard error estimates computed this way are also referred to as Eicker-Huber-W
 It can be quite cumbersome to do so this calculation by hand. Luckily, there are R function for that purpose. A convenient one, named `vcovHC` is contained in the `sandwich` package. 
 
 Let us now compute robust standard error estimates for coefficients in `linear_model`.
+
+<div class="fold o">
 ```{r}
 library(sandwich)
 
 vcov <- vcovHC(linear_model, type = "HC0")
 vcov
 ```
+</div>
+
 The output is the variance-covariance matrix of coefficient estimates. We are interested in the square root of the diagonal elements of this matrix since these are the standard error estimates we seek:
 
+<div class="fold o">
 ```{r}
 robust_se <- sqrt(diag(vcov))
 robust_se
 ```
-
+</div>
 
 Now assume we want to generate a coefficient summary that reports robust standard error estimates for coefficient estimates, robust $t$-statistics and corresponding $p$-values for the regression model `linear_model`. This can be done as follows:
 
+<div class="fold o">
 ```{r}
 # We invoke the function `coeftest()` on our model. Further we specify in the argument `vcov.`
 # that the Eicker-Huber-White estimator, "HC0", is to be used.
 
 coeftest(linear_model, vcov. = vcovHC(linear_model, type = "HC0"))
 ```
+</div>
 
 We see that values reported in the column 'Std. Error' equal the ones received using `sqrt(diag(vcov))`.
 
@@ -349,6 +377,7 @@ We also know that $Var(\hat{\beta}_1)=\frac{\sigma^2}{n}$.
 
 We will now use R for a simulation study to illustrate what happens to the variance of the estimator if different weights \[ w_i = \frac{1 \pm \epsilon}{n} \] are assigned to either half of the sample $Y_1, \dots, Y_n$.
 
+<div class="fold o">
 ```{r, fig.align='center'}
 
 # Set sample size and number of repititionas
@@ -381,10 +410,11 @@ lines(density(weightedestimator),col="steelblue", lwd=3)
 abline(v=0,lty=2)
 legend('topright', c("OLS","weighted"), col=c("purple","steelblue"),lwd=3)
 ```
+</div>
 
 What conclusion can we draw from the result?
 
 - Both estimators seem to be unbiased: The means of their estimated distributions are zero.
 - The `weightedestimator` is less efficient than the `ols` estimator: There is higher dispersion when weights are $w_i = \frac{1 \pm \epsilon}{n}$ instead of $w_i=\frac{1}{n}$. 
 
-<div>
+</div>
