@@ -66,18 +66,22 @@ where
 
 In practical situations the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must use data to estimate the two unknown parameters. We will demonstrate how to do that on a real data example. We want to relate test scores to class sizes in $420$ California school restricts. The test score is the districtwide average of reading and math scores for fifth graders. Class size is measured as the number of students divided by the number of teachers (student-teacher ratio). The California School dataset is available in the `AER` package. After installing the package with `install.packages()` and attaching it with `library()` the dataset can be loaded using the `data()` function. 
 
+<div class="fold o">
 ```{r, message=FALSE, warning=FALSE}
 library(AER)                                                    # contains the data set 
 data(CASchools)                                                 # loads the the data set in the workspace 
 ```
+</div>
 
 For several reasons it is interesting to know what kind of object we are dealing with. 
 `class(object_name)` returns the type (class) of the object. Depending on the class of an object several
 functions (such as `plot`) behave differently (example link).
 
+<div class="fold o">
 ```{r}
 class(CASchools)
 ```
+</div>
 
 It turns out that our object is of class `data.frame` which is a convienient format to work with. 
 
@@ -145,9 +149,11 @@ The plot (figure 4.2 in the book) shows the scatterplot of all observations. We 
 
 With the commad `cor()` the correlation between 2 variables can be computed. As the scatterplot already suggested the correlation is with $-0.23$ rather weak. 
 
+<div class="fold o">
 ```{r}
 cor(CASchools$size, CASchools$score)
 ```
+</div>
 
 The task we are facing now is to find the line which fits best to the data.  
 
@@ -190,7 +196,7 @@ The estimated intercept $(\hat{\beta_0})$, slope $(\hat{\beta_1})$, and residual
 
 There are many possible ways to compute $\left(\hat{\beta_0}\right)$ and $\left(\hat{\beta_1}\right)$ in R. We could implement the formulas with two of R's most basic functions `mean()` and `sum()`. But of course their are also other and even more manual ways to do the same tasks. 
 
-
+<div class="fold o">
 ```{r}
 attach(CASchools) #allows to use the variables contained in CASchools directly
 beta_1 <- sum((size - mean(size))*(score - mean(score))) / sum((size - mean(size))^2)
@@ -198,7 +204,7 @@ beta_0 <- mean(score) - beta_1 * mean(size)
 beta_1
 beta_0
 ```
-
+</div>
 
 OLS is one of the most widly-used estimation techniques. Hence R, as a statistical programming language, already contains a built-in function `lm` (**l**inear **m**odel) which can be used to carry out regression analysis. The first argument of the function is the formula with the basic syntax `y~x` where `y` is the dependent variable and `x` the explanatory variable. The argument `data` specifies the data set to be used in the regression. We now revisit the example from the book where the relationship between students' test scores and the class size is analysed. The following code uses `lm` to replicate equation $(4.11)$ and figure $4.3$. 
 
@@ -252,9 +258,11 @@ $$SER = s_{\hat{u} } \text{, where } s_{\hat{u} }^2 = \frac{1}{n-2} \sum_{i = 1}
 ##Application to the test score data
 Both measures of fit can be obtained by using the  function `summary()` with the `lm` object as the only argument. Whereas `lm()` only prints out the coefficients, `summary()` provides additional predefined information such as the $R^2$ and the **SER**.  
 
+<div class="fold o">
 ```{r}
 summary(linear_model)
 ```
+</div>
 
 The $R^2$ in the output is called multiple R-squared and takes the value $0.051$. Hence, $5.1 \%$ of the variance of the dependent variable `TestScore` is explained by the explanatory variable *STR*. That is the regression explains some of the variance but much of the variation of `TestScore` remains unexplained (compare figure 4.3).   
 
@@ -376,6 +384,7 @@ The large-sample normal distribution of $\hat{\beta_0}$ is $N(\beta_0, \sigma^2_
 
 Whether this really holds we can verify using R. First we build our own population of $1000$ observations in total (n_pop). To do this we need values for our independent variable $x$, for the error term $u$, and the regression parameters $\beta_0$ and $\beta_1$. With all this we can also compute our dependent variable $y$. In our example we generate the numbers $x_i$, $i = 1$, ... ,$1000$ by drawing a random sample from a uniform distribution in the range $[0,20]$. The realisations of the error term  $u_i$, $i = 1$, ... ,$1000$ are drawn from a standard distribution with $\mu = 0$ and $\sigma^2 = 100$ (note that `rnorm()` requires $\sigma$ as input). Furthermore we chose $\beta_0 = -2$ and $\beta_1 = 3.5$.  
 
+<div class="fold o">
 ```{r}
 #Population Regression
 pop_n      <- 1000
@@ -384,6 +393,7 @@ u          <- rnorm(pop_n, sd = 10)
 y          <- -2 + 3.5*x + u
 population <- data.frame(x, y)
 ```
+</div>
 
 From now on we will consider the previously generated data as the truth (which we of course would not know in a real world example). This knowledge about the true relationship between $y$ and $x$ can be used to verify the statements of key concept 4.4. Now let us assume that we do not know the true values for $\beta_0$ and $\beta_1$ and we also can not observe the whole population. However, we can observe a random sample of 100 observations. Using OLS it would be possible to estimate $\beta_0$ and $\beta_1$. However, the estimates would depend on which observations of the population we have drawn and it is very unlikly that 2 sample of 100 observation would result in the same parameter estimates. 
 

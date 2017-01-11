@@ -41,10 +41,11 @@ You may check this by computing the $t$-statistics or $p$-values by hand using t
 
 Using the definition of the $p$-value for a two sided test, we can confirm the $p$-value for the intercept coeffiecient to be approximatley zero:
 
+<div class="fold o">
 ```{r, warning=F, message=F}
 2*(1-pnorm(abs(92.566)))
 ```
-
+</div>
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.2 </h3>          
@@ -60,18 +61,22 @@ Let us take a look at the regression from section 6.3 again.
 
 Computing individual confidence intervals for the coefficients in the multiple regression model can be done analogously as in the simple regression model using the function `confint`:
 
+<div class="fold o">
 ```{r, warning=F, message=F}
 model <- lm(score ~ size + english, data = CASchools)
 confint(model)
 ```
+</div>
 
 We note that intervals for all three coefficients are computed. 
 
 If we want to compute confidence intervalls at another level of $\alpha$, 0.1 say, we have to set the argument `level` of the `confint` function accordingly.
 
+<div class="fold o">
 ```{r, warning=F, message=F}
 confint(model, level = 0.9)
 ```
+</div>
 
 #### An Application to Test Scores and th Student-Teacher Ratio
 
@@ -95,6 +100,7 @@ with $Expn$ the total amount of expenditures per pupil in the district (thousand
 
 Estimating the model equation yields:
 
+<div class="fold o">
 ```{r, echo=6:8, warning=F, message=F}
 library(AER)
 data(CASchools)
@@ -105,13 +111,16 @@ CASchools$expenditure <- CASchools$expenditure/1000
 model <- lm(score ~ size + english + expenditure, data = CASchools)
 summary(model)
 ```
+</div>
 
 We see that the estimated effect of a change in the student-teacher ratio on test scores with expenditures per pupil and the share of english learning pupils held constant is rather small (`-0.29`). What is more, the coefficient of `size` is not significantly different from zero anymore ($p\text{-value}=$`0.55) so the new model provides no evidence that changing the student-teacher ratio has any effect on the test scores in this case.
 
+<div class="fold o">
 ```{r, echo=5:7, warning=F, message=F}
 model <- lm(score ~ size + english, data = CASchools)
 summary(model)
 ```
+<div>
 
 #### Joint Hypothesis testing using the $F$-Statistic
 
@@ -125,11 +134,13 @@ with $SSR_{restricted}$ the sum of squared residuals from the restricted regress
 
 Luckily, it is fairly easy to conduct an $F$-test in R. We can use the function `linearHypothesis` coming with the `car` package.
 
+<div class="fold o">
 ```{r, warning=F, message=F}
 model <- lm(score ~ size + english + expenditure, data = CASchools)
 # execute the function on the model object and provide the linear restriction to be tested as strings
 linearHypothesis(model, c("size=0","expenditure=0"))
 ```
+</div>
 
 From the output we can infer that the $F$-statistic for this joint hypothesis test is around `-8.01` and the corresponding $p$-value is `0.000386`. Thus we can reject the null hypothesis that both coefficients are zero at any level of significance common in practice.
 
@@ -139,12 +150,14 @@ The standard output of a model summary also reports a related $p$-value correspo
 
 We will now check that the $F$-statistic belonging to the $p$-values listed in the model's summary coincides with the result reportet by `linearHypothesis`:
 
+<div class="fold o">
 ```{r, warning=F, message=F}
 # execute the function on the model object and provide the linear restriction to be tested as strings
 linearHypothesis(model, c("size=0","english=0","expenditure=0"))
 # Access the F-statistic from the model's summary
 summary(model)$fstatistic
 ```
+</div>
 
 #### Confidence Sets for Multiple Coefficients
 
@@ -155,13 +168,13 @@ If we consider two coefficients, their confidence set is an ellipse centered aro
 In the following, we plot the 95\% confidence ellipse for the coefficients on `size` and `expenditure` from the last regression we conducted.
 By specifying the additional argument `fill`, the confidence set colored which gives a better impression which set of coefficient pairs is meant.
 
-
+<div class="fold o">
 ```{r, echo2:3, warning=F, message=F}
 model <- lm(score ~ size + english + expenditure, data = CASchools)
 # Draw the 95% confidence set for coefficients on size and expenditure
 confidenceEllipse(model, fill = T, which.coef = c("size","expenditure"))
 ```
-
+</div>
 
 We see that the ellipse is centered arrount $(-0.29, 3.87)$ i.e. the pair of coefficients estimates on `size` and `expenditure`.
 
