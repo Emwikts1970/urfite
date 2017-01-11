@@ -109,11 +109,6 @@ summary(model)
 We see that the estimated effect of a change in the student-teacher ratio on test scores with expenditures per pupil and the share of english learning pupils held constant is rather small (`-0.29`). What is more, the coefficient of `size` is not significantly different from zero anymore ($p\text{-value}=$`0.55) so the new model provides no evidence that changing the student-teacher ratio has any effect on the test scores in this case.
 
 ```{r, echo=5:7, warning=F, message=F}
-library(AER)
-data(CASchools)
-CASchools$size  <- CASchools$students/CASchools$teachers
-CASchools$score    <- (CASchools$read + CASchools$math)/2
-
 model <- lm(score ~ size + english, data = CASchools)
 summary(model)
 ```
@@ -155,17 +150,22 @@ summary(model)$fstatistic
 
 Based on the $F$-statistic that we have previously encountered, we can specify confidence sets i.e. sets consisting of combinations of coefficients that contain the true combination of coefficients in, 95\% say, of all cases if we could infinitely draw random samples, just as in the univariate case. Put differently, it is the set of coefficient combinations for which we cannot reject the null hypothesis related to the computed $F$-statistic.  
 
-If we consider two coefficients, their confidence set is an ellipse. Again, there is a very convenient way to plot the "confidence ellipse" for coefficients of model objects, namely the function `ellipse` which is also coming with the `car` package.
+If we consider two coefficients, their confidence set is an ellipse centered around the coefficient estimates. Again, there is a very convenient way to plot the "confidence ellipse" for coefficients of model objects, namely the function `ellipse` which is also coming with the `car` package.
 
 In the following, we plot the 95\% confidence ellipse for the coefficients on `size` and `expenditure` from the last regression we conducted.
 By specifying the additional argument `fill`, the confidence set colored which gives a better impression which set of coefficient pairs is meant.
 
-```{r, warning=F, message=F}
+
+```{r, echo2:3, warning=F, message=F}
+model <- lm(score ~ size + english + expenditure, data = CASchools)
 # Draw the 95% confidence set for coefficients on size and expenditure
 confidenceEllipse(model, fill = T, which.coef = c("size","expenditure"))
 ```
 
 
+We see that the ellipse is centered arrount $(-0.29, 3.87)$ i.e. the pair of coefficients estimates on `size` and `expenditure`.
+
+#### Model Specification for Multiple Regression
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.3 </h3>          
@@ -208,4 +208,24 @@ $$ \widehat{TestScore} = \underset{(4.7)}{700.2} - \underset{(0.24)}{1.00} \time
 
 We observe no substantial changes in the conclusion about the effect of `size`: the coefficient changes by only $0.1$ and keeps its significance. 
 
+Although the difference in estimated coefficients is not big in this case, it might be a good idea to keep  `lunch` in the model to make the assumption of conditional mean independence more credible.
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 7.4 </h3>          
+<h3 class = "left"> $R^2$ and $\overline{R^2}$: What They Tell You --- and What They Don't  </h3>
+
+<p>
+
+<b><i>The $R^2$ and $\overline{R^2}$ tell you</i></b> whether the regressors are good at predicting, or "explaining" the values of the independent variable in the sample of data at hand. if the $R^2$ (or $\overline{R^2}$) is nearly 1, then the regressors produce good prediction of the dependent variable in that sample, in the sense that the variance of OLS residuals is small compared to the variance of the dependent variable. If the $R^2$ (or $\overline{R^2}$) is nearly 0, the opposite is true.
+
+<b><i>The $R^2$ and $\overline{R^2}$ do <u>not</u> tell you </i></b> whether:
+
+1. An included variable is statistically significant. 
+2. The regressors are truea cause of the movements in the dependent variable
+3. There is omitted variable bias, or
+4. You have chosen the most appropriate set of regressors.
+
+</p>
+  
+</div>
 
