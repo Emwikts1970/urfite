@@ -19,7 +19,7 @@ $(document).ready(function() {
       
       // plots
       $(this).find('img').wrap('<pre class=\"plot\"></pre>');
-      $('pre.plot', this).prepend("<div class=\"showopt\">Show Plot</div><br style=\"line-height:22px;\"/>");
+      $('pre.plot', this).prepend("<div class=\"showopt\">Hide Plot</div><br style=\"line-height:22px;\"/>");
       $('pre.plot', this).children('img').addClass('folded');
       
     }
