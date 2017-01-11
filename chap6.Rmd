@@ -1,5 +1,9 @@
 ## Section 6.1 (Omitted Variable Bias)
 
+t.b.d.
+
+(see chapter 7)
+
 ## Section 6.3
 ```{r}
 # Multiple Regression - Application to Test Scores and the Student-Teacher Ratio
