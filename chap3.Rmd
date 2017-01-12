@@ -1,31 +1,65 @@
+## Section 3.1
+
+### Estimation of the Population Mean
+
+To demonstrate properties of the sample mean as an estimator for the corresponding population mean consider the following code snippet.
+
+```{r, echo = T, eval = T, message = F, warning = F}
+pop <- rnorm(25000, 10, 1)
+est <- replicate(expr = mean(sample(x = pop, size = 100)), n = 25000)
+```
+
+We generate a population `x` which consists of 10000 observations drawn from the normal distribution with $\bar{x} = 10$ and $\hat{\sigma}^2 = 1$. Afterwards we use the function `replicate` to evaluate the code expression in `expr` $n = 25000$ times.
+That is, we take 25000 samples of size 100 and compute the sample mean for each of them.
+
+The plot below...
+
+```{r, echo = T, eval = T, message = F, warning = F}
+plot(density(est), col = 'steelblue', lwd = 2, bty = 'l')
+abline(v = 10, lty = 2)
+```
+
+
+
+
+
+
+
+
+
 ## Section 3.5
 
-### Table 3.1 - Not completed (sig. test)
-In order to reproduce the data from table 3.1 you need to download the data from the books source (LINK).
-We simply read in the data and then make use of the powerful package dplyr to subset the data.
 
+### Table 3.1: The Gender Gap of Earnings of College Graduates in the United States
+In order to reproduce the data from table 3.1 you need to download the replication data hosted by Pearson (http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html). Download the data for chapter three as an excel spreadsheet ("cps_ch3.xlsx") and load it in R with the following commands (make sure you use the correct path to the downloaded file). 
+
+You need the packages *readxl* (`install.packages('readxl')`) to read the excel file and *dplyr* (`install.packages('dplyr')`) to make handling the data easier. 
 <div class="fold o">
-```{r, echo=T, eval=T}
-library(dplyr, quietly=T)
-# Read in CPS data (taken from http:// ....)
-cps_dat <- read.csv("data/cps_ch3.csv", sep=";", dec=".")
+```{r, echo=T, eval=T, message = F, warning = F}
+library(readxl) # needed to read Excel files
+library(dplyr, quietly = T)
+
+cps <- read_excel(path = 'data/cps_ch3.xlsx')
 # Get an overview of the data structure
-head(cps_dat)
+head(cps)
 
 
 # Take cps_dat %>% group data by gender and year %>% compute the mean, standard deviation
 # and number of observations for each group
-avgs <- cps_dat %>% group_by(a_sex, year) %>% summarise(mean(ahe12), sd(ahe12), n())
-print(avgs, digits=2)
+avgs <- cps %>% group_by(a_sex, year) %>% summarise(mean(ahe08), sd(ahe08), n())
+print(avgs, digits = 2)
 ```
 </div>
+With the pipe operator `%>%` we simply chain different R commands. In the above code for example, we take the dataset `cps` and use it as an input for the function `group_by`. The output of that function will be used as an input for `summarise` and so on.
 
-Now that we have the numbers we can compute the difference between both genders.
+Now that we have computed the statistics of interest for both genders, we can investigate the gap between them.
 
 <div class="fold o">
 ```{r, echo=T}
 male   <- avgs %>% filter(a_sex == 1) 
 female <- avgs %>% filter(a_sex == 2)
+
+# Rename columns
 colnames(male)   <- c("Sex", "Year", "Y_bar_m", "s_m", "n_m")
 colnames(female) <- c("Sex", "Year", "Y_bar_f", "s_f", "n_f")
 
@@ -34,7 +68,7 @@ gap      <- male$Y_bar_m - female$Y_bar_f
 gap_se   <- sqrt(male$s_m^2 / male$n_m + female$s_f^2 / female$n_f)
 gap_ci_l <- gap - 1.96 * gap_se
 gap_ci_u <- gap + 1.96 * gap_se
-result <- cbind(male[,-1], female[,-(1:2)], gap, gap_se, gap_ci_l, gap_ci_u)
+result   <- cbind(male[,-1], female[,-(1:2)], gap, gap_se, gap_ci_l, gap_ci_u)
 print(result, digits = 2)
 ```
 </div>
