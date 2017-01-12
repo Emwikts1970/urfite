@@ -120,7 +120,7 @@ We see that the estimated effect of a change in the student-teacher ratio on tes
 model <- lm(score ~ size + english, data = CASchools)
 summary(model)
 ```
-<div>
+</div>
 
 #### Joint Hypothesis testing using the $F$-Statistic
 
@@ -169,7 +169,7 @@ In the following, we plot the 95\% confidence ellipse for the coefficients on `s
 By specifying the additional argument `fill`, the confidence set colored which gives a better impression which set of coefficient pairs is meant.
 
 <div class="fold o">
-```{r, echo2:3, warning=F, message=F}
+```{r, echo=2:3, fig.align = 'center', warning=F, message=F}
 model <- lm(score ~ size + english + expenditure, data = CASchools)
 # Draw the 95% confidence set for coefficients on size and expenditure
 confidenceEllipse(model, fill = T, which.coef = c("size","expenditure"))
