@@ -1,43 +1,34 @@
 $(document).ready(function() {
-  // Select all <pre> tags that do not have class 'r'
-  
-  $chunks = $('.fold');
-
+  $chunks = $('.folded, .unfolded');
+  var thisClass;
   $chunks.each(function () {
-    // hide source code
-    if ( $(this).hasClass('s') ) {
-      $('pre.r', this).prepend("<div class=\"showopt\">Hide Source</div><br style=\"line-height:22px;\"/>");
-      $('pre.r', this).children('code').attr('class', 'folded');
+    $(this).find('img').unwrap('<p>');
+    $(this).find('img').wrap('<pre class=\"plot\"></pre>');
+    
+    thisClass = $(this).attr('class');
+    var word;
+    if(thisClass === 'unfolded') {
+      word = 'Hide';
+    } else {
+      word = 'Show';
+      $('pre', this).find('code, img').toggle();
     }
     
-    // hide output
-    if ( $(this).hasClass('o') ) {
-    
-      // text Output
-      $('pre:not(.r)', this).has('code').prepend("<div class=\"showopt\">Hide Output</div><br style=\"line-height:22px;\"/>");
-      $('pre:not(.r)', this).children('code:not(r)').addClass('folded');
-      
-      // plots
-      $(this).find('img').wrap('<pre class=\"plot\"></pre>');
-      $('pre.plot', this).prepend("<div class=\"showopt\">Hide Plot</div><br style=\"line-height:22px;\"/>");
-      $('pre.plot', this).children('img').addClass('folded');
-      
-    }
-
+    $('pre.r', this).append('<span class=\"showopt\">' + word + ' Source</span>');
+    $('pre:not(.r)', this).has('code').append('<span class=\"showopt\">' + word + ' Output</span>');
+    $('pre.plot', this).append('<span class=\"showopt\">' + word + ' Plot</span>');
   });
-  
 
   $(".showopt").click(function() {
-      var label = $(this).html();
-      if(label.indexOf("Show") >= 0) {
-          $(this).html(label.replace("Show", "Hide"));
-      } else {
-          $(this).html(label.replace("Hide", "Show"));
-          
-      }
+    var label = $(this).html();
+    if(label.indexOf('Show') >= 0) {
+      $(this).html(label.replace('Show', 'Hide'));
+    } else {
+      $(this).html(label.replace('Hide', 'Show'));
+    }
       $(this).parent().find('code, img').slideToggle('fast', 'swing');
   });
-  
+
 });
 
 

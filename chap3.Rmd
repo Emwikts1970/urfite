@@ -4,20 +4,27 @@
 
 To demonstrate properties of the sample mean as an estimator for the corresponding population mean consider the following code snippet.
 
+
+
+<div class="unfolded">
 ```{r, echo = T, eval = T, message = F, warning = F}
 pop <- rnorm(25000, 10, 1)
 est <- replicate(expr = mean(sample(x = pop, size = 100)), n = 25000)
+head(est)
 ```
+</div>
 
 We generate a population `x` which consists of 10000 observations drawn from the normal distribution with $\bar{x} = 10$ and $\hat{\sigma}^2 = 1$. Afterwards we use the function `replicate` to evaluate the code expression in `expr` $n = 25000$ times.
 That is, we take 25000 samples of size 100 and compute the sample mean for each of them.
 
 The plot below...
 
+<div class="folded">
 ```{r, echo = T, eval = T, message = F, warning = F}
 plot(density(est), col = 'steelblue', lwd = 2, bty = 'l')
 abline(v = 10, lty = 2)
 ```
+</div>
 
 
 
@@ -34,7 +41,8 @@ abline(v = 10, lty = 2)
 In order to reproduce the data from table 3.1 you need to download the replication data hosted by Pearson (http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html). Download the data for chapter three as an excel spreadsheet ("cps_ch3.xlsx") and load it in R with the following commands (make sure you use the correct path to the downloaded file). 
 
 You need the packages *readxl* (`install.packages('readxl')`) to read the excel file and *dplyr* (`install.packages('dplyr')`) to make handling the data easier. 
-<div class="fold o">
+
+
 ```{r, echo=T, eval=T, message = F, warning = F}
 library(readxl) # needed to read Excel files
 library(dplyr, quietly = T)
@@ -49,12 +57,12 @@ head(cps)
 avgs <- cps %>% group_by(a_sex, year) %>% summarise(mean(ahe08), sd(ahe08), n())
 print(avgs, digits = 2)
 ```
-</div>
+
 With the pipe operator `%>%` we simply chain different R commands. In the above code for example, we take the dataset `cps` and use it as an input for the function `group_by`. The output of that function will be used as an input for `summarise` and so on.
 
 Now that we have computed the statistics of interest for both genders, we can investigate the gap between them.
 
-<div class="fold o">
+
 ```{r, echo=T}
 male   <- avgs %>% filter(a_sex == 1) 
 female <- avgs %>% filter(a_sex == 2)
@@ -71,4 +79,3 @@ gap_ci_u <- gap + 1.96 * gap_se
 result   <- cbind(male[,-1], female[,-(1:2)], gap, gap_se, gap_ci_l, gap_ci_u)
 print(result, digits = 2)
 ```
-</div>

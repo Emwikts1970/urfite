@@ -1449,14 +1449,23 @@ td.visible-print,th.visible-print{display:table-cell!important}
 
 /* ADDDED BY MARTIN */
 
+.folded > pre, .unfolded > pre {
+  min-height: 30px;
+  position: relative;
+  padding-top: 30px;
+}
+
 .showopt {
+  position: absolute;
+  left: 100%;
+  top: 7.5px;
+  transform: translateX(-105%);
   background-color: #004c93;
   color: #FFFFFF; 
   width: 100px;
   height: 20px;
   text-align: center;
   vertical-align: middle !important;
-  float: right;
   font-family: sans-serif;
   border-radius: 8px;
 }
