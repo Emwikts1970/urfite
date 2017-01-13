@@ -1,8 +1,7 @@
-#Chapter 8 Nonlinear Regression
 
 Until now we assumed the regression function to be linear, i.e. the slope of the regression function to be constant. This implies that the effect on $Y$ of a unit change in $X$ does not depend on the value of $X$. If the effect of a change in $X$ on $Y$ depends on the value of $X$, we have to use a nonlinear regression function.
 
-Let us have a look at an example where using a nonlinear regression function might be better suited to describe the relationship between $X$ and $Y$: the relation between `District Income` and `Test Scores` (Stock and Watson, 2012 Figure 8.2).
+Let us have a look at an example where using a nonlinear regression function might be better suited to describe the relationship between $X$ and $Y$: the relation between `District Income` and `Test Scores` (Stock and Watson, 2012 - Figure 8.2).
 
 ```{r, results='hide', echo=TRUE, message=FALSE}
 #Preparing the data
@@ -18,15 +17,16 @@ We start our analysis by computing the correlation between the two variables.
 cor(CASchools$income, CASchools$score)
 ```
 
-The correlation coefficient is about $0.71$. This means that income and test scores are positively correlated. In other words, children whose parents have an above average income tend to achieve above average test scores. Can we use the correlation coefficient to assess whether a linear regression model does fit the data adequately? To answer this question we visualize the data and add a linear regression line to the plot.
+The correlation coefficient is about `0.71. This means that income and test scores are positively correlated. In other words, children whose parents have an above average income tend to achieve above average test scores. Can we use the correlation coefficient to assess whether a linear regression model does fit the data adequately? To answer this question we visualize the data and add a linear regression line to the plot.
 
-```{r, fig.align = 'center', , fig.cap='Figure 8.1'}
+```{r, fig.align = 'center', fig.cap='Figure 8.1'}
 #Fit linear model
 linear_model<- lm(score ~ income, data = CASchools)
 
 # Plot observations
 plot(CASchools$income, CASchools$score,
-     col = "steelblue", 
+     col = "steelblue",
+     pch = 20,
      xlab="District Income (thousands of dollars)", 
      ylab="Test Score")
 
@@ -55,9 +55,10 @@ We might want to draw the same plot as for the linear model and add the regressi
 them sequentially. This makes it necessary to sort the coordinate pairs according to the X-values. Otherwise your will not get the desired result. 
 
 
-```{r}
+```{r, fig.align="center"}
 plot(CASchools$income, CASchools$score,
      col  = "steelblue",
+     pch = 20,
      xlab = "District Income (thousands of dollars)",
      ylab = "Test Score")
 
@@ -101,10 +102,10 @@ for `income^2` and `income^3` are jointly significant.
 anova(linear_model, cubic_model, test = "F") ##Seite 307 F-statistic = 37.7?
 ```
 
-With a p-value less than $0.05$ the null hypothesis that the regression function is linear is rejected against the alternative that it is
-quadratic or cubic. 
+With a $p$-value of `1.424e-10` i.e. much less than $0.05$, the null hypothesis that the regression function is linear is rejected inf favour of the alternative, that is a
+quadratic or a cubic model. 
 
-##Interpretation of coefficients in polynomial regression models 
+### Interpretation of coefficients in polynomial regression models 
 
 The coefficients in polynomial regression do not have a simple interpretation. The best way is to calculate the estimated effect on $Y$ associated with a change in $X$ for one or more values of $X$. 
 
@@ -126,14 +127,14 @@ $$\Delta \hat{Y} = \hat{f}(X_1 + \Delta X_1, X_2, \cdots, X_k) - \hat{f}(X_1, X_
 
 What is the predicted change in test score associated with a one unit change ($\$1.000$), based on the estimated quadratic regression function
 
-$$\widehat{TestScore} = 607.3 + 3.85Income - 0.0423Income^2 \text{ ?}$$
+$$\widehat{TestScore} = 607.3 + 3.85 \times Income - 0.0423 \times Income^2 \text{ ?}$$
 
 Because the regression function is quadratic, this effect depends on the initial district Income. We therefore consider two cases: an increase 
-in district income form 10 to 11 (i.e. from $\$10,000$ per capita to $\$11,000$) and an increase in district income from 40 to 41. 
+in district income form $10$ to $11$ (i.e. from $\$10,000$ per capita to $\$11,000$) and an increase in district income from $40$ to $41$. 
 
-To compute compute $\Delta \hat{Y}$ associated with a change in income form 10 to 11, we use the following formula. 
+To compute compute $\Delta \hat{Y}$ associated with a change in income form $10$ to $11$, we use the following formula: 
 
-$$\Delta \hat{Y} = (\hat{\beta_0 } + \hat{\beta_1} \times 11 + \hat{\beta_2} \times 11^2) - (\hat{\beta_0 } + \hat{\beta_1} \times 10 + \hat{\beta_2} \times 10^2) $$
+$$\Delta \hat{Y} = \left(\hat{\beta_0 } + \hat{\beta_1} \times 11 + \hat{\beta_2} \times 11^2\right) - \left(\hat{\beta_0 } + \hat{\beta_1} \times 10 + \hat{\beta_2} \times 10^2\right) $$
 To compute $\hat{Y}$ using R we apply `predict()`.
 
 ```{r quadratic}
@@ -150,18 +151,18 @@ quadratic regression function is steeper at low levels of income than at the hig
 
 
 
-##Logarithms
+### Logarithms
 Another way to specify a nonlinear regression function is to use the natural logarithm of $Y$ and/or $X$.
 Logarithms convert changes in variables into percentage changes, and many relationships are naturally expressed in terms of percentages. 
 
 There are three different cases in which logarithms might be used, when X is transformed by taking its logarithm but Y is not; when Y is transformed
 to its logarithm but X is not; and when both Y and X are transformed to their logarithms. The interpretation of the regression coefficients is different in each case.  
 
-###Case I: x is in logarithm, Y is not.
+#### Case I: x is in logarithm, Y is not.
 
 The regression model is 
 
-$$Y_i = \beta_0 + \beta_1\ln(X_i) + u_i \text{, } i=1,...,n. $$
+$$Y_i = \beta_0 + \beta_1 \times \ln(X_i) + u_i \text{, } i=1,...,n. $$
 Similar as for polynomial regression we do not have to create a new variable $log(x)$. We can specify the formula argument 
 of `lm()` to tell R that the log transformation of a variable should be used.    
 
@@ -172,10 +173,10 @@ coeftest(linearLog_model, vcov = vcovHC(linearLog_model, type = "HC1"))
 
 According to the output the estimated regression function is:
 
-$$\widehat{TestScore} = 557.8 + 36.42\ln(Income).$$
+$$\widehat{TestScore} = 557.8 + 36.42 \times \ln(Income).$$
 
-```{r}
-plot(score ~ income, data = CASchools)
+```{r, fig.align="center"}
+plot(score ~ income, col="steelblue", pch=20, data = CASchools)
 order_id  <- order(CASchools$income)
 lines(CASchools$income[order_id], fitted(linearLog_model)[order_id], col = "red", lwd = 2)
 ```
@@ -191,18 +192,18 @@ changes <- matrix(Y_hat, nrow = 2, byrow = TRUE)
 changes[ ,2] - changes[ ,1]
 ```
 
-###Case II: Y is in logarithm, X is not
+#### Case II: Y is in logarithm, X is not
 
-###Case III: X and Y are in logarithm
+#### Case III: X and Y are in logarithm
 
 ```{r log log}
 logLog_model <- lm(log(score) ~ log(income), data = CASchools)
 coeftest(logLog_model, vcov = vcovHC(logLog_model, type = "HC1"))
 ```
 
-```{r}
+```{r, fig.align="center"}
 plot(log(score) ~ income, data = CASchools,
-     col = "steelblue")
+     col = "steelblue", pch=20)
 lines(sort(CASchools$income), fitted(logLog_model)[order(CASchools$income)], col = "red", lwd = 2)
 ```
 
