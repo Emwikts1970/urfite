@@ -48,7 +48,7 @@ As you can seen from Figure 1, the interface of R-Studio can be roughly broken d
 
 <b><font color="darkred">3</font></b> contains several tabs providing different functionalities e.g. file and package browsers as well as a glossary. Graphical output you create will also be displayed here.
 
-<b><font color="darkred">4</font></b> is the core pane of any R developer environment: The R console. It works like a command line tool. Code that is entered here will be immediately executed when you hit the "enter" on your keyboard. The output produced by your code will (in most cases) also be displayed here.
+<b><font color="darkred">4</font></b> is the core pane of any R developer environment: The R console. It works like a command line tool. Code that is entered here will be immediately executed when you hit the "enter" key on your keyboard. The output produced by your code will (in most cases) also be displayed here.
 
 
 
