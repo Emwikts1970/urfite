@@ -1,9 +1,13 @@
-## Section 7.2 Hypothesis Tests and Confidence Intervals in Multiple Regression
+This chapter discusses methods that allow to quantify the sampling uncertainty inherent to the OLS estimator by computation of standard errors, statistical hypothesis tests and confidence intervalls using basic R functions. We will also tackle the issue of joint hypothesis tests on coefficients inmultiple regression models. 
+
+### Hypothesis Tests and Confidence Intervals in Multiple Regression
+
+First, we will see how to compute standard errors, how to test hypotheses and how to construct confidence intervalls for regression coefficients in the multiple regression model.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.1 </h3>          
-<h3 class = "left"> Testing the hypothesis $\beta_j = \beta_{j,0}$ <br>
-                    against the alternative $\beta_j \neq \beta_{j,0}$ </h3>
+<h3 class = "left"> Testing the Hypothesis $\beta_j = \beta_{j,0}$ <br>
+                    Against the Alternative $\beta_j \neq \beta_{j,0}$ </h3>
 
 <p>
 1. Compute the standard error of $\hat{\beta_j}$
@@ -37,9 +41,9 @@ summary(model)
 ```
 </div>
 
-You may check this by computing the $t$-statistics or $p$-values by hand using the output above and R as a calculator!
+You may check that calculation of these quantities is done as in the simple regression model by computing the $t$-statistics or $p$-values by hand using the output above and R as a calculator.
 
-Using the definition of the $p$-value for a two sided test, we can confirm the $p$-value for the intercept coeffiecient to be approximatley zero:
+E.g. using the definition of the $p$-value for a two sided test, we can confirm the $p$-value for the intercept coeffiecient to be approximatley zero:
 
 <div class="fold o">
 ```{r, warning=F, message=F}
@@ -49,11 +53,11 @@ Using the definition of the $p$-value for a two sided test, we can confirm the $
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.2 </h3>          
-<h3 class = "left"> Confidence Intervals for a single coefficient in multipe regression </h3>
+<h3 class = "left"> Confidence Intervals for a Single Coefficient in Multipe Regression </h3>
 
 <p>
 A $95\%$ two-sided confidence interval for coefficient $\beta_j$ is an interval that contains the true value of $\beta_j$ with a $95 \%$ probability; that is, it contains the true value of $\beta_j$ in $95 \%$ of all randomly drawn samples. Equivalently, it is the set of values of $\beta_j$ that cannot be rejected by a $5 \%$ two-sided hypothesis test. When the sample size is large, the $95 \%$ confidence interval for $\beta_j$ is
-$$[\hat{\beta_j}- 1.96 \times SE(\hat{\beta}_j), \hat{\beta_j} + 1.96 \times SE(\hat{\beta_j})]$$
+$$\left[\hat{\beta_j}- 1.96 \times SE(\hat{\beta}_j), \hat{\beta_j} + 1.96 \times SE(\hat{\beta_j})\right]$$
 </p>
 </div>
 
@@ -78,7 +82,7 @@ confint(model, level = 0.9)
 ```
 </div>
 
-#### An Application to Test Scores and th Student-Teacher Ratio
+### An Application to Test Scores and th Student-Teacher Ratio
 
 Knowing how to use R to draw inference for multiple Regression models, you can now answer the following question: Can the null hypothesis that a change in the student-teacher ratio has no significant effect on test scores if we control for the percentage of students learning English in the district be rejected?
  
@@ -86,7 +90,7 @@ The outputs above tell us that 0 is not an element of the computed confidence in
 
 The 95\% confidence intervall tells us that we can be 95\% confident that a one-unit decrease in the student-teacher ratio has an effect on test scores that lies in the intervall $[-1.8487969,  -0.3537944]$
 
-#### Another Augmentation of the Model
+### Another Augmentation of the Model
 
 What is the effect on test scores of reducing the student-teacher ratio when the expenditures per pupil and the percentage of english learning pupils are held constant?
 
@@ -94,11 +98,11 @@ We can pursue this by augmenting our model equation yet again and perform joint 
 
 The model we want the estimate now is 
 
-$$ TestScore = \beta_0 + \beta_1 \times size + \beta_2 \times english + \beta_3 \times Expn + u $$
+$$ TestScore = \beta_0 + \beta_1 \times size + \beta_2 \times english + \beta_3 \times expenditure + u $$
 
-with $Expn$ the total amount of expenditures per pupil in the district (thousands of dollars).
+with $expenditure$ the total amount of expenditures per pupil in the district (thousands of dollars).
 
-Estimating the model equation yields:
+Let us estimate the model:
 
 <div class="fold o">
 ```{r, echo=6:8, warning=F, message=F}
@@ -115,14 +119,7 @@ summary(model)
 
 We see that the estimated effect of a change in the student-teacher ratio on test scores with expenditures per pupil and the share of english learning pupils held constant is rather small (`-0.29`). What is more, the coefficient of `size` is not significantly different from zero anymore ($p\text{-value}=$`0.55) so the new model provides no evidence that changing the student-teacher ratio has any effect on the test scores in this case.
 
-<div class="fold o">
-```{r, echo=5:7, warning=F, message=F}
-model <- lm(score ~ size + english, data = CASchools)
-summary(model)
-```
-</div>
-
-#### Joint Hypothesis testing using the $F$-Statistic
+### Joint Hypothesis Testing Using the $F$-Statistic
 
 Now, can we reject the hypothesis that $\beta_1$ \underline{and} $\beta_3$ are zero? To answer this question, we have to resort to methods that allow joint testing of two hypotheses. This is different from conducting individual $t$-tests.
 
@@ -159,7 +156,7 @@ summary(model)$fstatistic
 ```
 </div>
 
-#### Confidence Sets for Multiple Coefficients
+### Confidence Sets for Multiple Coefficients
 
 Based on the $F$-statistic that we have previously encountered, we can specify confidence sets i.e. sets consisting of combinations of coefficients that contain the true combination of coefficients in, 95\% say, of all cases if we could infinitely draw random samples, just as in the univariate case. Put differently, it is the set of coefficient combinations for which we cannot reject the null hypothesis related to the computed $F$-statistic.  
 
@@ -178,15 +175,20 @@ confidenceEllipse(model, fill = T, which.coef = c("size","expenditure"))
 
 We see that the ellipse is centered arrount $(-0.29, 3.87)$ i.e. the pair of coefficients estimates on `size` and `expenditure`.
 
-#### Model Specification for Multiple Regression
+### Model Specification for Multiple Regression
+
+Choosing a regression specifaction i.e. selecting the variables to be included in a regression model can be quite cumbersome. However, there are some guidelines how to do this.
+One could consider:
+* Possible sources of omitted variable bias and control variables.
+* Comparison of different regression specifications by means of $R^2$.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.3 </h3>          
-<h3 class = "left"> Omitted variable bias in multiple regression</h3>
+<h3 class = "left"> Omitted Variable Bias in Multiple Regression</h3>
 
 <p>
 
-Omitted Variable bias is the bias in the OLS estimator that arises when one or more included regressors are correlated with an omitted variable. For omitted variable bias to arise, two things must be true: 
+Omitted variable bias is the bias in the OLS estimator that arises when one or more included regressors are correlated with an omitted variable. For omitted variable bias to arise, two things must be true: 
 
 1. At least one of the included regressors must be correlated with the omitted variable. 
 2. The omitted variable must be a determinant of the dependent variable, $Y$.
@@ -241,4 +243,6 @@ Although the difference in estimated coefficients is not big in this case, it mi
 </p>
   
 </div>
+
+(Kein Beispiel im Buch. Eigenes hinzufügen.)
 
