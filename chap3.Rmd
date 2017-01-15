@@ -42,7 +42,7 @@ In order to reproduce the data from table 3.1 you need to download the replicati
 
 You need the packages *readxl* (`install.packages('readxl')`) to read the excel file and *dplyr* (`install.packages('dplyr')`) to make handling the data easier. 
 
-<div class="folded">
+<div class="unfolded">
 ```{r, echo=T, eval=T, message = F, warning = F, fig.align='center'}
 library(readxl) # needed to read Excel files
 library(dplyr, quietly = T)

@@ -118,7 +118,7 @@ quantiles     <- c(0.10, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9)
 quant_size    <- quantile(CASchools$size, quantiles)
 quant_score   <- quantile(CASchools$score, quantiles)
 
-#Gather everything in a data frame 
+#Gather everything in a data.frame 
 DistributionSummary <- data.frame(Average           = c(avg_size, avg_score), 
                                   StandardDeviation = c(sd_size, sd_score), 
                                   quantile          = rbind(quant_size, quant_score)
@@ -219,7 +219,7 @@ linear_model
 </div>
 
 <div class="unfolded">
-```{r, fig.align='center', echo=-1, fig.cap='Figure 4.3'}
+```{r, fig.align='center'}
 plot(score ~ size, 
      data = CASchools,
      main = "Scatterplot of Test Score vs. Class Size", 
@@ -336,7 +336,7 @@ abline(fitWithoutOutlier, col = "red")
 </div>
 
 <div class="unfolded">
-```{r, eval = FALSE}
+```{r, eval = FALSE, fig.align='center'}
 library(ggvis)
 library(dplyr)
 
