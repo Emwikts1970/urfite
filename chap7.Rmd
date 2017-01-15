@@ -1,8 +1,8 @@
-This chapter discusses methods that allow to quantify the sampling uncertainty inherent to the OLS estimator by computation of standard errors, statistical hypothesis tests and confidence intervalls using basic R functions. We will also tackle the issue of joint hypothesis tests on coefficients in multiple regression models. 
+This chapter discusses methods that allow to quantify the sampling uncertainty inherent to the OLS estimator by computation of standard errors, statistical hypothesis tests and confidence intervals using basic R functions. We will also tackle the issue of joint hypothesis tests on coefficients in multiple regression models. 
 
 ### Hypothesis Tests and Confidence Intervals in Multiple Regression
 
-First, we will see how to compute standard errors, how to test hypotheses and how to construct confidence intervalls for regression coefficients in the multiple regression model.
+First, we will see how to compute standard errors, how to test hypotheses and how to construct confidence intervals for regression coefficients in the multiple regression model.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.1 </h3>          
@@ -11,9 +11,9 @@ First, we will see how to compute standard errors, how to test hypotheses and ho
 
 <p>
 1. Compute the standard error of $\hat{\beta_j}$
-2. Compute the t-statistic,
+2. Compute the $t$-statistic,
 $$t = \frac{\hat{\beta}_j - \beta_{j,0}} {SE(\hat{\beta_j})}$$
-3. Compute the p-value,
+3. Compute the $p$-value,
 $$p\text{-value} = 2 \Phi(-|t^{act}|)$$
 
 where $t^{act}$ is the value of the $t$-statistic actually computed. Reject the hypothesis at the 5\% significance level if the $p$-value is less than $0.05$ or, equivalently, if $|t^{act}| > 1.96$. The standard error and (typically) the $t$-statistic and $p$-value testing $\beta_j = 0$ are computed automatically by statistical software.  
@@ -27,7 +27,7 @@ You can easily see this by inspecting the summary of the regression model
 
 $$ TestScore = \beta_0 - \beta_1 \times size - \beta_2 \times english + u $$
 
-already discussed in chapter 6. Let us review it:
+already discussed in chapter 6. Let us review this:
 
 <div class="unfolded">
 ```{r, echo=5:7, warning=F, message=F}
@@ -51,6 +51,8 @@ E.g. using the definition of the $p$-value for a two sided test, we can confirm 
 ```
 </div>
 
+Given a vector of quantiles, `pnorm` calculates associated probabilities for the standard normal distribution by default.
+
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.2 </h3>          
 <h3 class = "left"> Confidence Intervals for a Single Coefficient in Multiple Regression </h3>
@@ -60,6 +62,8 @@ A $95\%$ two-sided confidence interval for coefficient $\beta_j$ is an interval 
 $$\left[\hat{\beta_j}- 1.96 \times SE(\hat{\beta}_j), \hat{\beta_j} + 1.96 \times SE(\hat{\beta_j})\right]$$
 </p>
 </div>
+
+### An Application to Test Scores and the Student-Teacher Ratio
 
 Let us take a look at the regression from section 6.3 again.
 
@@ -74,7 +78,7 @@ confint(model)
 
 We note that $95\%$ confidence intervals for all three coefficients are computed. 
 
-If we want to compute confidence intervalls at another level of $\alpha$, 0.1 say, we have to set the argument `level` in our call of the `confint` function accordingly.
+If we want to compute confidence intervals at another level of $\alpha$, 0.1 say, we have to set the argument `level` in our call of the `confint` function accordingly.
 
 <div class="unfolded">
 ```{r, warning=F, message=F}
@@ -82,25 +86,25 @@ confint(model, level = 0.9)
 ```
 </div>
 
-The output now provides the desired $90\%$ confidence intervalls for all model coefficients.
-
-### An Application to Test Scores and the Student-Teacher Ratio
+The output now provides the desired $90\%$ confidence intervals for all model coefficients.
 
 Knowing how to use R to draw inference about the coefficients in multiple Regression models, you can now answer the following question: 
 
-Can the null hypothesis that a change in the student-teacher ratio (`size`) has no significant effect on test scores (`scores`) if we control for the percentage of students learning English in the district (`english`) be rejected at the $10\%$ and/or the $5\%$ level of significance?
+Can the null hypothesis that a change in the student-teacher ratio (`size`) has no significant effect on test scores (`scores`) --- if we control for the percentage of students learning English in the district (`english`) --- be rejected at the $10\%$ and/or the $5\%$ level of significance?
  
-The outputs above tell us that zero is not an element of the computed confidence intervals for the coefficient of `size` such that we can reject the null hypothesis at significance levels of $5\%$ and $10\%$ (Note that rejection at the $5\%$-level implies rejection at the 10\% level. Why?). 
+The outputs above tell us that zero is not an element of the computed confidence intervals for the coefficient of `size` such that we can reject the null hypothesis at significance levels of $5\%$ and $10\%$.
+
+Note that rejection at the $5\%$-level implies rejection at the 10\% level (why?). 
 
 The same conclusion can be made when beholding the $p$-value for `size`: $0.00398 < 0.05 = \alpha$.
 
-The $95\%$ confidence intervall tells us that we can be $95\%$ confident that a one-unit decrease in the student-teacher ratio has an effect on test scores that lies in the intervall $[-1.8487969,  -0.3537944]$.
+The $95\%$ confidence interval tells us that we can be $95\%$ confident that a one-unit decrease in the student-teacher ratio has an effect on test scores that lies in the interval $[-1.8487969,  -0.3537944]$.
 
 ### Another Augmentation of the Model
 
 What is the effect on test scores of reducing the student-teacher ratio when the expenditures per pupil and the percentage of english learning pupils are held constant?
 
-We can pursue this by augmenting our model equation yet again and perform joint significant testing.
+We can pursue this question by augmenting our model equation yet again and perform *joint* significant testing.
 
 The model we want the estimate now is 
 
@@ -123,11 +127,11 @@ summary(model)
 ```
 </div>
 
-We see that the estimated effect of a change in the student-teacher ratio on test scores with expenditures per pupil and the share of english learning pupils held constant is rather small (`-0.29`). What is more, the coefficient of `size` is not significantly different from zero anymore ($p\text{-value}=$`0.55`) so the new model provides no evidence that changing the student-teacher ratio has any effect on the test scores in this case.
+We see that the estimated effect of a one unit change in the student-teacher ratio on test scores with expenditures per pupil and the share of english learning pupils held constant is rather small (`-0.29`). What is more, the coefficient of `size` is not significantly different from zero anymore ($p\text{-value}=$`0.55`) so the new model provides no evidence that changing the student-teacher ratio has any effect on the test scores when we do not change expenditures and share of english learners simultaneously.
 
 ### Joint Hypothesis Testing Using the $F$-Statistic
 
-Now, can we reject the hypothesis that $\beta_1$ \underline{and} $\beta_3$ are zero? To answer this question, we have to resort to methods that allow joint testing of two hypotheses. This is different from conducting individual $t$-tests.
+Now, can we reject the hypothesis that $\beta_1$ <u>and</u> $\beta_3$ are zero? To answer this question, we have to resort to methods that allow joint testing of two hypotheses. This is different from conducting individual $t$-tests.
 
 The homoskedasticity-only $F$-Statistic is given by
 
