@@ -329,9 +329,9 @@ Cosistent estimation of $SE(\hat{\beta}_1)$ under heteroskedasticity is granted 
 \[ SE(\hat{\beta}_1) = \sqrt{ \frac{ \frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2} } \]
 
 Stadard error estimates computed this way are also referred to as Eicker-Huber-White standard errors. 
-It can be quite cumbersome to do so this calculation by hand. Luckily, there are R function for that purpose. A convenient one, named `vcovHC` is contained in the `sandwich` package. 
+It can be quite cumbersome to do this calculation by hand. Luckily, there are R function for that purpose. A convenient one, named `vcovHC` is contained in the `sandwich` package. 
 
-Let us now compute robust standard error estimates for coefficients in `linear_model`.
+Let us now compute robust standard error estimates for the coefficients in `linear_model`.
 
 <div class="unfolded">
 ```{r}
@@ -362,13 +362,13 @@ coeftest(linear_model, vcov. = vcovHC(linear_model, type = "HC0"))
 ```
 </div>
 
-We see that values reported in the column `Std. Error equal the ones received using `sqrt(diag(vcov))`.
+We see that values reported in the column `Std. Error` equal the ones received using `sqrt(diag(vcov))`.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 5.5 </h3>          
 <h3 class = "left"> The Gauss-Markov-Theorem for $\hat{\beta}_1$ </h3>
 
-Suppose the Assumptions made in Key Concept 4.3 hold *and* that the errors are *homoskedastic*. The OLS estimator is the best (in the sense of smallest variance) linear conditionally unbiased estimator (*BLUE*) in this setting.
+Suppose that the assumptions made in Key Concept 4.3 hold *and* that the errors are *homoskedastic*. The OLS estimator is the best (in the sense of smallest variance) linear conditionally unbiased estimator (*BLUE*) in this setting.
 
 Let us have a closer look at what this means:
 
@@ -381,13 +381,13 @@ Let us have a closer look at what this means:
 
 #### An Example to Clarify the Gauss-Markov Theorem
 
-Consider the case of a regression of $Y_i,\dots,Y_n$ on a constant. Here, the $Y_i$ are assumed to be a random sample from a population with mean $\mu$ and variance $\sigma^2$. We know that the OLS estimator is the sample mean: \[ \hat{\beta}_1 = \overline{\beta}_1 = \sum_{i=1}^n \underbrace{\frac{1}{n}}_{=a_i} Y_i \]
+Consider the case of a regression of $Y_i,\dots,Y_n$ on a constant. Here, the $Y_i$ are assumed to be a random sample from a population with mean $\mu$ and variance $\sigma^2$. We know that the OLS estimator in this model is simply the sample mean: \[ \hat{\beta}_1 = \overline{\beta}_1 = \sum_{i=1}^n \underbrace{\frac{1}{n}}_{=a_i} Y_i \]
 
 Clearly, each observation is weighted by $a_i = \frac{1}{n}$.
 
 We also know that $Var(\hat{\beta}_1)=\frac{\sigma^2}{n}$.
 
-We will now use R for a simulation study to illustrate what happens to the variance of the estimator for $\beta_1$ if different weights \[ w_i = \frac{1 \pm \epsilon}{n} \] are assigned to either half of the sample $Y_1, \dots, Y_n$ instead of using  the weights implied by OLS , $\frac{1}{n}$.
+We will now use R for a simulation study to illustrate what happens to the variance of the estimator for $\beta_1$ if different weights \[ w_i = \frac{1 \pm \epsilon}{n} \] are assigned to either half of the sample $Y_1, \dots, Y_n$ instead of using  the weights implied by OLS i.e. $\frac{1}{n}$.
 
 <div class="unfolded">
 ```{r, fig.align='center'}
