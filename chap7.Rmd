@@ -1,4 +1,4 @@
-This chapter discusses methods that allow to quantify the sampling uncertainty inherent to the OLS estimator by computation of standard errors, statistical hypothesis tests and confidence intervalls using basic R functions. We will also tackle the issue of joint hypothesis tests on coefficients inmultiple regression models. 
+This chapter discusses methods that allow to quantify the sampling uncertainty inherent to the OLS estimator by computation of standard errors, statistical hypothesis tests and confidence intervalls using basic R functions. We will also tackle the issue of joint hypothesis tests on coefficients in multiple regression models. 
 
 ### Hypothesis Tests and Confidence Intervals in Multiple Regression
 

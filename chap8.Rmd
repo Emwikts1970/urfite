@@ -1,4 +1,3 @@
-
 Until now we assumed the regression function to be linear, i.e. the slope of the regression function to be constant. This implies that the effect on $Y$ of a unit change in $X$ does not depend on the value of $X$. If the effect of a change in $X$ on $Y$ depends on the value of $X$, we have to use a nonlinear regression function.
 
 Let us have a look at an example where using a nonlinear regression function might be better suited to describe the relationship between $X$ and $Y$: the relation between `District Income` and `Test Scores` (Stock and Watson, 2012 - Figure 8.2).

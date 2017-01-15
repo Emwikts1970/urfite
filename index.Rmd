@@ -87,7 +87,7 @@ Ein paar Beispiele dazu? Und Chapter 1 könnte dann eine Anleitung zur Installat
 ```{r child = 'chap7.Rmd', eval = TRUE}
 ```
 
-# Chapter 8 Nonlinear Regression Functions
+# Chapter 8
 
 ```{r child = 'chap8.Rmd', eval = TRUE}
 ```
