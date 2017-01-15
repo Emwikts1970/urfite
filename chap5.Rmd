@@ -54,7 +54,7 @@ For testing a hypothesis regarding the slope parameter, we need $SE(\hat{\beta}_
 How can we get these values using R? By looking at the second column of the coefficients' summary, we discover both values.
 In the third column, we find $t^{act}$ for tests of hypotheses $H_0: \beta_0=0$ and $H_0: \beta_1=0$. Furthermore we find corresponding $p$-values in the fourth column.
 
-<div class="fold o">
+<div class="unfolded">
 ```{r, echo=7}
 library(AER)
 data(CASchools)
@@ -70,9 +70,10 @@ Let's have a closer look at the test $H_0: \beta_1=0 \, v. \, H_1: \beta_1 \neq 
 
 \[ t^{act} = \frac{-2.279808 - 0}{0.4798255} \approx - 4.75 \]
 
-What does this tell about the significance of the estimated coefficient? Using R we may visualise how such a statement can be made:
+What does this tell about the significance of the estimated coefficient? 
+Using R we may visualise how such a statement can be made:
 
-<div class="fold o">
+<div class="unfolded">
 ```{r, fig.align='center'}
 # Plot the standard normal density
 z <- seq(-6,6,0.01)
@@ -114,7 +115,7 @@ As we already know, estimates of regression coefficients $\beta_0$ and $\beta_1$
 <h3 class = "right"> Key Concept 5.3 </h3>
 <h3 class = "left"> Confidence Interval for $\beta_i$ </h3>
 
-Imagine you could draw all possible random samples of given size. The interval that contains the true value $\beta_i$ in $95\%$ of all samples is given by the expression
+Imagine You could draw all possible random samples of given size. The interval that contains the true value $\beta_i$ in $95\%$ of all samples is given by the expression
 
 \[ \text{KI}_{0.95}^{\beta_i} = \left[ \hat{\beta}_i - 1.96 \times SE(\hat{\beta}_i) \, , \, \hat{\beta}_i + 1.96 \times SE(\hat{\beta}_i) \right]. \]
 
@@ -123,13 +124,13 @@ Equivalently, this interval can be seen as the set of null hypotheses for which 
 
 Let us now turn back to the regression model stored in `linear_model`. An easy way to get $95\%$ confidence intervals for $\beta_0$ and $\beta_1$, the coefficients of `(intercept)` and `size`, is to use the function `confint()`. We only have to provide a fitted model object as an argument to this function. 
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 confint(linear_model)
 ```
 </div>
 
-Let us check if the calculation is done as we expect it to be. For $\beta_1$, according to the formula presented above, interval borders are computed as
+Let us check if the calculation is done as we expect it to be. For $\beta_1$, that is the coefficient on `size`, according to the formula presented above interval borders are computed as
 
 \[  -2.279808 \pm 1.96 \times 0.4798255 \, \Rightarrow \, \text{KI}_{0.95}^{\beta_1} = \left[ -3.22, -1.34 \right]  \]
 
@@ -155,7 +156,7 @@ The regression model now is
 
 Let us see how these data points look like.
 
-<div class="fold o">
+<div class="unfolded">
 ```{r, eval=F}
 # Create the dummy variable as defined above using a for loop
 for (i in 1:nrow(CASchools)) {
@@ -178,7 +179,7 @@ plot(CASchools$D, CASchools$score,          # provide the data to be ploted
 ```
 </div>
 
-<div class="fold o">
+<div class="unfolded">
 ```{r, fig.align='center', echo=F}
 # Create the dummy variable as defined above
 for (i in 1:nrow(CASchools)) {
@@ -209,7 +210,7 @@ The interpretation of estimated coefficients from such a regression model is as 
 
 We will now use R to estimate the dummy regression model.
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 dummy_model <- lm(score ~ D, data = CASchools)
 summary(dummy_model)
@@ -230,7 +231,7 @@ Since $t = 3.88 > 1.96$ we reject the null hypothesis at the $5\%$ level of sign
 
 Equivalently, we may use the `confint()` function to compute a $95\%$ confidence interval for the true difference in means and see if the hypothesised value is element of this set. 
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 confint(dummy_model)
 ```
@@ -257,7 +258,7 @@ All inference made in previous subsections of Chapter 5 relies on the assumption
 
 For a better understanding of heteroskedasticity, we generate heteroskedastic data, estimate a linear regression model and then use boxplots for illustration of conditional distrubutions of residuals.
 
-<div class="fold o">
+<div class="unfolded">
 ```{r, fig.align='center', warning=FALSE}
 library(scales)
 
@@ -269,30 +270,35 @@ e <- rnorm(100, sd=12)
 i <- order(runif(100, max=dnorm(e, sd=12))) 
 y <- 720 - 3.3 * x + e[rev(i)]
 
-# Plot data and inspect conditional distributions
-
+# Estimate the model 
 mod <- lm(y ~ x)
+
+# Plot the data
+
 plot(x, y, main="An Example of Heteroskedasticity",
      xlab = "Student teacher-ratio (X)",
      ylab = "Test Score (Y)",
      cex=0.5, pch=19, xlim=c(8,27), ylim=c(600,710))
+
+# Add the regression line to the plot
 abline(mod, col="red")
+
+# Add boxplots to the plot
 boxplot(y~x, add=TRUE, at=c(10,15,20,25), col=alpha("gray", 0.4), border="black")
 ```
 </div>
 In this example, it is straightforward to see that we face unequal conditional variances. Specifically, the variance of the test score (and therefore $var(u_i|X=x)$) increases with $X$.
 
-### Should we care about heteroskedasticity?
+### Should We Care About Heteroskedasticity?
 
 First, let us see how $SE(\hat{\beta}_1)$ is computed under the assumption of homoskedasticity. The `summary` function uses the homoskedasticity-only formula 
   \[ SE(\hat{\beta}_1) = \sqrt{ \overset{\sim}{\sigma}^2_{beta_1} } = \sqrt{ \frac{SER^2}{\sum(X_i - \overline{X})^2} }. \]
 
-This in fact is an estimator for the standard deviation of the estimator $\hat{\beta}_1$ that is inconsistent for the true value $SE(\hat{\beta}_1)$. The implication is that $t$-statistics computed in the manner of key concept 5.1 do not have a standard normal distribution, even in large samples. This issue may invalidate inference drawn from the previously treated tools for hypothesis testing.
-
+This in fact is an estimator for the standard deviation of the estimator $\hat{\beta}_1$ that is inconsistent for the true value $SE(\hat{\beta}_1)$ when there is heteroskedasticity. The implication is that $t$-statistics computed in the manner of key concept 5.1 do not have a standard normal distribution, even in large samples. This issue may invalidate inference drawn from the previously treated tools for hypothesis testing.
 
 We will now use R to compute the homoskedasticity-only standard error estimator for $\hat{\beta}_1$ by hand and see if it matches the value provided by `summary()`.
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 # Store model summary in 'mod'
 model <- summary(linear_model)
@@ -316,19 +322,18 @@ round(model$coefficients[2,2],4) == round(SE.beta_1.hat,4)
 
 Indeed, the estimated values are equal.
 
-### Computation of heteroskedasticity-robust standard errors
+### Computation of Heteroskedasticity-Robust Standard Errors
 
 Cosistent estimation of $SE(\hat{\beta}_1)$ under heteroskedasticity is granted when the following robust estimator is used.
 
 \[ SE(\hat{\beta}_1) = \sqrt{ \frac{ \frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2} } \]
 
 Stadard error estimates computed this way are also referred to as Eicker-Huber-White standard errors. 
-
 It can be quite cumbersome to do so this calculation by hand. Luckily, there are R function for that purpose. A convenient one, named `vcovHC` is contained in the `sandwich` package. 
 
 Let us now compute robust standard error estimates for coefficients in `linear_model`.
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 library(sandwich)
 
@@ -339,7 +344,7 @@ vcov
 
 The output is the variance-covariance matrix of coefficient estimates. We are interested in the square root of the diagonal elements of this matrix since these are the standard error estimates we seek:
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 robust_se <- sqrt(diag(vcov))
 robust_se
@@ -348,16 +353,16 @@ robust_se
 
 Now assume we want to generate a coefficient summary that reports robust standard error estimates for coefficient estimates, robust $t$-statistics and corresponding $p$-values for the regression model `linear_model`. This can be done as follows:
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 # We invoke the function `coeftest()` on our model. Further we specify in the argument `vcov.`
-# that the Eicker-Huber-White estimator, "HC0", is to be used.
+# that the Eicker-Huber-White estimator "HC0" is used.
 
 coeftest(linear_model, vcov. = vcovHC(linear_model, type = "HC0"))
 ```
 </div>
 
-We see that values reported in the column 'Std. Error' equal the ones received using `sqrt(diag(vcov))`.
+We see that values reported in the column `Std. Error equal the ones received using `sqrt(diag(vcov))`.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 5.5 </h3>          
@@ -374,7 +379,7 @@ Let us have a closer look at what this means:
 - We may ask if $\overset{\sim}{\beta}_1$ is also the *best* estimator in this class, i.e. the most efficient one where "most efficient" means smallest variance. The weights $a_i$ play an important role here.
 </div>
 
-#### An Example about the Gauss-Markov Theorem
+#### An Example to Clarify the Gauss-Markov Theorem
 
 Consider the case of a regression of $Y_i,\dots,Y_n$ on a constant. Here, the $Y_i$ are assumed to be a random sample from a population with mean $\mu$ and variance $\sigma^2$. We know that the OLS estimator is the sample mean: \[ \hat{\beta}_1 = \overline{\beta}_1 = \sum_{i=1}^n \underbrace{\frac{1}{n}}_{=a_i} Y_i \]
 
@@ -384,10 +389,10 @@ We also know that $Var(\hat{\beta}_1)=\frac{\sigma^2}{n}$.
 
 We will now use R for a simulation study to illustrate what happens to the variance of the estimator for $\beta_1$ if different weights \[ w_i = \frac{1 \pm \epsilon}{n} \] are assigned to either half of the sample $Y_1, \dots, Y_n$ instead of using  the weights implied by OLS , $\frac{1}{n}$.
 
-<div class="fold o">
+<div class="unfolded">
 ```{r, fig.align='center'}
 
-# Set sample size and number of repititionas
+# Set sample size and number of repititions
 
 n <- 100      
 reps <- 1e5
@@ -397,8 +402,9 @@ reps <- 1e5
 epsilon <- 0.8
 w <- c( rep((1+epsilon)/n,n/2), rep((1-epsilon)/n,n/2) )
 
-# Draw random sample y_1,...,y_N from the standard normal distribution 
-# Compute both estimates 1e5 times and store the result in vectors  
+# Draw a random sample y_1,...,y_N from the standard normal distribution, 
+# use both estimators 1e5 times and store the result in vectors ols and 
+# weightedestimator
 
 ols <- rep(NA,reps)
 weightedestimator <- rep(NA,reps)
@@ -410,12 +416,17 @@ for (i in 1:reps)
   weightedestimator[i] <- crossprod(w,y)
 }
 
-# Plot estimates of the estimators distribution 
+# Plot kernel density estimates of the estimators distribution 
 
-plot(density(ols),col="purple", lwd=3, main="Density of OLS and Weighted Estimator",xlab="")
-lines(density(weightedestimator),col="steelblue", lwd=3) 
-abline(v=0,lty=2)
-legend('topright', c("OLS","weighted"), col=c("purple","steelblue"),lwd=3)
+# OLS
+plot(density(ols), col="purple", lwd=3, main="Density of OLS and Weighted Estimator", xlab="Estimates")
+
+# Weighted
+lines(density(weightedestimator), col="steelblue", lwd=3) 
+
+# Add a dashed line at 0 and a legend
+abline(v=0, lty=2)
+legend('topright', c("OLS","Weighted"), col=c("purple","steelblue"), lwd=3)
 ```
 </div>
 
@@ -424,5 +435,5 @@ What conclusion can we draw from the result?
 - Both estimators seem to be unbiased: The means of their estimated distributions are zero.
 - The `weightedestimator` is less efficient than the `ols` estimator: There is higher dispersion when weights are $w_i = \frac{1 \pm \epsilon}{n}$ instead of $w_i=\frac{1}{n}$. 
 
-Hence, our simulation results confirm the Gauss-Markov Theorem.
+Hence, our simulation results confirm what is stated by the Gauss-Markov Theorem.
 
