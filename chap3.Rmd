@@ -1,5 +1,3 @@
-## Section 3.1
-
 ### Estimation of the Population Mean
 
 To demonstrate properties of the sample mean as an estimator for the corresponding population mean consider the following R example.
@@ -9,29 +7,28 @@ To investigate how the estimator $\hat{\mu} = \bar{Y}$ behaves we need to random
 
 ```{r, echo = T, eval = T, message = F, warning = F}
 pop <- rnorm(10000, 10, 1)
-est <- replicate(expr = mean(sample(x = pop, size = 100)), n = 25000)
-head(est)
+est1 <- replicate(expr = mean(sample(x = pop, size = 100)), n = 25000)
+est2 <- replicate(expr = mean(sample(x = pop, size = 250)), n = 25000)
+head(est1)
 ```
 
 The plot below shows the distribution of the estimator $\bar{Y}$ over these 25000 samples. Notice how it is centered around $\mu = 10$. This is evidence for the unbiasedness of $\hat{\mu}$. 
 
-Take the code and try out different values for `size` (the sample size). Notice how the interval on the x-axis becomes smaller as you increase it. The deviation from $\mu$ becomes smaller the higher the sample size is. The probability that the deviation from the true value is smaller than any given small $\tau$ converges to 1 as $n$ grows. This behavior is called consistency of $\hat{\mu}$.
+Take the code and try out different values for `size` (the sample size). Notice how the deviation from $\mu$ becomes smaller the higher the sample size is. The probability that the deviation from the true value is smaller than any given $\tau > 0$ converges to 1 as $n$ grows. This behavior is called consistency of $\hat{\mu}$.
 
 $$P(|\hat{\mu} - \mu|<\tau) \overset{p}{\longrightarrow} 1 \quad \text{for all}\quad\tau>0$$
 
 <div class="unfolded">
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'}
-plot(density(est), col = 'steelblue', lwd = 2, bty = 'l')
+plot(density(est1), col = 'steelblue', lwd = 2, bty = 'l', ylim = c(0, 8), main = '')
+lines(density(est2), col = 'red2', lwd = 2)
 abline(v = 10, lty = 2)
+legend(x = 9.6, y = 7, legend = c('n = 100', 'n = 250'), lty = c(1, 1), col = c('steelblue', 'red2'))
 ```
 </div>
 
 
-
-## Section 3.5
-
-
-### Table 3.1: The Gender Gap of Earnings of College Graduates in the United States
+### The Gender Gap of Earnings of College Graduates in the United States
 In order to reproduce the data from table 3.1 you need to download the replication data hosted by Pearson (http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html). Download the data for chapter three as an excel spreadsheet ("cps_ch3.xlsx") and load it in R with the following commands (make sure you use the correct path to the downloaded file). 
 
 You need the packages *readxl* (`install.packages('readxl')`) to read the excel file and *dplyr* (`install.packages('dplyr')`) to make handling the data easier. 
