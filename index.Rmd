@@ -10,12 +10,10 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
-<!--Include script for hiding output chunks-->
+<!--Include script for hiding code chunks-->
 <script src="js/hideOutput.js"></script>
 
 # Introduction
-
-
 
 
 # Chapter 1: Prerequisites

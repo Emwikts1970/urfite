@@ -28,7 +28,6 @@ $(document).ready(function() {
     }
       $(this).parent().find('code, img').slideToggle('fast', 'swing');
   });
-
 });
 
 
