@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 # Chapter 1: Prerequisites
 
-In order to reproduce the examples in this script You need the statistical software package R. Additionally we recommend using the R editor software RStudio which will improve Your R working experience.
+In order to reproduce the examples in this script You need the statistical software package R. Additionally we recommend using the RStudio integrated developer environment (IDE) which will improve Your R working experience.
 
 ### Installation of R and RStudio
 
@@ -36,7 +36,7 @@ Install R first and then procede with RStudio. Afterwards start RStudio.
 
 ### Working with RStudio 
 
-<div class="imgContainer" cap="Fig. 1: Test">
+<div class="imgContainer" cap="Fig. 1: The RStudio IDE">
   <img class="image" src="Images/rstudio.png" width="50%"/>
 </div>
 
