@@ -2,22 +2,22 @@
 
 ### Estimation of the Population Mean
 
-To demonstrate properties of the sample mean as an estimator for the corresponding population mean consider the following code snippet.
+To demonstrate properties of the sample mean as an estimator for the corresponding population mean consider the following R example.
 
+We generate a population `x` which consists of 10000 observations drawn from the normal distribution with $\bar{x} = 10$ and $\hat{\sigma}^2 = 1$.
+To investigate how the estimator $\hat{\mu} = \bar{Y}$ behaves we need to randomly draw samples from this population and calculate $\bar{Y}$ for each of them. This is easily done by making use of the function `replicate`. Its argument `expr` is evaluated `n` times. In this case we draw a sample of size 100, compute its sample mean and repeat this exactly $n=25000$ times.
 
-
-<div class="unfolded">
 ```{r, echo = T, eval = T, message = F, warning = F}
-pop <- rnorm(25000, 10, 1)
+pop <- rnorm(10000, 10, 1)
 est <- replicate(expr = mean(sample(x = pop, size = 100)), n = 25000)
 head(est)
 ```
-</div>
 
-We generate a population `x` which consists of 10000 observations drawn from the normal distribution with $\bar{x} = 10$ and $\hat{\sigma}^2 = 1$. Afterwards we use the function `replicate` to evaluate the code expression in `expr` $n = 25000$ times.
-That is, we take 25000 samples of size 100 and compute the sample mean for each of them.
+The plot below shows the distribution of the estimator $\bar{Y}$ over these 25000 samples. Notice how it is centered around $\mu = 10$. This is evidence for the unbiasedness of $\hat{\mu}$. 
 
-The plot below...
+Take the code and try out different values for `size` (the sample size). Notice how the interval on the x-axis becomes smaller as you increase it. The deviation from $\mu$ becomes smaller the higher the sample size is. The probability that the deviation from the true value is smaller than any given small $\tau$ converges to 1 as $n$ grows. This behavior is called consistency of $\hat{\mu}$.
+
+$$P(|\hat{\mu} - \mu|<\tau) \overset{p}{\longrightarrow} 1 \quad \text{for all}\quad\tau>0$$
 
 <div class="unfolded">
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'}
@@ -28,12 +28,6 @@ abline(v = 10, lty = 2)
 
 
 
-
-
-
-
-
-
 ## Section 3.5
 
 
@@ -41,6 +35,7 @@ abline(v = 10, lty = 2)
 In order to reproduce the data from table 3.1 you need to download the replication data hosted by Pearson (http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html). Download the data for chapter three as an excel spreadsheet ("cps_ch3.xlsx") and load it in R with the following commands (make sure you use the correct path to the downloaded file). 
 
 You need the packages *readxl* (`install.packages('readxl')`) to read the excel file and *dplyr* (`install.packages('dplyr')`) to make handling the data easier. 
+
 
 <div class="unfolded">
 ```{r, echo=T, eval=T, message = F, warning = F, fig.align='center'}
@@ -78,3 +73,4 @@ result   <- cbind(male[,-1], female[,-(1:2)], gap, gap_se, gap_ci_l, gap_ci_u)
 print(result, digits = 2)
 ```
 </div>
+
