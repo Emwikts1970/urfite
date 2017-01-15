@@ -1,10 +1,10 @@
-## 4. Linear Regression with One Regressor 
+### Linear Regression with One Regressor 
 
 This chapter introduces the simple linear regression model which relates one variable, $X$, to another variable $Y$. If for example a school cuts the class sizes by hiring new teachers, how would this effect the performance of the students? With linear regression we can not only examine whether the class size $\left(X\right)$ does have an impact on the test results $\left(Y\right)$. We can also learn something about the direction and the strength of this effect. 
 
 To start with an easy example consider the following combinations of average test scores and the average class size in some school districts:
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 #Creating sample data
 TestScore   <- c(680, 640, 670, 660, 630, 660, 635) 
@@ -24,14 +24,14 @@ to each other is
 
 $$TestScore = 713 - 3 \times ClassSize.$$
 
-If it is possible it is always a good idea to visualize the data you work with in an appropriate way.
+If it is possible it is always a good idea to visualize the data You work with in an appropriate way.
 For our purpose we can use the function `plot()` to produce a scatterplot with `ClassSize` on the $X$-axis and `TestScore` on the $Y$-axis. An easy way to do so is to call `plot(y_variable ~ x_variable)`.   
 We might furthermore want to add the true relationship to the plot. To draw a straight line R provides the
 function `abline()`. We just have to call this function with arguments `a` (representing the intercept) 
 and `b` (representing the slope) after we executed `plot()` in order to add the line to our scatterplot. The following code reproduces figure 4.1 from the book. 
 
-<div class="fold o">
-```{r Figure 4.1}
+<div class="unfolded">
+```{r Figure 4.1, fig.align='center'}
 plot(TestScore ~ ClassSize)
 abline(a = 713, b = -3)
 ```
@@ -62,11 +62,11 @@ where
 </p>
 </div>
 
-##4.2 Estimating the Coefficients of the Linear Regression Model
+### Estimating the Coefficients of the Linear Regression Model
 
 In practical situations the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must use data to estimate the two unknown parameters. We will demonstrate how to do that on a real data example. We want to relate test scores to class sizes in $420$ California school restricts. The test score is the districtwide average of reading and math scores for fifth graders. Class size is measured as the number of students divided by the number of teachers (student-teacher ratio). The California School dataset is available in the `AER` package. After installing the package with `install.packages()` and attaching it with `library()` the dataset can be loaded using the `data()` function. 
 
-<div class="fold o">
+<div class="unfolded">
 ```{r, message=FALSE, warning=FALSE}
 library(AER)                                                    # contains the data set 
 data(CASchools)                                                 # loads the the data set in the workspace 
@@ -77,7 +77,7 @@ For several reasons it is interesting to know what kind of object we are dealing
 `class(object_name)` returns the type (class) of the object. Depending on the class of an object several
 functions (such as `plot`) behave differently (example link).
 
-<div class="fold o">
+<div class="undfolded">
 ```{r}
 class(CASchools)
 ```
@@ -87,7 +87,7 @@ It turns out that our object is of class `data.frame` which is a convienient for
 
 With `head()` we get a first overview of our data. This function shows only the first 6 rows of the dataset which prevents an overcrowded console output. An alternative to `class()` and `head()` is `str()` which means structure and gives an comprehensive overview of the object.  
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 head(CASchools)
 ```
@@ -95,7 +95,7 @@ head(CASchools)
 
 We find that the dataset consists of plenty variables but the two we are intersted in (average test scores and class size) are not included. However, it is possible to calculate both from the existing data. To obtain the average class size we divide the number of students by the number of teachers. The avarage test score is the arithmetic mean of the test score for reading and the score of the math test.  
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 CASchools$size     <- CASchools$students/CASchools$teachers     # class size
 CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
@@ -108,7 +108,7 @@ For this we use the functions `mean` (computes the arithmetic mean of the provid
 
 In order to have a nice display format we gather all data after the computation in a `data.frame`. 
 
-<div class="fold o">
+<div class="unfolded">
 ```{r Table 4.1, results='hold'}
 avg_size      <- mean(CASchools$size) 
 avg_score     <- mean(CASchools$score)
@@ -134,8 +134,8 @@ such as outliers, which are hard to discover by looking at mere numbers. This ti
 The first argument `score ~ size` is again a formula representing the y and the x variables. However, this time the two variables are not 
 saved in seperate varibales but are contained in a `data.frame`. R would not find the variables without the argument `data`. Here we put in the name of the `data.frame` to which the variables belong. The other three arguments change the appearance of the plot. `main` adds a title and `xlab` and `ylab` are adding custom labels to the axes.  
 
-<div class="fold o">
-```{r}
+<div class="unfolded">
+```{r, fig.align='center'}
 plot(score ~ size, 
      data = CASchools,
      main = "Scatterplot of Test Score vs. Class Size", 
@@ -149,7 +149,7 @@ The plot (figure 4.2 in the book) shows the scatterplot of all observations. We 
 
 With the commad `cor()` the correlation between 2 variables can be computed. As the scatterplot already suggested the correlation is with $-0.23$ rather weak. 
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 cor(CASchools$size, CASchools$score)
 ```
@@ -157,7 +157,7 @@ cor(CASchools$size, CASchools$score)
 
 The task we are facing now is to find the line which fits best to the data.  
 
-## The Ordinary Least Squares Estimator (OLS)
+### The Ordinary Least Squares (OLS) Estimator
 
 The OLS estimator chooses the regression coefficients so that the estimated regression line is as close as possible to the observed data. Closeness is measured by the sum of the squared mistakes made in predicting $Y$ given $X$. Let $b_0$ and $b_1$ be some estimator of $\beta_0$ and $\beta_1$ then the total squared estimation mistakes can be expressed as: 
 
@@ -173,9 +173,9 @@ The OLS Estimator is the pair of estimators for intercept and slope which minimi
 
 
 \begin{align}
-\hat{\beta_1} & = \frac{ \sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y}) } { \sum_{i=1}^n (X_i - \bar{X})^2}  \\
-\\
-\hat{\beta_0} & =  \bar{Y} - \hat{\beta_1} \bar{X} 
+  \hat{\beta_1} & = \frac{ \sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y}) } { \sum_{i=1}^n (X_i -   \bar{X})^2}  \\
+  \\
+  \hat{\beta_0} & =  \bar{Y} - \hat{\beta_1} \bar{X} 
 \end{align}
 
 
@@ -183,10 +183,10 @@ The OLS Estimator is the pair of estimators for intercept and slope which minimi
 The OLS predicted values $\hat{Y_i}$ and residuals $\hat{u_i}$ are
 
 \begin{align}
-\hat{Y_i} & =  \hat{\beta_0} + \hat{\beta_1}X_i\\
-\\
-\\
-\hat{u_i} & =  Y_i - \hat{Y_i} 
+  \hat{Y_i} & =  \hat{\beta_0} + \hat{\beta_1}X_i\\
+  \\
+  \\
+  \hat{u_i} & =  Y_i - \hat{Y_i} 
 \end{align}
 
 The estimated intercept $(\hat{\beta_0})$, slope $(\hat{\beta_1})$, and residuals $\left(\hat{u_i}\right)$ are computed from a sample of n observations of $X_i$ and $Y_i$, $i$, $...$,  $n$. These are estimates of the unkown true population intercept $\left(\beta_0 \right)$, slope $\left(\beta_1\right)$, and error term $(u_i)$.
@@ -196,7 +196,7 @@ The estimated intercept $(\hat{\beta_0})$, slope $(\hat{\beta_1})$, and residual
 
 There are many possible ways to compute $\left(\hat{\beta_0}\right)$ and $\left(\hat{\beta_1}\right)$ in R. We could implement the formulas with two of R's most basic functions `mean()` and `sum()`. But of course their are also other and even more manual ways to do the same tasks. 
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 attach(CASchools) #allows to use the variables contained in CASchools directly
 beta_1 <- sum((size - mean(size))*(score - mean(score))) / sum((size - mean(size))^2)
@@ -208,7 +208,7 @@ beta_0
 
 OLS is one of the most widly-used estimation techniques. Hence R, as a statistical programming language, already contains a built-in function `lm` (**l**inear **m**odel) which can be used to carry out regression analysis. The first argument of the function is the formula with the basic syntax `y~x` where `y` is the dependent variable and `x` the explanatory variable. The argument `data` specifies the data set to be used in the regression. We now revisit the example from the book where the relationship between students' test scores and the class size is analysed. The following code uses `lm` to replicate equation $(4.11)$ and figure $4.3$. 
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 #Assigns the results of the lm estimation to linear_model
 linear_model <- lm(score ~ size, data = CASchools)
@@ -218,7 +218,7 @@ linear_model
 ```
 </div>
 
-<div class="fold o">
+<div class="unfolded">
 ```{r, fig.align='center', echo=-1, fig.cap='Figure 4.3'}
 plot(score ~ size, 
      data = CASchools,
@@ -232,33 +232,33 @@ abline(linear_model) # add regression line
 ```
 </div>
 
-Did you note that we this time did not pass the intercept and slope parameters to `abline`? If you call `abline()` with an object of class `lm` and only one regressor variable R does automatically draws the regression line. 
+Did You note that we this time did not pass the intercept and slope parameters to `abline`? If You call `abline()` with an object of class `lm` and only one regressor variable R does automatically draws the regression line. 
 
-##Measures of fit
+### Measures of fit
 
 After estimating a linear regression the question occurs how well that regression line describes the data. Are the observations tightly clustered arround the regression line, or are they spread out? The $R^2$ and the standard error of the regression (**SER**) measure how well the OLS Regression line fits the data. 
 
-###The $R^2$
+#### The $R^2$
 
 The $R^2$ is the fraction of sample variance of $Y_i$ explained by $X_i$. Mathemethically, the $R^2$ can be written as the explained sum of squares to the total sum of squares. The **explained sum of squares** (**ESS**) is the sum of squared deviations of the predicted values, $\hat{Y_i}$, from the average of $Y_i$. The **total sum of squares**(**TSS**) is the sum of squared deviations of $Y_i$ from its average. 
 
 \begin{align}
-ESS & =  \sum_{i = 1}^n \left( \hat{Y_i} - \bar{Y} \right)^2   \\
-\\
-TSS & =  \sum_{i = 1}^n \left( Y_i - \bar{Y} \right)^2   \\
-\\
-R^2 & = \frac{ESS}{TSS}
+  ESS & =  \sum_{i = 1}^n \left( \hat{Y_i} - \bar{Y} \right)^2   \\
+  \\
+  TSS & =  \sum_{i = 1}^n \left( Y_i - \bar{Y} \right)^2   \\
+  \\
+  R^2 & = \frac{ESS}{TSS}
 \end{align}
 
-###Standard Error of the Regression
+#### Standard Error of the Regression
 
 The **Standard Error of the Regression** (**SER**) is an estimator of the standard deviation of the regression error $\hat{u_i}$.
 $$SER = s_{\hat{u} } \text{, where } s_{\hat{u} }^2 = \frac{1}{n-2} \sum_{i = 1}^n \hat{u_i ^2} = \frac{SSR}{n - 2}$$
 
-##Application to the test score data
+#### Application to the Test Score Data
 Both measures of fit can be obtained by using the  function `summary()` with the `lm` object as the only argument. Whereas `lm()` only prints out the coefficients, `summary()` provides additional predefined information such as the $R^2$ and the **SER**.  
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 summary(linear_model)
 ```
@@ -273,7 +273,7 @@ The **SER** is called residual standard error and takes the value 18.58. The uni
 #Ab hier keine Beispiele aus dem Buch mehr für diese Kapitel. Was wollen wir machen? 
 
 
-#4.4 The Least Square Assumptions
+### The Least Square Assumptions
 
 OLS performs well under a great variety of different circumstances. However, there are some assumptions which are posed on the data 
 which need to be satisfied in order to achieve reliable results.  
@@ -291,7 +291,7 @@ $$Y_i = \beta_0 + \beta_1 X_i + u_i \text{, } i = 1, ...,n \text{, where} $$
 </p>
 </div>
 
-## Assumption #1 Error Term has conditional mean of zero
+#### Assumption #1: The Error Term has Conditional Mean of Zero
 
 This means that no matter which X-value we choose the error term should not show any systematic pattern and have a mean of $0$.
 Consider the case that $E(u) = 0$ but for low and high values of $X$ the error term tends to be positive and for midrange values of
@@ -300,8 +300,8 @@ random number generators. We can start by creating a vector of X-values. For our
 which can be done with the function `runif()`. We also need to simulate the error term. For this we generate normally distributed numbers with 
 a mean equal to $0$. Finally, the y-value is obtained as a quadratic function of the X-values and the error term.
 
-<div class="fold o">
-```{r}
+<div class="unfolded">
+```{r, fig.align='center'}
 set.seed(321)
 x <- runif(50, min = -5, max = 5)
 u <- rnorm(50, sd = 5)             
@@ -314,13 +314,13 @@ lines(sort(x), l)
 ```
 </div>
 
-####Assumption #2 Identical and independtly distributed
+#### Assumption #2: Identical and Independtly Distributed
 
 
-##Assumption #3 Sensitivity to Outliers
+#### Assumption #3: Sensitivity to Outliers
 
-<div class="fold o">
-```{r}
+<div class="unfolded">
+```{r, fig.align='center'}
 set.seed(123)
 x     <- sort(runif(10, min = 30, max = 70 ))
 y     <- rnorm(10 , mean = 200, sd = 50)
@@ -335,7 +335,7 @@ abline(fitWithoutOutlier, col = "red")
 ```
 </div>
 
-<div class="fold o">
+<div class="unfolded">
 ```{r, eval = FALSE}
 library(ggvis)
 library(dplyr)
@@ -358,7 +358,7 @@ df %>%
 
 
 
-# 4.5 The Sampling Distribution of the OLS Estimator 
+### The Sampling Distribution of the OLS Estimator 
 
 Because the OLS estimators $\hat{\beta_0}$ and $\hat{\beta_1}$ are computed from a randomly drawn sample, the estimators themselves are random variables with a probability distribution -the sampling distribution- that describes the values they could take over different random samples. Although the sampling distribution of $\hat{\beta_0}$ and $\hat{\beta_1}$ can be complicated when the sample size is small, it is possible to make certain statements about it that hold for all $n$. In particular 
 $$ E(\hat{\beta_0}) = \beta_0 \text{ and } E(\hat{\beta_1}) = \beta_1,$$
@@ -384,7 +384,7 @@ The large-sample normal distribution of $\hat{\beta_0}$ is $N(\beta_0, \sigma^2_
 
 Whether this really holds we can verify using R. First we build our own population of $1000$ observations in total (n_pop). To do this we need values for our independent variable $x$, for the error term $u$, and the regression parameters $\beta_0$ and $\beta_1$. With all this we can also compute our dependent variable $y$. In our example we generate the numbers $x_i$, $i = 1$, ... ,$1000$ by drawing a random sample from a uniform distribution in the range $[0,20]$. The realisations of the error term  $u_i$, $i = 1$, ... ,$1000$ are drawn from a standard distribution with $\mu = 0$ and $\sigma^2 = 100$ (note that `rnorm()` requires $\sigma$ as input). Furthermore we chose $\beta_0 = -2$ and $\beta_1 = 3.5$.  
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 #Population Regression
 pop_n      <- 1000
@@ -399,8 +399,8 @@ From now on we will consider the previously generated data as the truth (which w
 
 To do so we first calculate the variances $\sigma^2_\hat{\beta_0}$ and $\sigma^2_\hat{\beta_1}$. 
 
-<div class="fold o">
-```{r}
+<div class="unfolded">
+```{r, fig.align='center'}
 n <- 100 # sample size
 sigma_b1 <- var( ( x - mean(x) ) * u ) / (100 * var(x)^2)
 H_i      <- 1 - mean(x) / mean(x^2) * x
@@ -420,6 +420,6 @@ var(fit[ ,1])
 hist(fit[ ,1], main = bquote(The ~ distribution  ~ of ~ 500 ~ beta[1] ~ estimates))
 
 var(fit[ ,2])
-hist(fit[ ,2], , main = bquote(The ~ distribution  ~ of ~ 500 ~ beta[2] ~ estimates))
+hist(fit[ ,2], main = bquote(The ~ distribution  ~ of ~ 500 ~ beta[2] ~ estimates))
 ```
 </div>
