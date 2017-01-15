@@ -18,11 +18,11 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 # Chapter 1: Prerequisites
 
-In order to reproduce the examples in this script you need the statistical software package R. Additionally we recommend using the R editor software RStudio which will improve your R working experience.
+In order to reproduce the examples in this script You need the statistical software package R. Additionally we recommend using the RStudio integrated developer environment (IDE) which will improve Your R working experience.
 
 ### Installation of R and RStudio
 
-Go to the following webpages and download the software adequate for your operating system:
+Go to the following webpages and download the software adequate for Your operating system:
 
 
   1. <b>The Statistical Software Package R:</b> <a href="http://cran.r-project.org/">http://cran.r-project.org</a><br>
@@ -34,19 +34,19 @@ Install R first and then procede with RStudio. Afterwards start RStudio.
 
 ### Working with RStudio 
 
-<div class="imgContainer" cap="Fig. 1: Test">
+<div class="imgContainer" cap="Fig. 1: The RStudio IDE">
   <img class="image" src="Images/rstudio.png" width="50%"/>
 </div>
 
-As you can seen from Figure 1, the interface of R-Studio can be roughly broken down to 4 panes.
+As You can seen from Figure 1, the interface of R-Studio can be roughly broken down to 4 panes.
 
-<b><font color="darkred">1</font></b> is your script pane. You can think of it as a notepad for your code. You can also execute code directly from here by marking lines with the cursor and hit the "Run" button. When you open multiple scripts, the script pane basically works like a browser: each script is loaded in its own tab and you can switch between them.
+<b><font color="darkred">1</font></b> is Your script pane. You can think of it as a notepad for Your code. You can also execute code directly from here by marking lines with the cursor and hit the "Run" button. When You open multiple scripts, the script pane basically works like a browser: each script is loaded in its own tab and You can switch between them.
 
 <b><font color="darkred">2</font></b> is the environment pane. All functions and objects that are available at the user level are displayed here. This includes also data sets from external sources. More on that later.
 
-<b><font color="darkred">3</font></b> contains several tabs providing different functionalities e.g. file and package browsers as well as a glossary. Graphical output you create will also be displayed here.
+<b><font color="darkred">3</font></b> contains several tabs providing different functionalities e.g. file and package browsers as well as a glossary. Graphical output You create will also be displayed here.
 
-<b><font color="darkred">4</font></b> is the core pane of any R developer environment: The R console. It works like a command line tool. Code that is entered here will be immediately executed when you hit the "enter" on your keyboard. The output produced by your code will (in most cases) also be displayed here.
+<b><font color="darkred">4</font></b> is the core pane of any R developer environment: The R console. It works like a command line tool. Code that is entered here will be immediately executed when You hit the "enter" key on Your keyboard. The output produced by Your code will (in most cases) also be displayed here.
 
 
 
@@ -56,7 +56,7 @@ As you can seen from Figure 1, the interface of R-Studio can be roughly broken d
 
 Since chapter reviews basic concepts of probability theory and how they can be applied in R. 
 
-The most common probability distributions are implemented in base R. That means that you can draw random numbers from these distributions, compute densities, probabilies or quantiles. ...
+The most common probability distributions are implemented in base R. That means that You can draw random numbers from these distributions, compute densities, probabilies or quantiles. ...
 
 Ein paar Beispiele dazu? Und Chapter 1 könnte dann eine Anleitung zur Installation von R, Rstudio und eine kleine Einführung sein (<- Operator, Funktionen, ...)
 
@@ -85,7 +85,7 @@ Ein paar Beispiele dazu? Und Chapter 1 könnte dann eine Anleitung zur Installat
 ```{r child = 'chap7.Rmd', eval = TRUE}
 ```
 
-# Chapter 8 Nonlinear Regression Functions
+# Chapter 8
 
 ```{r child = 'chap8.Rmd', eval = TRUE}
 ```

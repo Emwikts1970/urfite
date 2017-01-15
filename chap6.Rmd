@@ -1,46 +1,52 @@
-Chapter 6 deals with omitted variables and their effect on coefficients estimated with OLS and advocates usage of multiple regression models by presenting their key idea. Naturally we will introduce estimation of multiple regression models using R.
+Chapter 6 deals with omitted variables and their effect on coefficients estimated with OLS and advocates usage of multiple regression models by presenting their key idea. Naturally, we will introduce estimation of multiple regression models using R.
 
 ### Omitted Variable Bias
 
 t.b.d.
 
-(see chapter 7)
+(for now: see chapter 7)
 
 ### OLS Estimation in the Multiple Regression Model
 ```{r}
-# Multiple Regression - Application to Test Scores and the Student-Teacher Ratio
-library(AER)                                                    # contains the dataset 
-data(CASchools) 
-CASchools$size  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
-CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
-model <- lm(score ~ size + english, data = CASchools)
+# Multiple Regression - Application to Test Scores and the student-teacher Ratio
+
+library(AER)                                                  # load the package 
+data(CASchools)                                               # load the data set
+CASchools$size <- CASchools$students/CASchools$teachers       # define student-teacher-ratio
+CASchools$score <- (CASchools$read + CASchools$math)/2        # define average test-score
+model <- lm(score ~ size + english, data = CASchools)         # estimate the model
 
 ```
 
 ### Measures of Fit in Multiple Regression
-Taking the code from Section 6.3 you could simply use `summary(model)` to print the $SER$, $R^2$ and adjusted-$R^2$. You find them at the bottom of the output.
+Taking the code from Section 6.3 You could simply use `summary(model)` to print the $SER$, $R^2$ and adjusted-$R^2$. You find them at the bottom of the output.
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 summary(model)
 ```
 </div>
 
-You can also compute the parameters by hand using the formulas on p. 242.
+You can also compute the parameters by hand using the formulas from p. 242 in the book.
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
-n <- nrow(CASchools)    # number of observations (rows)
-k <- 2                  # 2 regressors
-y_mean <- mean(CASchools$score)
+n <- nrow(CASchools)                            # number of observations (rows)
+k <- 2                                          # number of regressors
+y_mean <- mean(CASchools$score)                 # mean of avg. test-scores
 
-SSR <- sum( residuals(model)^2 )
-TSS <- sum( ( CASchools$score - y_mean )^2 )
-ESS <- sum((fitted(model) - y_mean)^2)
+SSR <- sum(residuals(model)^2)                  # sum of squared residuals
+TSS <- sum((CASchools$score - y_mean )^2)       # total sum of squares
+ESS <- sum((fitted(model) - y_mean)^2)          # explained sum of squares
 
-SER <- sqrt(1/(n-k-1) * SSR)
-Rsq <- 1 - (SSR / TSS)
-adj_Rsq <- 1 - (n-1)/(n-k-1) * SSR/TSS
+# Now we compute the measures
+
+SER <- sqrt(1/(n-k-1) * SSR)                    # standard error of the regression
+Rsq <- 1 - (SSR / TSS)                          # R^2
+adj_Rsq <- 1 - (n-1)/(n-k-1) * SSR/TSS          # adj. R^2
+
+# Print the measures to the console
+
 cat(SER, Rsq, adj_Rsq, sep = "    ")
 ```
 </div>
@@ -48,54 +54,54 @@ cat(SER, Rsq, adj_Rsq, sep = "    ")
 ### Multicollinearity
 #### Examples of Perfect Multicollinearity
 
-If you use `lm` to estimate a model with a set of regressors that suffer from perfect multicollinearity the system will warn you (_1 not defined because of singularities_) and ignore the regressor(s) which is(are) assumed to be a linear combination of the others.
+If You use `lm` to estimate a model with a set of regressors that suffer from perfect multicollinearity the system will warn You (_1 not defined because of singularities_) and ignore the regressor(s) which is (are) assumed to be a linear combination of the others.
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 # Example 1
-library(AER)                                                    # contains the dataset 
-data(CASchools) 
-CASchools$size  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
-CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
-CASchools$FracEL    <- CASchools$english/100
-model <- lm(score ~ size + english + FracEL, data = CASchools)
-summary(model)
+library(AER)                                                    # load the package 
+data(CASchools)                                                 # load the data set
+CASchools$size <- CASchools$students/CASchools$teachers         # define student-teacher-ratio
+CASchools$score <- (CASchools$read + CASchools$math)/2          # define average test-score
+CASchools$FracEL <- CASchools$english/100                       # define the fraction of english learners
+model <- lm(score ~ size + english + FracEL, data = CASchools)  # estimate the model
+summary(model)                                                  # obtain a summary of the model
 ```
 </div>
 
-If you compute OLS by hand you will run into the problem as well but noone is helping you out. The computation simply fails. Why is this the case? Take the following example:
+If You compute OLS by hand You will run into the problem as well but no one is helping You out. The computation simply fails. Why is this the case? Take the following example:
 
-Assume you want to estimate a simple linear regression model with an intercept and one regressor:
+Assume You want to estimate a simple linear regression model with an intercept and one regressor:
     \[ y_i = \beta_0 + \beta_1 x_i + u_i\]
-When applying perfect multicollinearity $x$ has to be a linear combination of the other regressors. Since the only other regressor is a constant, $x$ has to be constant as well. When you recap the formula for $\beta_1$, namely
+When applying perfect multicollinearity $x$ has to be a linear combination of the other regressors. Since the only other regressor is a constant, $x$ has to be constant as well. When You recap the formula for $\beta_1$, namely
     \[ \hat{\beta_1} =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})^2}\]
-you find the variance of the regressor $x$ in the nominator. Since the variance of a constant is zero, you are not able to compute this fraction. $\hat{\beta}_1$ remains undefined.
+You find the variance of the regressor $X$ in the denominator. Since the variance of a constant is zero, You are not able to compute this fraction. $\hat{\beta}_1$ remains undefined.
 
-<font style="color:#004c93; font-weight:bold;">Note:</font> In this special case the nominator equals zero as well. Can you show that?
+<font style="color:#004c93; font-weight:bold;">Note:</font> In this special case the nominator equals zero as well. Can You show that?
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 # Example 2
-library(AER)                                                    # contains the dataset 
-data(CASchools) 
-CASchools$size  <- CASchools$students/CASchools$teachers     # teacher-student-ratio
-CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
-CASchools$NVS      <- ifelse(CASchools$size < 12, 0, 1)      # if size smaller 12, NVS = 0, else NVS = 1
-model <- lm(score ~ size + english + NVS, data = CASchools)
-summary(model)
+library(AER)                                                    # load the package 
+data(CASchools)                                                 # load the data set
+CASchools$size <- CASchools$students/CASchools$teachers         # define student-teacher-ratio
+CASchools$score <- (CASchools$read + CASchools$math)/2          # define average test-score
+CASchools$NVS      <- ifelse(CASchools$size < 12, 0, 1)         # if size smaller 12, NVS = 0, else NVS = 1
+model <- lm(score ~ size + english + NVS, data = CASchools)     # estimate the model
+summary(model)                                                  # obtain a model summary
 ```
 </div>
 
-<div class="fold o">
+<div class="unfolded">
 ```{r}
 # Example 3
-library(AER)                                                    # contains the dataset 
-data(CASchools) 
-CASchools$size  <- CASchools$students/CASchools$teachers  # teacher-student-ratio
-CASchools$score    <- (CASchools$read + CASchools$math)/2  # average test-score
-CASchools$PctES    <- 100 - CASchools$english  # Percentage of english speakers 
-model <- lm(score ~ size + english + PctES, data = CASchools)
-summary(model)
+library(AER)                                                    # load the package 
+data(CASchools)                                                 # load the data set
+CASchools$size <- CASchools$students/CASchools$teachers         # define student-teacher-ratio
+CASchools$score <- (CASchools$read + CASchools$math)/2          # define average test-score
+CASchools$PctES <- 100 - CASchools$english                      # Percentage of english speakers 
+model <- lm(score ~ size + english + PctES, data = CASchools)   # estimate the model
+summary(model)                                                  # obtain a model summary
 ```
 </div>
 

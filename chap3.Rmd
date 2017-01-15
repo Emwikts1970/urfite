@@ -19,8 +19,8 @@ Take the code and try out different values for `size` (the sample size). Notice 
 
 $$P(|\hat{\mu} - \mu|<\tau) \overset{p}{\longrightarrow} 1 \quad \text{for all}\quad\tau>0$$
 
-<div class="folded">
-```{r, echo = T, eval = T, message = F, warning = F}
+<div class="unfolded">
+```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'}
 plot(density(est), col = 'steelblue', lwd = 2, bty = 'l')
 abline(v = 10, lty = 2)
 ```
@@ -36,8 +36,9 @@ In order to reproduce the data from table 3.1 you need to download the replicati
 
 You need the packages *readxl* (`install.packages('readxl')`) to read the excel file and *dplyr* (`install.packages('dplyr')`) to make handling the data easier. 
 
-<div class="folded">
-```{r, echo=T, eval=T, message = F, warning = F, results='hold'}
+
+<div class="unfolded">
+```{r, echo=T, eval=T, message = F, warning = F, fig.align='center'}
 library(readxl) # needed to read Excel files
 library(dplyr, quietly = T)
 cps <- read_excel(path = 'data/cps_ch3.xlsx')
@@ -54,7 +55,7 @@ With the pipe operator `%>%` we simply chain different R commands. In the above 
 
 Now that we have computed the statistics of interest for both genders, we can investigate the gap between them.
 
-<div class="folded">
+<div class="unfolded">
 ```{r, echo=T}
 male   <- avgs %>% filter(a_sex == 1) 
 female <- avgs %>% filter(a_sex == 2)
