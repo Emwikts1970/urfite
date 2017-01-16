@@ -1,3 +1,8 @@
+```{r, include=FALSE}
+tutorial::go_interactive(greedy = FALSE)
+```
+
+
 ### Linear Regression with One Regressor 
 
 This chapter introduces the simple linear regression model which relates one variable, $X$, to another variable $Y$. If for example a school cuts the class sizes by hiring new teachers, how would this effect the performance of the students? With linear regression we can not only examine whether the class size $\left(X\right)$ does have an impact on the test results $\left(Y\right)$. We can also learn something about the direction and the strength of this effect. 
@@ -128,6 +133,28 @@ DistributionSummary
 </div>
 
 R already contains a `summary()`function which can be applied to `data.frames`. Check it out! 
+
+```{r ex="create_a", type="pre-exercise-code", tut=T}
+library(AER)                                                    # contains the data set 
+data(CASchools) 
+CASchools$size     <- CASchools$students/CASchools$teachers     # class size
+CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+```
+
+```{r ex="create_a", type="sample-code", tut=T}
+#apply summary to the CASchools data.frame
+
+```
+
+```{r ex="create_a", type="solution", tut=T}
+#apply summary to the CASchools data.frame
+summary(CASchools)
+```
+
+```{r ex="create_a", type="sct", tut=T}
+test_output_contains(summary(CASchools))
+
+```
 
 As we did for the sample data we use `plot()` for a visual survey. This allows us to detect specific characteristics of our data, 
 such as outliers, which are hard to discover by looking at mere numbers. This time the `plot()` command was extended by a few more arguments. 
