@@ -2,7 +2,7 @@ Until now we assumed the regression function to be linear, i.e. the slope of the
 
 Let us have a look at an example where using a nonlinear regression function might be better suited to describe the relationship between $X$ and $Y$: the relation between `District Income` and `Test Scores` (Stock and Watson, 2012 - Figure 8.2).
 
-```{r, results='hide', echo=TRUE, message=FALSE}
+```{r dataset, results='hide', echo=TRUE, message=FALSE}
 #Preparing the data
 library(AER)                                                    # contains the dataset 
 data(CASchools)
@@ -16,10 +16,10 @@ We start our analysis by computing the correlation between the two variables.
 cor(CASchools$income, CASchools$score)
 ```
 
-The correlation coefficient is about `0.71. This means that income and test scores are positively correlated. In other words, children whose parents have an above average income tend to achieve above average test scores. Can we use the correlation coefficient to assess whether a linear regression model does fit the data adequately? To answer this question we visualize the data and add a linear regression line to the plot.
+The correlation coefficient is about $0.71$. This means that income and test scores are positively correlated. In other words, children whose parents have an above average income tend to achieve above average test scores. Can we use the correlation coefficient to assess whether a linear regression model does fit the data adequately? To answer this question we visualize the data and add a linear regression line to the plot.
 
 <div class="unfolded">
-```{r, fig.align = 'center'}
+```{r Figure 8.1, fig.align = 'center'}
 #Fit linear model
 linear_model<- lm(score ~ income, data = CASchools)
 
@@ -30,10 +30,9 @@ plot(CASchools$income, CASchools$score,
      xlab="District Income (thousands of dollars)", 
      ylab="Test Score")
 
-# Estimate a linear model and add the regression line to the plot
+# Add the regression line to the plot
 abline(linear_model, col="red", lwd=2)
 ```
-Figure 8.1
 </div>
 
 As Stock and Watson point out, the linear regression line seems to overestimates the true relationship when income is very high or very low and underestimates it in the midrange.    
@@ -47,7 +46,7 @@ This equation is called the *quadratic regression model*. Note, that $Income^2$ 
 <div class="unfolded">
 ```{r, fig.align = 'center', fig.cap='Figure 8.2'}
 #Fit Model
-quadratic_model <- lm(CASchools$score ~ CASchools$income + I(CASchools$income^2))
+quadratic_model <- lm(score ~ income + I(income^2), data = CASchools)
 
 #Model Output
 summary(quadratic_model)
@@ -89,25 +88,22 @@ cubic_model <- lm(score ~ income + I(income^2) + I(income^3), data = CASchools)
 ```
 
 In practice the question will arise which model should be chosen. For reasons already discussed in section ... 
-the $R^2$ and the **SER** are not appropriate because adding regressors always improves those measures. However, we can
-test whether the estimated coefficients are significantly different from zero.  
+the $R^2$ and the **SER** are not appropriate because adding regressors always improves those measures. 
+However, we cantest whether the estimated coefficients are significantly different from zero.  
 
 ```{r}
 library(lmtest)
 coeftest(cubic_model, vcov = vcovHC(cubic_model, type = "HC1"))
 ```
 
-The coefficients for `income^3` are significant at the $5\%$ level. This means we reject the hypothesis that the 
-regression function is quadratic against the alternative that it is cubic. Furthermore, we could test if the coefficients 
-for `income^2` and `income^3` are jointly significant. 
-
+The coefficient for `income^3` is significant at the $5\%$ level. This means we reject the hypothesis that the 
+regression function is quadratic against the alternative that it is cubic. Furthermore, we could test if the coefficients for `income^2` and `income^3` are jointly significant. 
 
 ```{r f-test}
 anova(linear_model, cubic_model, test = "F") ##Seite 307 F-statistic = 37.7?
 ```
 
-With a $p$-value of `1.424e-10` i.e. much less than $0.05$, the null hypothesis that the regression function is linear is rejected inf favour of the alternative, that is a
-quadratic or a cubic model. 
+With a $p$-value of `1.424e-10`, i.e. much less than $0.05$, the null hypothesis of linearity is rejected in favour of the alternative, that the model is quadratic or a cubic. 
 
 ### Interpretation of coefficients in polynomial regression models 
 
@@ -163,18 +159,20 @@ Logarithms convert changes in variables into percentage changes, and many relati
 There are three different cases in which logarithms might be used, when X is transformed by taking its logarithm but Y is not; when Y is transformed
 to its logarithm but X is not; and when both Y and X are transformed to their logarithms. The interpretation of the regression coefficients is different in each case.  
 
-#### Case I: x is in logarithm, Y is not.
+#### Case I: X is in logarithm, Y is not.
 
 The regression model is 
 
 $$Y_i = \beta_0 + \beta_1 \times \ln(X_i) + u_i \text{, } i=1,...,n. $$
-Similar as for polynomial regression we do not have to create a new variable $log(x)$. We can specify the formula argument 
-of `lm()` to tell R that the log transformation of a variable should be used.    
+Similar as for polynomial regression we do not have to create a new variable $log(x)$. We can specify the 
+formula argument of `lm()` to tell R that the log transformation of a variable should be used.    
 
+<div class="unfolded">
 ```{r}
-linearLog_model <- lm(score ~ log(income), data = CASchools)
-coeftest(linearLog_model, vcov = vcovHC(linearLog_model, type = "HC1"))
+LinearLog_model <- lm(score ~ log(income), data = CASchools)
+coeftest(LinearLog_model, vcov = vcovHC(LinearLog_model, type = "HC1"))
 ```
+</div>
 
 According to the output the estimated regression function is:
 
@@ -184,7 +182,7 @@ $$\widehat{TestScore} = 557.8 + 36.42 \times \ln(Income).$$
 ```{r, fig.align="center"}
 plot(score ~ income, col="steelblue", pch=20, data = CASchools)
 order_id  <- order(CASchools$income)
-lines(CASchools$income[order_id], fitted(linearLog_model)[order_id], col = "red", lwd = 2)
+lines(CASchools$income[order_id], fitted(LinearLog_model)[order_id], col = "red", lwd = 2)
 ```
 </div>
 
@@ -193,30 +191,79 @@ To estimate the effect on $Y$ in its original units of thousends of dollars (not
 
 
 ```{r}
-Y_hat <- predict(linearLog_model,newdata = new_data)
+Y_hat   <- predict(LinearLog_model,newdata = new_data)
 changes <- matrix(Y_hat, nrow = 2, byrow = TRUE)
 changes[ ,2] - changes[ ,1]
 ```
 
-#### Case II: Y is in logarithm, X is not
+The estimated model suggests for an income increase from $\$10,000$ to $\$11,000$ that test scores increase by $3.47$ points. When income increases from $\$40,000$ to $\$41,000$, the increase in test scores amounts only to 
+$0.90$ points.
 
-#### Case III: X and Y are in logarithm
+
+#### Case II: Y is in logarithm, X is not
+If you want to learn about the absolute impact of an explanatory variable on your dependent variable, it is not recommended to log-transform the latter. 
+There are, however, cases where we want to learn about $log(Y)$ instead of $Y$. 
+
+The regression model is 
+
+$$\ln(Y_i) = \beta_0 + \beta_1 \times X_i + u_i \text{, } i=1,...,n. $$
+
+```{r}
+LogLinear_model <- lm(log(score) ~ income, data = CASchools)
+coeftest(LogLinear_model, vcov = vcovHC(LogLinear_model, type = "HC1"))
+```
+
+
+The estimated regression function is 
+$$\widehat{\ln(TestScore)} = 6.439 + 0.00284 \times Income.$$
+Since we are interested in $\ln Y$ rather than $Y$ we do not retransform the dependent variable.  
+
+```{r, fig.align="center"}
+plot(log(score) ~ income, col="steelblue", pch=20, data = CASchools)
+order_id  <- order(CASchools$income)
+lines(CASchools$income[order_id], fitted(LogLinear_model)[order_id], col = "red", lwd = 2)
+```
+
+
+In a log-linear model, a one-unit change in $X$ is associated with a $100 \times \beta_1 \%$ change in $Y$. This time we left the $X$ values unchanged 
+
+```{r}
+Y_hat   <- predict(LogLinear_model, newdata = new_data)
+changes <- matrix(Y_hat, nrow = 2, byrow = TRUE)
+changes[ ,2] - changes[ ,1]
+```
+
+
+#### Case III: X and Y are in logarithms
+
+The regression model is
+
+$$\ln(Y_i) = \beta_0 + \beta_1 \times \ln(X_i) + u_i \text{, } i=1,...,n. $$
+
+
 
 ```{r log log}
-logLog_model <- lm(log(score) ~ log(income), data = CASchools)
-coeftest(logLog_model, vcov = vcovHC(logLog_model, type = "HC1"))
+LogLog_model <- lm(log(score) ~ log(income), data = CASchools)
+coeftest(LogLog_model, vcov = vcovHC(LogLog_model, type = "HC1"))
 ```
+
+
+The estimated regression function is 
+$$\widehat{\ln(TestScore)} = 6.336 + 0.0554 \times Income.$$
+
 
 <div class="unfolded">
 ```{r, fig.align="center"}
 plot(log(score) ~ income, data = CASchools,
      col = "steelblue", pch=20)
-lines(sort(CASchools$income), fitted(logLog_model)[order(CASchools$income)], col = "red", lwd = 2)
+lines(sort(CASchools$income), fitted(LogLog_model)[order(CASchools$income)], col = "red", lwd = 2)
 ```
 </div>
 
+In a log-log model, a $1\%$ change in X is associated with a $\beta_1 \%$ change in $Y$. 
+
 ```{r}
-Y_hat   <- predict(linearLog_model,newdata = new_data)
+Y_hat   <- predict(LogLog_model, newdata = new_data)
 changes <- matrix(Y_hat, nrow = 2, byrow = TRUE)
 changes[ ,2] - changes[ ,1]
 ```
