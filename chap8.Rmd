@@ -306,9 +306,10 @@ changes[ ,2] - changes[ ,1]
 </p>
 </div>
 
-
 ```{r poly log}
 polyLog_model <- lm(score ~ log(income) + I(log(income)^2) + I(log(income)^3), data = CASchools)
 coeftest(polyLog_model, vcov = vcovHC(polyLog_model, type = "HC1"))
 
 ```
+
+
