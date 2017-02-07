@@ -2,13 +2,21 @@
 
 This chapter introduces the simple linear regression model which relates one variable, $X$, to another variable $Y$. If for example a school cuts the class sizes by hiring new teachers, how would this effect the performance of the students? With linear regression we can not only examine whether the class size $\left(X\right)$ does have an impact on the test results $\left(Y\right)$. We can also learn something about the direction and the strength of this effect. 
 
-To start with an easy example consider the following combinations of average test scores and the average class size in some school districts:
+To start with an easy example consider the following combinations of average test scores and the average class size in some school districts.
+
+| Class Size | 680 | 640 | 670 | 660 | 630 | 660  | 635 |
+|------------|-----|-----|-----|-----|-----|------|-----|
+| Test Score | 15  | 17  | 19  | 20  | 22  | 23.5 | 25  |
+
+To work with this data in R we can create 2 vectors, one for class size and one for test scores which contain 
+the data from the table. 
 
 <div class="unfolded">
 ```{r}
 #Creating sample data
-TestScore   <- c(680, 640, 670, 660, 630, 660, 635) 
 ClassSize   <- c(15, 17, 19, 20, 22, 23.5, 25)
+TestScore   <- c(680, 640, 670, 660, 630, 660, 635) 
+
                          
 #Print out sample data
 TestScore 
@@ -24,11 +32,11 @@ to each other is
 
 $$TestScore = 713 - 3 \times ClassSize.$$
 
-If it is possible it is always a good idea to visualize the data You work with in an appropriate way.
+If it is possible it is always a good idea to visualize the data you work with in an appropriate way.
 For our purpose we can use the function `plot()` to produce a scatterplot with `ClassSize` on the $X$-axis and `TestScore` on the $Y$-axis. An easy way to do so is to call `plot(y_variable ~ x_variable)`.   
 We might furthermore want to add the true relationship to the plot. To draw a straight line R provides the
 function `abline()`. We just have to call this function with arguments `a` (representing the intercept) 
-and `b` (representing the slope) after we executed `plot()` in order to add the line to our scatterplot. The following code reproduces figure 4.1 from the book. 
+and `b` (representing the slope) after we executed `plot()` in order to add the line to our scatterplot. The following code reproduces figure 4.1 from the textbook. 
 
 <div class="unfolded">
 ```{r Figure 4.1, fig.align='center'}
@@ -64,7 +72,7 @@ where
 
 ### Estimating the Coefficients of the Linear Regression Model
 
-In practical situations the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must use data to estimate the two unknown parameters. We will demonstrate how to do that on a real data example. We want to relate test scores to class sizes in $420$ California school restricts. The test score is the districtwide average of reading and math scores for fifth graders. Class size is measured as the number of students divided by the number of teachers (student-teacher ratio). The California School dataset is available in the `AER` package. After installing the package with `install.packages()` and attaching it with `library()` the dataset can be loaded using the `data()` function. 
+In practical situations the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must use data to estimate the two unknown parameters. In the following a real world example will be used to demonstrate how to do that. We want to relate test scores to class sizes in $420$ California school destricts. The test score is the districtwide average of reading and math scores for fifth graders. Class size is measured as the number of students divided by the number of teachers (student-teacher ratio). The California School dataset is available in the `AER` package. After installing the package with `install.packages("AER")` and attaching it with `library()` the dataset can be loaded using the `data()` function. 
 
 <div class="unfolded">
 ```{r, message=FALSE, warning=FALSE}
@@ -74,7 +82,7 @@ data(CASchools)                                                 # loads the the 
 </div>
 
 For several reasons it is interesting to know what kind of object we are dealing with. 
-`class(object_name)` returns the type (class) of the object. Depending on the class of an object several
+`class(object_name)` returns the type (class) of an object. Depending on the class of an object several
 functions (such as `plot`) behave differently (example link).
 
 <div class="undfolded">
@@ -85,7 +93,7 @@ class(CASchools)
 
 It turns out that our object is of class `data.frame` which is a convienient format to work with. 
 
-With `head()` we get a first overview of our data. This function shows only the first 6 rows of the dataset which prevents an overcrowded console output. An alternative to `class()` and `head()` is `str()` which means structure and gives an comprehensive overview of the object.  
+With `head()` we get a first overview of our data. This function shows only the first 6 rows of the data set which prevents an overcrowded console output. An alternative to `class()` and `head()` is `str()` which means structure and gives an comprehensive overview of the object.  
 
 <div class="unfolded">
 ```{r}
@@ -93,18 +101,19 @@ head(CASchools)
 ```
 </div>
 
-We find that the dataset consists of plenty variables but the two we are intersted in (average test scores and class size) are not included. However, it is possible to calculate both from the existing data. To obtain the average class size we divide the number of students by the number of teachers. The avarage test score is the arithmetic mean of the test score for reading and the score of the math test.  
+We find that the dataset consists of plenty variables but the two we are intersted in (average test scores and class size) are not included. However, it is possible to calculate both from the existing data. To obtain the average class size we divide the number of students by the number of teachers. The avarage test score is the arithmetic mean of the test score for reading and the score of the math test. The next code chunk shows how the two variables can be added to the dataframe.
 
 <div class="unfolded">
 ```{r}
-CASchools$size     <- CASchools$students/CASchools$teachers     # class size
-CASchools$score    <- (CASchools$read + CASchools$math)/2       # average test-score
+CASchools$size     <- CASchools$students/CASchools$teachers     
+CASchools$score    <- (CASchools$read + CASchools$math)/2     
 ```
 </div>
 
-The next code chunk reproduces table 4.1 from the text book which summarizes the distribution of test scores and class sizes. 
-For this we use the functions `mean` (computes the arithmetic mean of the provided numbers), `sd` (computes the standard deviation), and 
-`quantiles` (returns a vector of the desired quantiles).
+If we run `head()` again we would now find the two variables of interest `size` and `score`.
+
+Table 4.1 from the text book summarizes the distribution of test scores and class sizes. 
+The functions `mean()` (computes the arithmetic mean of the provided numbers), `sd()` (computes the standard deviation), and `quantiles()` (returns a vector of the desired quantiles) can be used to obtain the same results.
 
 In order to have a nice display format we gather all data after the computation in a `data.frame`. 
 
@@ -130,9 +139,9 @@ DistributionSummary
 R already contains a `summary()`function which can be applied to `data.frames`. Check it out! 
 
 As we did for the sample data we use `plot()` for a visual survey. This allows us to detect specific characteristics of our data, 
-such as outliers, which are hard to discover by looking at mere numbers. This time the `plot()` command was extended by a few more arguments. 
+such as outliers, which are hard to discover by looking at mere numbers. This time we add some additional arguments to the `plot()` function. 
 The first argument `score ~ size` is again a formula representing the y and the x variables. However, this time the two variables are not 
-saved in seperate varibales but are contained in a `data.frame`. R would not find the variables without the argument `data`. Here we put in the name of the `data.frame` to which the variables belong. The other three arguments change the appearance of the plot. `main` adds a title and `xlab` and `ylab` are adding custom labels to the axes.  
+saved in seperate variables but are contained in a `data.frame`. R would not find the variables without the argument `data`. Here we put in the name of the `data.frame` to which the variables belong. The other three arguments change the appearance of the plot. `main` adds a title and `xlab` and `ylab` are adding custom labels to the axes.  
 
 <div class="unfolded">
 ```{r, fig.align='center'}
@@ -147,7 +156,7 @@ plot(score ~ size,
 
 The plot (figure 4.2 in the book) shows the scatterplot of all observations. We see that the points are strongly scatterd and an apparent relationship cannot be detected with the naked eye.
 
-With the commad `cor()` the correlation between 2 variables can be computed. As the scatterplot already suggested the correlation is with $-0.23$ rather weak. 
+With the function `cor()` the correlation between 2 variables can be computed. As the scatterplot already suggested the correlation is with $-0.23$ rather weak. 
 
 <div class="unfolded">
 ```{r}
@@ -232,7 +241,7 @@ abline(linear_model) # add regression line
 ```
 </div>
 
-Did You note that we this time did not pass the intercept and slope parameters to `abline`? If You call `abline()` with an object of class `lm` and only one regressor variable R does automatically draws the regression line. 
+Did you note that we this time did not pass the intercept and slope parameters to `abline`? If you call `abline()` with an object of class `lm` and only one regressor variable R automatically draws the regression line. 
 
 ### Measures of fit
 
@@ -264,7 +273,7 @@ summary(linear_model)
 ```
 </div>
 
-The $R^2$ in the output is called multiple R-squared and takes the value $0.051$. Hence, $5.1 \%$ of the variance of the dependent variable `TestScore` is explained by the explanatory variable *STR*. That is the regression explains some of the variance but much of the variation of `TestScore` remains unexplained (compare figure 4.3).   
+The $R^2$ in the output is called multiple R-squared and takes the value $0.051$. Hence, $5.1 \%$ of the variance of the dependent variable `score` is explained by the explanatory variable *STR*. That is the regression explains some of the variance but much of the variation of `score` remains unexplained (compare figure 4.3).   
 
 The **SER** is called residual standard error and takes the value 18.58. The unit of the **SER** is the same as the unit of the dependent variable. We interpret the **SER** as follows: on average the deviation of the actual achieved *TestScore* and the regression line is 18.58 points. 
 
