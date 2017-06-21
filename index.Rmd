@@ -48,9 +48,6 @@ As You can seen from Figure 1, the interface of R-Studio can be roughly broken d
 
 <b><font color="darkred">4</font></b> is the core pane of any R developer environment: The R console. It works like a command line tool. Code that is entered here will be immediately executed when You hit the "enter" key on Your keyboard. The output produced by Your code will (in most cases) also be displayed here.
 
-
-
-
 # Chapter 2 
 
 ```{r child = 'chap2.Rmd', eval = TRUE}
