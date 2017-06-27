@@ -1,323 +1,236 @@
-This chapter reviews basic concepts of probability theory and how they can be
-applied in R.
+This chapter reviews basic concepts of probability theory and how they can be applied in R. 
 
-The most common probability distributions are implemented in base R. That means
-that You can draw random numbers from these distributions, compute densities,
-probabilies, quantiles and alike. It is often very convenient to rely on these
-routines, especially when writing Your own functions.
-
-Every distribution function that R handles has four basic functions whose names
-consist of a prefix followed by a root name. As an example, take the normal
-distribution. The root name of all four functions associated with the normal distribution is <tt>norm</tt>. The four prefixes are
-
-- <tt>d</tt> for "density" - probability function / probability density function
-- <tt>p</tt> for "probability" - cumulative distribution function
-- <tt>q</tt> for "quantile" - quantile function (inverse cumulative distribution function)
-- <tt>r</tt> for "random" - random generator
-
-Thus, for the normal distribution we have <tt>dnorm</tt>, <tt>pnorm</tt>, <tt>qnorm</tt> and <tt>rnorm</tt>.
+The most common probability distributions are implemented in base R. That means that You can draw random numbers from these distributions, compute densities, probabilies, quantiles and alike. It is often very convenient to rely on these routines, especially when writing Your own functions.  
 
 ## Section 2.1 --- Random Variables and Probability Distributions
 
-R provides a variety of functions that allow to user to perform random
-experiments.
+R provides a variety of functions that allow to user to perform random experiments. 
 
-Before we see how to conduct such an experiment using R, let us briefly review
-some basic terms.
+Before we see how to conduct such an experiment using R, let us briefly review some basic terms. 
 
 - The mutually exclusive results of a random process are called the *outcomes*. 'Mutually exclusive' means that only one of the possible outcomes is observed. 
 - We reffer to the *probability* of an outcome as the proportion of the time that the outcome occurs in the long run, that is if the experiment is repeated very often. 
 - The set of all possible outcomes of a random variable is called the *sample space*. 
-- An *event* is a subset of the sample space and consists of one or more outcomes.
+- An *event* is a subset of the sample space and consists of one or more outcomes. 
 
 These indeas are unified in the concept of a *random variable* which is a numerical summary of random outcomes. Random variables can be *discrete* or *continuous*.
 
-- Discrete random variables have discrete outcomes, e.g. 0 and 1. 
-- A continuous random variable takes on a continuum of possible values.
+- Discrete random variables have discrete outcomes, e.g. 0 and 1.
+- A continuous random variable takes on a continuum of possible values. 
 
 ### Probability distributions of Discrete Random Variables
 
-A typical example for a discrete random variable $D$ is the result of a die
-roll: in terms of a random experiment this is nothing but randomly selecting a
-sample of size 1 from a set of numbers which are mutually exclusive outcomes.
-Here, the sample space is $\{1,2,3,4,5,6\}$ and we can think of many different
-events, e.g. 'the observed outcome lies between 2 and 5'.
+A typical example for a discrete random variable $D$ is the result of a die roll: in terms of a random experiment this is nothing but randomly selecting a sample of size 1 from a set of numbers which are mutually exclusive outcomes. Here, the sample space is $\{1,2,3,4,5,6\}$ and we can think of many different events, e.g. 'the observed outcome lies between 2 and 5'.
 
-A basic function to draw random samples from a specified set of elements is the
-the function `sample`, see `?sample`. We can use it to generate the random
-outcome of a die roll. Let's role the dice!
+A basic function to draw random samples from a specified set of elements is the the function `sample`, see `?sample`. We can use it to generate the random outcome of a die roll. Let's role the dice!
 
 
-```{r, echo = T, eval = T, message = F, warning = F} 
-sample(c(1,2,3,4,5,6),1) 
+```{r, echo = T, eval = T, message = F, warning = F}
+sample(c(1,2,3,4,5,6),1)
 ```
 
-The probability distribution of a discrete random variable is the list of all
-possible values of the variable and thier probabilities which sum to 1. The
-cumulative probability distribution is the probability that the random variable
-is less than or equal to a particular value.
+The probability distribution of a discrete random variable is the list of all possible values of the variable and thier probabilities which sum to 1. The cumulative probability distribution is the probability that the random variable is less than or equal to a particular value. 
 
 For the die roll, this is straightforward to set up
 
-| Outcome                             |  1  |  2  |  3  |  4  |  5  |  6  | 
+| Outcome                             |  1  |  2  |  3  |  4  |  5  |  6  |
 |-------------------------------------|-----|-----|-----|-----|-----|-----|
-Probability distribution              | 1/6 | 1/6 | 1/6 | 1/6 | 1/6 | 1/6 |
-Cumulative probability distribution   | 1/6 | 2/6 | 3/6 | 4/6 | 5/6 |  1  |
+| Probability distribution            | 1/6 | 1/6 | 1/6 | 1/6 | 1/6 | 1/6 |
+| Cumulative probability distribution | 1/6 | 2/6 | 3/6 | 4/6 | 5/6 |  1  |
 
 
-We can easily plot both functions using R. Since the probability equals to $1/6$
-for each outcome, we set up the vector `probability` by using the `rep` function
-which replicates a given value a desired number of times.
+We can easily plot both functions using R. Since the probability equals to $1/6$ for each outcome, we set up the vector `probability` by using the `rep` function which replicates a given value a desired number of times.
 
-<div class="unfolded"> 
-```{r, echo = T, eval = T, message = F, warning = F} 
-#generate the vector of probabilities 
-probability <- rep(1/6,6) # plot the probabilites 
-plot(probability, xlab = "outcomes", main = "Probability Distribution") 
-``` 
-</div>
-
-For the cumulative probability distribution we need the cumulative
-probabilities. These can be computed using `cumsum`.
-
-<div class="unfolded"> 
-```{r, echo = T, eval = T, message = F, warning = F} 
-#generate the vector of cumulative probabilities 
-cum_probability <- cumsum(rep(1/6,6)) 
-# plot the probabilites 
-plot(cum_probability, xlab = "outcomes", main = "Cumulative Probability Distribution") 
+<div class="unfolded">
+```{r, echo = T, eval = T, message = F, warning = F}
+# generate the vector of probabilities
+probability <- rep(1/6,6)
+# plot the probabilites
+plot(probability, xlab = "outcomes", main = "Probability Distribution")
 ```
 </div>
+
+For the cumulative probability distribution we need the cumulative probabilities. These can be computed using `cumsum`.
+
+<div class="unfolded">
+```{r, echo = T, eval = T, message = F, warning = F}
+# generate the vector of cumulative probabilities
+cum_probability <- cumsum(rep(1/6,6))
+# plot the probabilites
+plot(cum_probability, xlab = "outcomes", main = "Cumulative Probability Distribution")
+```
+</div>
+
+
 
 ### Bernoulli Trials
 
-The set of elements `sample` draws from does not have to consist of numbers
-only. We might as well simulate coin tossing with outcomes $H$ (head) and $T$
-(tail).
+The set of elements `sample` draws from does not have to consist of numbers only. We might as well simulate coin tossing with outcomes $H$ (head) and $T$ (tail).
 
-```{r, echo = T, eval = T, message = F, warning = F} 
-sample(c("H","T"),1) 
+```{r, echo = T, eval = T, message = F, warning = F}
+sample(c("H","T"),1)
 ```
 
 
-The result of a coin toss is a Bernoulli distributed random variable i.e. two
-distinct outcomes are possible.
+The result of a coin toss is a Bernoulli distributed random variable i.e. two distinct outcomes are possible.
 
-Imagine you are about to toss a coin 10 times in a row and wonder how likely it
-is to end up with a sequence of outcomes like
+Imagine you are about to toss a coin 10 times in a row and wonder how likely it is to end up with a sequence of outcomes like
 
 $$ H \, H \, T \, T \,T \,H \,T \,T \, H \, H $$
 
 $(H$=Head, $T$=Tail$)$
 
-This is a typical example of a Bernoulli experiment as it consists of $n=10$
-Bernoulli trials that are independent of each other and we are interested in the
-likelihood of observing $k=5$ successes $H$ that occur with probability $p=0.5$
-(assuming a fair coin) in each trial.
+This is a typical example of a Bernoulli experiment as it consists of $n=10$ Bernoulli trials that are independent of each other and we are interested in the likelihood of observing $k=5$ successes $H$ that occur with probability $p=0.5$ (assuming a fair coin) in each trial.
 
-It is a well known result that $k$ follows a binomial distribution
+It is a well known result that $k$ follows a binomial distribution 
 
 $$ k \sim B(n,p). $$
 
-The probability of observing $k$ successes in the experiment $B(n,p)$ is hence
-given by
+The probability of observing $k$ successes in the experiment $B(n,p)$ is hence given by
 
-$$f(k)=P(k)=\begin{pmatrix}n\\ k \end{pmatrix} \cdot p^k \cdot
-q^{n-k}=\frac{n!}{k!(n-k)!} \cdot p^k \cdot q^{n-k}$$
+$$f(k)=P(k)=\begin{pmatrix}n\\ k \end{pmatrix} \cdot p^k \cdot q^{n-k}=\frac{n!}{k!(n-k)!} \cdot p^k \cdot q^{n-k}$$
 
 
-where $\begin{pmatrix}n\\ k \end{pmatrix}$ is a binomial coefficient. In R, we
-can solve the problem stated above by means of the function `dbinom` which
-calculates the probability of the binomial distribution for parameters `x`,
-`size`, and `prob`, see `?binom`.
+where $\begin{pmatrix}n\\ k \end{pmatrix}$ is a binomial coefficient. In R, we can solve the problem stated above by means of the function `dbinom` which calculates the probability of the binomial distribution for parameters `x`, `size`, and `prob`, see `?binom`.
 
-```{r, echo = T, eval = T, message = F, warning = F} 
-dbinom(x = 5, size = 10, prob = 0.5) 
+```{r, echo = T, eval = T, message = F, warning = F}
+dbinom(x = 5, size = 10, prob = 0.5)
 ```
 
-We conclude that the probability of observing Head $k=5$ times when tossing the
-coin $n=10$ times is about $24.6\%$.
+We conclude that the probability of observing Head $k=5$ times when tossing the coin $n=10$ times is about $24.6\%$.
 
-Now assume You are interested in $P(4 \leq k \leq 7)$ i.e. the probability of
-observing 4, 5, 6 or 7 successes for $B(n,p)$. This is easily computed by
-providing a vector as the `x` argument in `dbinom` and summing up using `sum`.
+Now assume You are interested in $P(4 \leq k \leq 7)$ i.e. the probability of observing 4, 5, 6 or 7 successes for $B(n,p)$. This is easily computed by providing a vector as the `x` argument in `dbinom` and summing up using `sum`.
 
-```{r, echo = T, eval = T, message = F, warning = F} 
+```{r, echo = T, eval = T, message = F, warning = F}
 sum(dbinom(x = c(4:7), size = 10, prob = 0.5))
 ```
 
-The Probability distribution of a discrete random variable is nothing but a list
-of all possible outcomes that can occur and their respective probabilities. In
-our coin tossing example, we face 11 possible outcomes for $k$
+The Probability distribution of a discrete random variable is nothing but a list of all possible outcomes that can occur and their respective probabilities. In our coin tossing example, we face 11 possible outcomes for $k$
 
-```{r, echo = T, eval = T, message = F, warning = F} 
+```{r, echo = T, eval = T, message = F, warning = F}
 k <- 0:10
 ```
 
-To visualize the probability distribution function of $k$ we may therefore
-simply call
+To visualize the probability distribution function of $k$ we may therefore simply call
 
-<div class="unfolded"> 
-```{r, echo = T, eval = T, message = F, warning = F} 
-probability <- dbinom(x = 0:10, size = 10, prob = 0.5) 
-k <- 0:10 
-plot(k, probability) 
-``` 
+<div class="unfolded">
+```{r, echo = T, eval = T, message = F, warning = F}
+probability <- dbinom(x = 0:10, size = 10, prob = 0.5)
+k <- 0:10
+plot(k, probability)
+```
 </div>
 
-In a similar fashion we may plot the cummulative distribution function of $k$ by
-executing the following code chunk:
+In a similar fashion we may plot the cummulative distribution function of $k$ by executing the following code chunk:
 
-```{r, echo = T, eval = T, message = F, warning = F} 
-prob <- cumsum(dbinom(x =
-0:10, size = 10, prob = 0.5)) 
-k <- 0:10 
-plot(k, prob) 
+```{r, echo = T, eval = T, message = F, warning = F}
+prob <- cumsum(dbinom(x = 0:10, size = 10, prob = 0.5))
+k <- 0:10
+plot(k, prob)
 ```
+
 
 ### Expected Values, Mean and Variance
 
-The expected value of a random variable is the long-run average value of the
-random variable over many repeated trials. For a discrete random variable, the
-expected value is computed as a weighted average of its possible outcomes
-whereby the weights are the respective probabilities. This is formalized in Key
-Concept 2.1.
+The expected value of a random variable is the long-run average value of the random variable over many repeated trials. For a discrete random variable, the expected value is computed as a weighted average of its possible outcomes whereby the weights are the respective probabilities. This is formalized in Key Concept 2.1.
 
 <div class = "keyconcept"> 
-<h3 class = "right"> Key Concept 2.1 </h3> 
-<h3 class= "left"> Expected Value and the Mean </h3> 
-
-<p> Suppose the random variable $Y$
-takes on $k$ possible values, $y_1, \dots, y_k$, where $y_1$ denotes the first
-value, $y_2$ denotes the second value, and so forth, and that the probability
-that $Y$ takes on $y_1$ is $p_1$, the probability that $Y$ takes on $y_2$ is
-$p_2$ and so forth. The expected value of $Y$, $E(Y)$ is defined as
+<h3 class = "right"> Key Concept 2.1 </h3>          
+<h3 class = "left"> Expected Value and the Mean </h3>
+<p> 
+Suppose the random variable $Y$ takes on $k$ possible values, $y_1, \dots, y_k$, where $y_1$ denotes the first value, $y_2$ denotes the second value, and so forth, and that the probability that $Y$ takes on $y_1$ is $p_1$, the probability that $Y$ takes on $y_2$ is $p_2$ and so forth. The expected value of $Y$, $E(Y)$ is defined as
 
 $$ E(Y) = y_1 p_1 + y_2 p_2 + \cdots + y_k p_k = \sum_{i=1}^k y_i p_i $$
 
-where the notation $\sum_{i=1}^k y_i p_i$ means "the sum of $y_i$ $p_i$ for $i$
-running from 1 to $k$". The expected value of $Y$ is also called the mean of $Y$
-or the expectation of $Y$ and is denoted by $\mu_y$.
-</p> 
+where the notation $\sum_{i=1}^k y_i p_i$ means "the sum of $y_i$ $p_i$ for $i$ running from 1 to $k$". The expected value of $Y$ is also called the mean of $Y$ or the expectation of $Y$ and is denoted by $\mu_y$.
+
+</p>
 </div>
 
-In the dice example, the random variable, $D$ say, takes on $6$ possible values
-$d_1 = 1, \cdots, d_6 = 6$. Assuming a fair dice, each of the 6 outcomes occurs
-with a probability of $1/6$. It is therefore easy to calculate the exact value
-of $E(D)$ by hand:
+In the dice example, the random variable, $D$ say, takes on $6$ possible values $d_1 = 1, \cdots, d_6 = 6$. Assuming a fair dice, each of the 6 outcomes occurs with a probability of $1/6$. It is therefore easy to calculate the exact value of $E(D)$ by hand:
 
 $$ E(D) = 1/6 \sum_{i=1}^6 y_i = 3.5 $$
 
-This is simply the average of the natural numbers from 1 to 6. Convince Yourself
-that this can be easily calculated using the function `mean` which computes the
-arithmetic mean of a numeric sequence.
+This is simply the average of the natural numbers from 1 to 6. Convince Yourself that this can be easily calculated using the function `mean` which computes the arithmetic mean of a numeric sequence.
 
-```{r, echo = T, eval = T, message = F, warning = F} 
+```{r, echo = T, eval = T, message = F, warning = F}
 mean(1:6)
 ```
 
-An example of sampling with replacement is rolling a dice three times in a row.
+An example of sampling with replacement is rolling a dice three times in a row.  
 
-```{r, echo = 2, eval = T, message = F, warning = F} 
-set.seed(1) 
+```{r, echo = 2, eval = T, message = F, warning = F}
+set.seed(1)
 sample(c(1,2,3,4,5,6),3, replace = T)
 ```
 
-Of course we could also consider a much bigger number of trials, 10000 say.
-Doing so, it would be pointless to simply print the results to the console: by
-default R displays the first 1000 entries of large vectors and omitts the
-remainder (give it a go) and eyeballing the numbers does not reveal too much.
-Instead, let us calculate the sample average of the outcomes using `mean` and
-see if it comes close to the expected value $E(D)=3.5$.
+Of course we could also consider a much bigger number of trials, 10000 say. Doing so, it would be pointless to simply print the results to the console: by default R displays the first 1000 entries of large vectors and omitts the remainder (give it a go) and eyeballing the numbers does not reveal too much. Instead, let us calculate the sample average of the outcomes using `mean` and see if it comes close to the expected value $E(D)=3.5$. 
 
-```{r, echo = 2, eval = T, message = F, warning = F} 
-set.seed(1) 
+```{r, echo = 2, eval = T, message = F, warning = F}
+set.seed(1)
 mean(sample(c(1,2,3,4,5,6),10000, replace = T))
 ```
 
-We find the sample mean to be fairly close to the expectation value. (ref to
-WLLN)
+We find the sample mean to be fairly close to the expectation value. (ref to WLLN)
 
 ### Probability Distributions of Continuous Random Variables
 
-Since a continuous random variables takes on a continuum of possible values, we
-cannot use the concept of a probability distribution as used for discrete random
-variables. Instead, the probability distribution of a continuous random variable
-is summarized by its *probability density function*.
+Since a continuous random variables takes on a continuum of possible values, we cannot use the concept of a probability distribution as used for discrete random variables. Instead, the probability distribution of a continuous random variable is summarized by its *probability density function*.
 
-The cumulative probability distribution for a continuous random variable is
-defined just as in the discrete case. Hence, the cumulative probability
-distribution of a continuous random variables states the probability that the
-random variable is less than or equal to a particular value.
+The cumulative probability distribution for a continuous random variable is defined just as in the discrete case. Hence, the cumulative probability distribution of a continuous random variables states the probability that the random variable is less than or equal to a particular value.
 
-Although there is a wide variety of distribution, the ones most often
-encountered in econometrics are the normal, chi-squared, Student $t$ and $F$
-distributions. Therefore we will discuss some core R functions that allow to do
-calculations involving densities, probabilities and quantiles of these
-distributions.
+Although there is a wide variety of distribution, the ones most often encountered in econometrics are the normal, chi-squared, Student $t$ and $F$ distributions. Therefore we will discuss some core R functions that allow to do calculations involving densities, probabilities and quantiles of these distributions.
 
 #### The Normal Distribution
 
-The probably most import distribution considered here is the normal
-distribution. Distributions of the normal family have a familiar symmetric,
-bell-shaped probability density. A normal distribution is characterized by its
-mean $\mu$ and its standard deviation $\sigma$ what is concisely expressed by
-$N(\mu,\sigma^2)$. The normal distribution has the density function
+The probably most import distribution considered here is the normal distribution. Distributions of the normal family have a familiar symmetric, bell-shaped probability density. A normal distribution is characterized by its mean $\mu$ and its standard deviation $\sigma$ what is concisely expressed by $N(\mu,\sigma^2)$. The normal distribution has the density function
 
 $$ f(x) = \frac{1}{\sqrt{2 \pi} \sigma} e^{-(x - μ)^2/(2 σ^2)}. $$
 
-A special case is the standard normal distribution which has $\mu=0$ and
-$\sigma=1$. Standard normal variates are often denoted $Z$. Usually, the
-standard normal density function is denoted by $\phi$ and the standard normal
-cumulative distribution function is denoted by $\Phi$. Hence,
+A special case is the standard normal distribution which has $\mu=0$ and $\sigma=1$. Standard normal variates are often denoted $Z$. Usually, the standard normal density function is denoted by $\phi$ and the standard normal cumulative distribution function is denoted by $\Phi$. Hence,
 
-$$ \phi(c) = \Phi'(c) \ \ , \ \ \Phi(c) = P(Z \leq c) \ \ , \ \ Z \sim N(0,1).
-$$ In R, we can conveniently obtain density values of normal distributions using
-the function `dnorm`. Let us draw a plot of the standard normal density function
-using `curve` and `dnorm`.
+$$ \phi(c) = \Phi'(c) \ \ , \ \ \Phi(c) = P(Z \leq c) \ \ , \ \ Z \sim N(0,1). $$
+In R, we can conveniently obtain density values of normal distributions using the function `dnorm`. Let us draw a plot of the standard normal density function using `curve` and `dnorm`.
 
-```{r, echo = T, eval = T, message = F, warning = F} 
-curve(dnorm(x),
-xlim=c(-3.5, 3.5), ylab = "Density", main = "Standard Normal Distribution") 
+```{r, echo = T, eval = T, message = F, warning = F}
+curve(dnorm(x), xlim=c(-3.5, 3.5), ylab = "Density", main = "Standard Normal Distribution")
 ```
 
-We can obtain the density at different positions by passing a vector of
-quantiles to `dnorm`.
+We can obtain the density at different positions by passing a vector of quantiles to `dnorm`.
 
-```{r, echo = T, eval = T, message = F, warning = F} 
+```{r, echo = T, eval = T, message = F, warning = F}
 dnorm(c(-1.96,0,1.96))
 ```
 
-A commonly known result is that 95\% probability mass of a standard normal lies
-in the intervall $[-1.96, 1.96]$. We can easily confirm this by calculating
+A commonly known result is that 95\% probability mass of a standard normal lie in the intervall $[-1.96, 1.96]$. We can easily confirm this by calculating
 
-$$ P(-1.96 \leq Z \leq 1.96) = 1-2\times P(Z \leq -1.96) $$ due to symmetry.
-Thanks to R we can abondon the table of the standard normal c.d.f. and instead
-solve this by means of the function `pnorm`.
+$$ P(-1.96 \leq Z \leq 1.96) = 1-2\times P(Z \leq -1.96) $$
+due to symmetry. Thanks to R we can abondon the table of the standard normal c.d.f. and instead solve this by executing
 
-```{r, echo = T, eval = T, message = F, warning = F} 
-1 - 2 * (pnorm(-1.96)) 
+```{r, echo = T, eval = T, message = F, warning = F}
+1 - 2 * (pnorm(-1.96))
 ```
 
 ...we need to standardize the variable first as shown in Key Concept 2.4.
 
 <div class = "keyconcept"> 
-<h3 class = "right"> Key Concept 2.4 </h3> 
+<h3 class = "right"> Key Concept 2.4 </h3>          
 <h3 class = "left"> Computing Probabilities Involving Normal Random Variables </h3>
 
 <p>
 
-Suppose $Y$ is normally distributed with mean $\mu$ and variance $\sigma^2$: $$Y
-\sim N(\mu, \sigma^2)$$ Then $Y$ is standardized by substracting its mean and
-dividing by its standard deviation: $$ Z = \frac{Y -\mu}{\sigma} $$ Let $c_1$
-and $c_2$ denote two numbers whereby $c_1 < c_2$ and further $d_1 = (c_1 - \mu)
-/ \sigma$ and $d_2 = (c_2 - \mu)/\sigma$. Then
+Suppose $Y$ is normally distributed with mean $\mu$ and variance $\sigma^2$: 
+$$Y \sim N(\mu, \sigma^2)$$
+Then $Y$ is standardized by substracting its mean and dividing by its standard deviation:
+$$ Z = \frac{Y -\mu}{\sigma} $$
+Let $c_1$ and $c_2$ denote two numbers whereby $c_1 < c_2$ and further $d_1 = (c_1 - \mu) / \sigma$ and $d_2 = (c_2 - \mu)/\sigma$. Then
 
-\begin{align} 
-P(Y \leq c_2) =& \, P(Z \leq d_2) = \Phi(d_2) \\ 
-P(Y \geq c_1) =& \, P(Z \geq d_1) = 1 - \Phi(d_1) \\ 
-P(c_1 \leq Y \leq c_2) =& \, P(d_1 \leq Z \leq d_2) = \Phi(d_2) - \Phi(d_1) 
+\begin{align}
+  P(Y \leq c_2) =& \, P(Z \leq d_2) = \Phi(d_2) \\
+  P(Y \geq c_1) =& \, P(Z \geq d_1) = 1 - \Phi(d_1) \\
+  P(c_1 \leq Y \leq c_2) =& \, P(d_1 \leq Z \leq d_2) = \Phi(d_2) - \Phi(d_1)
 \end{align}
 
-</p> 
+</p>
 </div>
+
