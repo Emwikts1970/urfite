@@ -1,3 +1,5 @@
+<script src = "http://d3js.org/d3.v3.min.js"></script>
+
 This chapter reviews some basic concepts of probability theory and demonstrates how they can be
 applied in R.
 
@@ -671,7 +673,7 @@ $$ \overline{Y} = \frac{1}{n} \sum_{i=1}^n Y_i = \frac{1}{n} (Y_1 + Y_2 + \cdots
 ##### Mean and Variance of the Sample Mean
 
 
-Denote $\mu_Y$ and $\sigma_Y^2$ the mean and the variance of $Y_i$ and suppose that all observations $Y_1,\dots,Y_n$ are i.i.d. (mean and variance are the same for all $i=1,\dots,n$). Then we have that
+Denote $\mu_Y$ and $\sigma_Y^2$ the mean and the variance of the $Y_i$ and suppose that all observations $Y_1,\dots,Y_n$ are i.i.d. (mean and variance are the same for all $i=1,\dots,n$). Then we have that
 
 $$ E(\overline{Y}) = E\left(\frac{1}{n} \sum_{i=1}^n Y_i \right) = \frac{1}{n} E\left(\sum_{i=1}^n Y_i\right) = \frac{1}{n} \sum_{i=1}^n E\left(Y_i\right) = \frac{1}{n} \cdot n \cdot \mu_Y = \mu_Y    $$
 and
@@ -691,27 +693,62 @@ $$ sd(\overline{Y}) = \sigma_{\overline{Y}} = \frac{\sigma_Y}{\sqrt{n}}. $$
 
 These results hold irrespective of the underlying distribution of the $Y_i$.
 
+##### The Sampling Distribution of $\overline{Y}$ when $Y$ Is Normally Distributed
 If the $Y_1,\dots,Y_n$ are i.i.d. draws from a normal distribution with mean $\mu_Y$ and variance $\sigma_Y^2$, Key Concept XXX states that the following holds for their sample average $\overline{Y}$:
 
-$$ \overline{Y} \sim N(\mu_y, \sigma_Y^2/n). $$
+$$ \overline{Y} \sim N(\mu_y, \sigma_Y^2/n) $$
 
-We can use R's random number generation facilities to verifiy this result. We proceed as follows:
+For example, if a sample $Y_i$ with $i=1,\dots,10$ is drawn from a standard normal distribution with mean $\mu_Y = 0$ and variance $\sigma_Y^2=1$ we have
 
-1. abc
+$$ \overline{Y} \sim N(0,0.1).$$
 
+We can use R's random number generation facilities to verifiy this result. The basic idea is to simulate outcomes of the true distribution of $\overline{Y}$ by repeatedly drawing random samples of 10 observation from the $N(0,1)$ distribution and computing their respective averages. If we do this for a large number of repititions, the simulated dataset of averages should quite accuratetly reflect the theoretical distribution of $\overline{Y}$ if the theoretical result holds.
+
+The approach sketched above is an example of what is commonly known as *Monte Carlo Simulation* or *Monte Carlo Experiment*. To perform this in R, we proceed as follows:
+
+1. Choose a sample size `n` and the number of samples to be drawn `reps`.
+2. Use the function `replicate` in conjunction with `rnorm` to draw `n` observations from the standard normal distribution `rep` times. The outcome of `replicate` is a matrix with dimensions `n` $\times$ `rep`. It contains the drawn samples as columns.
+3. Compute sample means using `colMeans`. This function computes the mean of each column i.e. of each sample.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
+# Set sample size and number of samples
+n <- 10
+reps <- 10000
 
-repetitions <- 10000
+# Perform random sampling
+samples <- replicate(reps, rnorm(n)) # 10 x 10000 sample matrix
 
-samples <- replicate(repetitions, rnorm(10))
-
+# Compute sample means
 sample.avgs <-colMeans(samples)
-
-hist(sample.avgs, ylim=c(0,1.4), col="steelblue" , freq = F, breaks = 20)
-curve(dnorm(x,sd=1/sqrt(10)), col="red",  lwd="2", add=T)
 ```
 
+After performing these steps we end up with a vector of sample averages. You can check the vector property of `sample.avgs`:
+
+```{r, echo = T, eval = T, message = F, warning = F} 
+# Check that sample.avgs is a vector
+is.vector(sample.avgs) 
+
+# print the first few entries to the console
+head(sample.avgs)
+```
+
+A straightforward approach to examine the distribution of univariate numerical data is to plot it as a histogram and compare it to some known or assumed distribution. This comparison can be done with help of a suitable statistical test or by simply eyeballing some graphical representations of these distributions. For our simulated sample averages, we will do the latter by means of the functions `hist` and `curve`.
+
+By default, `hist` will give us a frequency histogram i.e. a bar chart where observations are grouped into ranges, also called bins. The ordinate reports the number of observations falling into each of the bins. Instead, we want it to report density estimates for comparison purposes. This is achieved by setting the argument `freq = FALSE`. The number of bins is adjusted by the argument `breaks`. 
+
+Using `curve`, we overlay the histogram with a red line which displays the theoretical density of a $N(0,0.1)$ distributed random variable. Remember to use the argument `add=TRUE` to add the curve to the current plot. Otherwise R will open a new graphic device and discard the histogram plot.  
+
+```{r, echo = T, eval = T, message = F, warning = F}
+# Plot the density histogram
+hist(sample.avgs, ylim=c(0,1.4), col="steelblue" , freq = F, breaks = 20)
+
+# overlay the theoretical distribution of sample averages on top of the histogram
+curve(dnorm(x,sd=1/sqrt(n)), col="red",  lwd="2", add=T)
+```
+
+From inspection of the plot we can tell that distribution of $\overline{Y}$ is indeed very close to that of a $N(0,0.1)$ distributed random variable so that evidence obained from the Monte Carlo Simulation supports the theoretical claim. 
+
+Let us discuss another example where using simple random sampling in a simulation setup helps to verify a well known result. 
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 repetitions <- 20000
@@ -723,10 +760,20 @@ Z <- replicate(repetitions, rnorm(DF)) # 20000 columns à 7 N(0,1) R.V.S
 X <- colSums(Z^2) # Column sums of squares
 
 # Histogram of column sums of squares:
-hist(X, freq = F, col="lightblue", breaks = 40, ylab="Density", main="")
+hist(X, freq = F, col="steelblue", breaks = 40, ylab="Density", main="")
 
 grid <- seq(0, 60, 0.01) # define x-axis
 
 # Add theoretical density
 lines(grid, dchisq(x = grid, df = DF), type = 'l', lwd = 2, col="red")
 ```
+
+
+```{r, echo = F, eval = T, message = F, warning = F} 
+url<-"https://plot.ly/~erikjan/1.embed?width=550&height=550" 
+plotly_iframe <- paste("<center><iframe scrolling='no' seamless='seamless' src='", url, 
+    "/800/1200' width='600' height='600'></iframe><center>", sep = "")
+```
+
+`r I(plotly_iframe)`
+
