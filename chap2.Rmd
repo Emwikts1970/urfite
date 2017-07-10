@@ -1,5 +1,20 @@
 <script src = "http://d3js.org/d3.v3.min.js"></script>
 
+<!--Customize Mathjax equation numbering
+<script type="text/x-mathjax-config">
+
+MathJax.Hub.Config({
+  TeX: { 
+          equationNumbers: { 
+            autoNumber: "all",
+            formatNumber: function (n) {return '2.'+n},
+            useLabelIds: true
+          } 
+       }
+});
+</script>
+-->
+
 This chapter reviews some basic concepts of probability theory and demonstrates how they can be
 applied in R.
 
@@ -481,13 +496,15 @@ R functions that handle the normal distribution do perform this standardization.
 pnorm(4, mean = 5, sd = 5) - pnorm(3, mean = 5, sd = 5) 
 ```
 
-#### The Chi-Squared Distribution
+<a name="chisquare"></a>
+
+#### The Chi-Squared Distribution 
 
 Another distribution relevant in econometric day-to-day work is the chi-squared distribution. It is often needed when testing special types of hypotheses frequently ecountered when dealing with regression models. 
 
 The sum of $M$ squared independent standard normal distributed random variables follows a chi-squared distribution with $M$ degrees of freedom.
 
-$$ Z_1^2 + \dots + Z_M^2 = \sum_{m=1}^M Z_m^2 \sim \chi^2_M \ \ \text{with} \ \ Z_m \overset{i.i.d.}{\sim} N(0,1) $$
+$$ Z_1^2 + \dots + Z_M^2 = \sum_{m=1}^M Z_m^2 \sim \chi^2_M \ \ \text{with} \ \ Z_m \overset{i.i.d.}{\sim} N(0,1) \label{eq:chisq}$$
 
 A $\chi^2$ distributed random variable with $M$ degrees of freedom has expectation $M$, mode at $M-2$ for $n \geq 2$ and variance $2 \cdot M$.
 
@@ -497,7 +514,7 @@ $$ Z_1,Z_2,Z_3 \overset{i.i.d.}{\sim} N(0,1) $$
 
 it holds that
 
-$$ Z_1^2+Z_2^2+Z_3^3 \sim \chi^2_3. $$
+$$ Z_1^2+Z_2^2+Z_3^3 \sim \chi^2_3. \tag{2.1} $$
 By means of the code below, we can display the p.d.f and c.d.f. of a $\chi^2_3$ random variable in one plot. This is achieved by setting `add = TRUE` in the second call of `curve`. Further we adjust axes limits using `xlim` and `ylim` and use different colors to make both functions better distinguishable. 
 The plot is completed by adding a legend with help of the function `legend`.
 
@@ -696,7 +713,7 @@ These results hold irrespective of the underlying distribution of the $Y_i$.
 ##### The Sampling Distribution of $\overline{Y}$ when $Y$ Is Normally Distributed
 If the $Y_1,\dots,Y_n$ are i.i.d. draws from a normal distribution with mean $\mu_Y$ and variance $\sigma_Y^2$, Key Concept XXX states that the following holds for their sample average $\overline{Y}$:
 
-$$ \overline{Y} \sim N(\mu_y, \sigma_Y^2/n) $$
+$$ \overline{Y} \sim N(\mu_y, \sigma_Y^2/n) \tag{2.2} $$
 
 For example, if a sample $Y_i$ with $i=1,\dots,10$ is drawn from a standard normal distribution with mean $\mu_Y = 0$ and variance $\sigma_Y^2=1$ we have
 
@@ -748,24 +765,34 @@ curve(dnorm(x,sd=1/sqrt(n)), col="red",  lwd="2", add=T)
 
 From inspection of the plot we can tell that distribution of $\overline{Y}$ is indeed very close to that of a $N(0,0.1)$ distributed random variable so that evidence obained from the Monte Carlo Simulation supports the theoretical claim. 
 
-Let us discuss another example where using simple random sampling in a simulation setup helps to verify a well known result. 
+Let us discuss another example where using simple random sampling in a simulation setup helps to verify a well known result. As discussed before, the [Chi-squared](#chisquare) distribution with $m$ degrees of freedom arises as the distribution of the sum of $m$ independent squared standard normal distributed random variables. 
+
+To visualize the claim stated in equation (<a href="#mjx-eqn-2.1">2.1</a>), we proceed similarly as in the example before.
+
+1. Choose the degrees of freedom `DF` and the number of samples to be drawn `reps`.
+2. Draw `reps` random samples of size `DF` from the standard normal distribution using `replicate`. 
+3. Continue by squaring the outcomes and summing them up columnwise i.e. for each sample.
+
+Again, we get a density estimate for the distribution underlying our simulated data using a density histogram and overlay it with a line graph of the theoretical density function of the $\chi^2_3$ distribution.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
-repetitions <- 20000
+# Number of repititions
+reps <- 10000
 
-DF <- 7 # Degrees of Freedom of a chi-Square Distribution
+# Set degrees of freedom of a chi-Square Distribution
+DF <- 3 
 
-Z <- replicate(repetitions, rnorm(DF)) # 20000 columns à 7 N(0,1) R.V.S
+# Sample 10000 column vectors à 3 N(0,1) R.V.S
+Z <- replicate(reps, rnorm(DF)) 
 
-X <- colSums(Z^2) # Column sums of squares
+# Column sums of squares
+X <- colSums(Z^2)
 
-# Histogram of column sums of squares:
+# Histogram of column sums of squares
 hist(X, freq = F, col="steelblue", breaks = 40, ylab="Density", main="")
 
-grid <- seq(0, 60, 0.01) # define x-axis
-
 # Add theoretical density
-lines(grid, dchisq(x = grid, df = DF), type = 'l', lwd = 2, col="red")
+curve(dchisq(x, df = DF), type = 'l', lwd = 2, col="red", add = T)
 ```
 
 
@@ -776,4 +803,13 @@ plotly_iframe <- paste("<center><iframe scrolling='no' seamless='seamless' src='
 ```
 
 `r I(plotly_iframe)`
+
+#### Large Sample Approximation to Sampling Distributions
+
+Sampling distributions as considered in the last section play an important role in the development of econometric methods. In general, there are two different approaches in characterizing sampling distributions: an "exact" approach and an "approximate" approach.
+
+The exact approach aims to find a general formula for the sampling distribution that holds for any sample size $n$. We call this the *exact distribution* or *finite sample distribution*. In the previous examples, we considered sample distributions of functionals of random variables whose distributions are *excactly known* in the sense that we can write them down as analytical expressions and do calculations. <br>
+However, this is not always possible. For $\overline{Y}$, result (<a href="#mjx-eqn-2.2">2.2</a>) tells us that normality of the $Y_i$ implies normality of $\overline{Y}$ (we demonstrated this for the special case of $Y_i \overset{i.i.d.}{\sim} N(0,1)$, $n=10$ using a simulation study that involves random sampling). Unfortunately, the *exact* distribution of $\overline{Y}$ is generally very hard to derive or even unknown if we drop the assumption of $Y$ having a normal distribution. <br>  
+
+
 
