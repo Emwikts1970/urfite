@@ -15,11 +15,12 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 <!--Customize Mathjax equation numbering-->
 <script type="text/x-mathjax-config">
+
 MathJax.Hub.Config({
   TeX: { 
           equationNumbers: { 
             autoNumber: "all",
-            formatNumber: function (n) {return '1.'+n} 
+            formatNumber: function (n) {return +n} 
           } 
        }
 });
