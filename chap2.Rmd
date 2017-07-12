@@ -496,6 +496,24 @@ R functions that handle the normal distribution do perform this standardization.
 pnorm(4, mean = 5, sd = 5) - pnorm(3, mean = 5, sd = 5) 
 ```
 
+An extension of the normal distribution for a single variable is the bivariate normal distribution. The bivariate probabilitiy density function of two random variables $X$ and $Y$ is given by
+
+$$ g_{X,Y}(x,y) = \frac{1}{2\pi\sigma_X\sigma_Y\sqrt{1-\rho_{XY}^2}} \exp \left\{ \frac{1}{-2(1-\rho_{XY}^2)} \left[ \left( \frac{x-\mu_x}{\sigma_x} \right)^2 - 2\rho_{XY}\left( \frac{x-\mu_X}{\sigma_X} \right)\left( \frac{y-\mu_Y}{\sigma_Y} \right) + \left( \frac{y-\mu_Y}{\sigma_Y} \right)^2 \right]  \right\} $$
+Admittedly, it is hard to gain insights from this complicated expression. Instead, let us consider the special case where $X$ and $Y$ are uncorrelated standard normal random variables that have a joint normal distribution. We then have the parameters $\sigma_X = \sigma_Y = 1$, $\mu_X=\mu_Y=0$ (due to marginal standard normality) and $\rho_{XY}=0$ (uncorrelatedness). The joint probability density function of $X$ and $Y$ hence becomes
+
+$$ g_{X,Y}(x,y) = f_X(x) f_Y(y) = \frac{1}{2\pi} \exp \left\{ -\frac{1}{2} \left[x^2 + y^2 \right]  \right\}  $$ 
+
+
+```{r, echo=F}
+library("knitr")
+library("devtools")
+url<-"https://plot.ly/~mca_unidue/22.embed?width=550&height=550" 
+plotly_iframe <- paste("<center><iframe scrolling='no' seamless='seamless' style='border:none' src='", url, 
+    "/800/1200' width='600' height='600'></iframe><center>", sep = "")
+```
+`r I(plotly_iframe)`
+
+
 <a name="chisquare"></a>
 
 #### The Chi-Squared Distribution 
@@ -795,15 +813,6 @@ hist(X, freq = F, col="steelblue", breaks = 40, ylab="Density", main="")
 curve(dchisq(x, df = DF), type = 'l', lwd = 2, col="red", add = T)
 ```
 
-
-```{r, echo = F, eval = T, message = F, warning = F} 
-url<-"https://plot.ly/~erikjan/1.embed?width=550&height=550" 
-plotly_iframe <- paste("<center><iframe scrolling='no' seamless='seamless' src='", url, 
-    "/800/1200' width='600' height='600'></iframe><center>", sep = "")
-```
-
-`r I(plotly_iframe)`
-
 #### Large Sample Approximation to Sampling Distributions
 
 Sampling distributions as considered in the last section play an important role in the development of econometric methods. In general, there are two different approaches in characterizing sampling distributions: an "exact" approach and an "approximate" approach.
@@ -811,5 +820,131 @@ Sampling distributions as considered in the last section play an important role 
 The exact approach aims to find a general formula for the sampling distribution that holds for any sample size $n$. We call this the *exact distribution* or *finite sample distribution*. In the previous examples, we considered sample distributions of functionals of random variables whose distributions are *excactly known* in the sense that we can write them down as analytical expressions and do calculations. <br>
 However, this is not always possible. For $\overline{Y}$, result (<a href="#mjx-eqn-2.2">2.2</a>) tells us that normality of the $Y_i$ implies normality of $\overline{Y}$ (we demonstrated this for the special case of $Y_i \overset{i.i.d.}{\sim} N(0,1)$, $n=10$ using a simulation study that involves random sampling). Unfortunately, the *exact* distribution of $\overline{Y}$ is generally very hard to derive or even unknown if we drop the assumption of $Y$ having a normal distribution. <br>  
 
+As can be guessed from its name, the "approximate" approach aims to find an approximation to the sampling distribution wherby it is required that the sample size $n$ is large. The distribution that is a large-sample approximation to the sampling distribution is also called the *asymptotic distribution*. This is due to the fact that the asymptotic distribution *is* the sampling distribution for $n \rightarrow \infty$ i.e. the approximation becomes exact if the sample size goes to infinity. However, there are cases where the difference between the sampling distribution and the asymptotic distribution is negligible for moderate or even small samples sizes so that approximation are very good.
+
+In this section we will discuss two well known results that are used to approximate sampling distributions and therefore consitute key tools in econoemtric theory: the *law of large numbers* and the *central limit theorem*.<br>
+The law of large numbers states that in large samples, $\overline{Y}$ is close to $\mu_Y$ with high probability. The central limit theorem says that the sampling distribution of the standardized sample average, that is $(\overline{Y} - \mu_Y)/\sigma_{\overline{Y}}$ is asymptotically normal distributed. It is particualarly interesting that this result does not depend on the distribution of $Y$. In other words, beeing unable to describe the complicated sampling distribution of $\overline{Y}$ if $Y$ is not normal, approximations of the latter using the central limit theorem simplify the development and applicability of econometric procedures enormously. This is a key component which underlies the theory of regression. Both results are summarized in Key Concept 2.6 and Key Concept 2.7.
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 2.6 </h3> 
+<h3 class = "left"> Convergence in Probability, Consistency and the Law of Large Numbers </h3>
+
+<p>
+
+The sample average $\overline{Y}$ converges in probability to $\mu_Y$ - we say that $\overline{Y}$ is *consistent* for $\mu_Y$ - if the probability that $\overline{Y}$ is in the range $(\mu_Y - \epsilon)$ to $(\mu_Y + \epsilon)$ becomes arbitrarly close to 1 as $n$ increases for any constant $\epsilon > 0$. We write this as
+
+$$ \overline{Y} \xrightarrow[]{p} \mu_Y. $$
+
+Consider the independently and identically distributed random variables $Y_i, i=1,\dots,n$ with expectation $E(Y_i)=\mu_Y$ and variance $Var(Y_i)=\sigma^2_Y$. Under the condition that $\sigma^2_Y< \infty$, that is large outliers are unlikely, the law of large numbers states
+
+$$ \overline{Y} \xrightarrow[]{p} \mu_Y. $$
 
 
+</p> 
+</div>
+
+The core statement of the law of large numbers is that under quite general conditions, the probability of obtaining a sample average $\overline{Y}$ that is close to $\mu_Y$ is high if we have a large sample size.
+
+Consider the example of repeatedly tossing a coin where $Y_i$ is the result of the $i^{th}$ coin toss. $Y_i$ is a Bernoulli distributed random variable with
+
+$$ P(Y_i) = \begin{cases} p, & Y_i = 1 \\ 1-p, & Y_i = 0 \end{cases} $$
+where $p = 0.5$ as we assume a fair coin. It is straightforward to show that
+
+$$ E(Y_i) = \mu_Y = p = 0.5. $$
+Say $p$ is the probabiliy of observing head and denote $R_n$ the proportion of heads in the first $n$ tosses,
+
+$$ R_n = \frac{1}{n} \sum_{i=1}^n Y_i. \tag{2.3}$$
+
+According to the law of large numbers, the proportion of heads converges in probability to $\mu_Y = 0.5$, the probability of tossing head in a single coin toss,
+
+$$ R_n \xrightarrow[]{p} \mu_Y=0.5 \ \ \text{as} \ \ n \rightarrow \infty.  $$
+We can use R to illustrate this by simulation. The procedure is as follows:
+
+1. Sample $n$ observations from the Bernoulli distribution e.g. using `sample`.
+2. Calculate the proportion of heads $R_n$ as in (<a href="#mjx-eqn-2.3">2.3</a>). A way to achieve is to call `cumsum` on the vector of observations $Y$ to obtain its cumulative sum and then divide by the respective number of observations.
+
+We continue by plotting the path and also add a dashed line for the benchmark $R_n = p = 0.5$.
+```{r, echo = -1, eval = T, message = F, warning = F} 
+set.seed(1)
+# Set number of coin tosses and simulate
+N <- 30000
+Y <- sample(0:1, N, replace =T)
+
+# Calculate R_n for 1:N
+S <- cumsum(Y)
+R <- S/(1:N)
+
+# Plot the path.
+plot(R, ylim=c(0.3, 0.7), type = "l", col = "steelblue", lwd = 2, xlab = "n", ylab = "R_n")
+
+# Add a dashed line for R_n = 0.5
+lines(c(0,N), c(0.5, 0.5), col = "darkred", lty = 2, lwd = 1)
+```
+
+There are several things to be said about this plot.
+
+- The blue graph shows the observed proportion of heads when tossing a coin $n$ times.
+
+- Since the $Y_i$ are radnom variables, $R_n$ is a random variate, too. The path depicted is only one of many possible realisations of $R_n$ as it is determined by the $30000$ observations sampled from the Bernoulli distribution. Thus, the code chunk above produces a differnt path every time You execute it (try this!).  
+
+- If the number of coin tosses $n$ is small, we observe the proportion of heads to be anything but close to its theoretical value, $\mu_Y = 0.5$. However, as more and more observation are included in the sample we find that the path stabilizes in neighbourhood of $0.5$.<br> This is the message to take away: the average of multiple trials shows a clear tendency to converge to its expected value as the sample size increases, as claimed by the law of large numbers. 
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 2.6 </h3> 
+<h3 class = "left"> The Central Limit Theorem </h3>
+
+  
+<p>
+
+Suppose that $Y_1,\dots,Y_n$ are independently and identically distributed random variables with expectation $E(Y_i)=\mu_Y$ and variance $Var(Y_i)=\sigma^2_Y$, $0<\sigma^2_Y<\infty$.<br>
+The central limit theorem states that, if the sample size $n$ goes to infinitny, the distribution of the standardized sample average 
+$$ \frac{\overline{Y} - \mu_Y}{\sigma_{\overline{Y}}} = \frac{\overline{Y} - \mu_Y}{\sigma_Y/\sqrt{n}} \ $$
+becomes arbitrarily well approximated by the standard normal distribution.
+
+</p> 
+</div>
+
+According to the central limit theorem, the distribution of the sample mean $\overline{Y}$ of the bernoulli distributed random variables $Y_i$, $i=1,...,n$ is well approximated by the normal distribution with parameters $\mu_Y=p=0.5$ and $\sigma^2_{\overline{Y}} = p(1-p) = 0.25$ for large $n$. Consequently,  for the standardized sample mean we conclude that the ratio
+
+$$ \frac{\overline{Y} - 0.5}{0.5/\sqrt{n}} \tag{2.4}$$
+should be well approximated by the standard normal distribution $N(0,1)$. We employ another simulation study to demonstrate this graphically. The idea is as follows.
+
+Draw a large number of random samples, 10000 say, of size $n$ from the bernoulli distribution and compute the sample averages. Standardize the averages as shown in (<a href="#mjx-eqn-2.4">2.4</a>). Next, visualize the distribution of the generated standardized sample averages by means of a density histogram and compare to the standard normal distribution. Repeat this for different sample sizes $n$ to see how increasing the sample size $n$ impacts the simulated distribution of the averages.
+
+In R, this is realized with the help of the following approach:
+
+1. We start by defining that the next four subsequently generated figures shall be drawn in a 2-by-2 array such that they can be easily compared. This is done by calling `par(mfrow = c(2, 2))` before the figures are generated.
+
+2. We define the number of repetitions `reps` as $10000$ and create a vector of sample sizes named `sample.sizes`. We consider samples of sizes $2$, $10$, $50$ and $100$.
+
+3. Next, we combine two `for` loops to simulate the data and plot the distributions. The inner loop generates $10000$ random samples, each consisting of `n` observations that are drawn from the bernoulli distribution, and computes the standardized averages. The outer loop executes the inner loop for the different sample sizes `n` and produces a plot for each iteration.
+
+```{r, echo = T, eval = T, message = F, warning = F, cache=T} 
+# Subdivide the plot panel into a 2-by-2 array
+par(mfrow = c(2, 2))
+
+# Set number of repetitions and the sample sizes
+reps <- 10000
+sample.sizes <- c(2, 10, 50, 100)
+
+# outer loop (loop over the sample sizes)
+  for (n in sample.sizes) {
+    
+    samplemean <- rep(0,reps) #initialize the vector of sample menas
+    stdsamplemean <- rep(0,reps) #initialize the vector of standardized sample menas
+
+# inner loop (loop over repetitions)   
+    for (i in 1:reps) {
+      x <- rbinom(n,1,0.5)
+      samplemean[i] <- mean(x)
+      stdsamplemean[i] <- sqrt(n)*(mean(x)-0.5)/0.5
+    }
+    
+# plot the histogram and overlay it with the N(0,1) density for every iteration    
+    hist(stdsamplemean, col = "steelblue", breaks = 40, freq = FALSE, xlim=c(-3, 3), ylim = c(0, 0.4), xlab = paste("n =", n), main = "")  
+    curve(dnorm(x), lwd = 2, col="darkred", add = TRUE)
+  }  
+  
+```
+
+We see that the simulated sampling distribution of the standardized average tends to deviate strongly from the standard normal distribution if the sample size is small, e.g. for $n=5$ and $n=10$. However as $n$ grows, the histograms are approaching the bell shape of a standard normal and we can be confident that the approximation works quite well as seen for $n=100$.
